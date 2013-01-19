@@ -51,6 +51,13 @@ public class RawInstanceTest {
         Assert.assertNotNull(ri);
         Assert.assertTrue("Instance has zero projects.", ri.getNumberOfProjects() > 0);
         Assert.assertTrue("Instance has zero resources.", ri.getNumberOfResources() > 0);
+        for (final RawProject rp : ri.getProjects()) {
+            try {
+                rp.getProjectData();
+            } catch (final Exception ex) {
+                Assert.fail("Parsing project data failed. Look for errors in the respective tests.");
+            }
+        }
     }
 
 }

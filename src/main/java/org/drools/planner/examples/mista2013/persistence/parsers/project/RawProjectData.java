@@ -15,13 +15,13 @@ import org.apache.commons.io.FileUtils;
 
 public class RawProjectData {
 
-    public static void parse(final File source) {
+    public static RawProjectData parse(final File source) {
         try {
             final ANTLRStringStream input = new ANTLRStringStream(FileUtils.readFileToString(source));
             final MRCPSPLexer lexer = new MRCPSPLexer(input);
             final CommonTokenStream tokens = new CommonTokenStream(lexer);
             final MRCPSPParser parser = new MRCPSPParser(tokens);
-            parser.parse();
+            return parser.parse();
         } catch (final IOException e) {
             throw new IllegalArgumentException("Cannot read parser input file: " + source, e);
         } catch (final RecognitionException e) {

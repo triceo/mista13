@@ -2,23 +2,14 @@ package org.drools.planner.examples.mista2013.persistence.parsers.instance;
 
 import java.io.File;
 
+import org.drools.planner.examples.mista2013.persistence.parsers.project.RawProjectData;
+
 public class RawProject {
-    
+
     private final int releaseDate;
     private final int criticalPathDuration;
     private final File projectFile;
-
-    public int getReleaseDate() {
-        return releaseDate;
-    }
-
-    public int getCriticalPathDuration() {
-        return criticalPathDuration;
-    }
-
-    public File getProjectFile() {
-        return projectFile;
-    }
+    private RawProjectData data;
 
     public RawProject(final int releaseDate, final int criticalPathDuration, final File projectFile) {
         if (releaseDate < 0) {
@@ -34,5 +25,20 @@ public class RawProject {
         this.criticalPathDuration = criticalPathDuration;
         this.projectFile = projectFile;
     }
-    
+
+    public int getCriticalPathDuration() {
+        return this.criticalPathDuration;
+    }
+
+    public RawProjectData getProjectData() {
+        if (this.data == null) {
+            this.data = RawProjectData.parse(this.projectFile);
+        }
+        return this.data;
+    }
+
+    public int getReleaseDate() {
+        return this.releaseDate;
+    }
+
 }
