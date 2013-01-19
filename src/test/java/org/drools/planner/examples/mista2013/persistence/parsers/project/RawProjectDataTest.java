@@ -33,7 +33,7 @@ public class RawProjectDataTest {
 
     };
 
-    @Parameters(name= "{index} ({0})")
+    @Parameters(name = "{index} ({0})")
     public static Collection<Object[]> retrieveInstanceFiles() {
         final Collection<Object[]> instanceFiles = new ArrayList<Object[]>();
         for (final File folder : RawProjectDataTest.dataFolder.listFiles(RawProjectDataTest.folderFilter)) {

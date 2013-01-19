@@ -40,7 +40,8 @@ public class ProjectMetadata {
     }
 
     public int getJobCount() {
-        return this.jobCount;
+        // for some reason, this doesn't include source and sink, hence the +2.
+        return this.jobCount + 2;
     }
 
     public int getMpmTime() {

@@ -1,4 +1,4 @@
-// $ANTLR 3.5 /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g 2013-01-19 19:29:10
+// $ANTLR 3.5 /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g 2013-01-19 20:40:49
 
 package org.drools.planner.examples.mista2013.persistence.parsers.project;
 
@@ -497,10 +497,10 @@ public class MRCPSPLexer extends Lexer {
 		try {
 			int _type = NUMBER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:108:8: ( ( DIGIT )+ )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:108:10: ( DIGIT )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:119:8: ( ( DIGIT )+ )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:119:10: ( DIGIT )+
 			{
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:108:10: ( DIGIT )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:119:10: ( DIGIT )+
 			int cnt1=0;
 			loop1:
 			while (true) {
@@ -549,10 +549,10 @@ public class MRCPSPLexer extends Lexer {
 		try {
 			int _type = WHITESPACE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:12: ( ( '\\t' | ' ' )+ )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:14: ( '\\t' | ' ' )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:121:12: ( ( '\\t' | ' ' )+ )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:121:14: ( '\\t' | ' ' )+
 			{
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:14: ( '\\t' | ' ' )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:121:14: ( '\\t' | ' ' )+
 			int cnt2=0;
 			loop2:
 			while (true) {
@@ -601,10 +601,10 @@ public class MRCPSPLexer extends Lexer {
 		try {
 			int _type = NEWLINE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:112:9: ( ( '\\r' | '\\n' )+ )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:112:11: ( '\\r' | '\\n' )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:123:9: ( ( '\\r' | '\\n' )+ )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:123:11: ( '\\r' | '\\n' )+
 			{
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:112:11: ( '\\r' | '\\n' )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:123:11: ( '\\r' | '\\n' )+
 			int cnt3=0;
 			loop3:
 			while (true) {
@@ -653,10 +653,10 @@ public class MRCPSPLexer extends Lexer {
 		try {
 			int _type = BEGIN_PAUSE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:114:13: ( ( '*' )+ NEWLINE )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:114:15: ( '*' )+ NEWLINE
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:125:13: ( ( '*' )+ NEWLINE )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:125:15: ( '*' )+ NEWLINE
 			{
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:114:15: ( '*' )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:125:15: ( '*' )+
 			int cnt4=0;
 			loop4:
 			while (true) {
@@ -668,7 +668,7 @@ public class MRCPSPLexer extends Lexer {
 
 				switch (alt4) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:114:16: '*'
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:125:16: '*'
 					{
 					match('*'); 
 					}
@@ -700,8 +700,8 @@ public class MRCPSPLexer extends Lexer {
 		try {
 			int _type = PAUSE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:116:7: ( NEWLINE BEGIN_PAUSE )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:116:9: NEWLINE BEGIN_PAUSE
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:127:7: ( NEWLINE BEGIN_PAUSE )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:127:9: NEWLINE BEGIN_PAUSE
 			{
 			mNEWLINE(); 
 
@@ -723,12 +723,12 @@ public class MRCPSPLexer extends Lexer {
 		try {
 			int _type = STRING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:118:8: ( ALPHABET ( ALPHABET | DIGIT | '-' | '_' | '.' )* )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:118:10: ALPHABET ( ALPHABET | DIGIT | '-' | '_' | '.' )*
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:129:8: ( ALPHABET ( ALPHABET | DIGIT | '-' | '_' | '.' )* )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:129:10: ALPHABET ( ALPHABET | DIGIT | '-' | '_' | '.' )*
 			{
 			mALPHABET(); 
 
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:118:19: ( ALPHABET | DIGIT | '-' | '_' | '.' )*
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:129:19: ( ALPHABET | DIGIT | '-' | '_' | '.' )*
 			loop5:
 			while (true) {
 				int alt5=2;
@@ -771,7 +771,7 @@ public class MRCPSPLexer extends Lexer {
 	// $ANTLR start "DIGIT"
 	public final void mDIGIT() throws RecognitionException {
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:120:15: ( '0' .. '9' )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:131:15: ( '0' .. '9' )
 			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:
 			{
 			if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
@@ -794,7 +794,7 @@ public class MRCPSPLexer extends Lexer {
 	// $ANTLR start "ALPHABET"
 	public final void mALPHABET() throws RecognitionException {
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:121:18: ( 'a' .. 'z' | 'A' .. 'Z' )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:132:18: ( 'a' .. 'z' | 'A' .. 'Z' )
 			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {

@@ -19,8 +19,8 @@ public class Request {
             throw new IllegalArgumentException("Mode number must not be lower than one.");
         }
         this.mode = mode;
-        if (duration < 1) {
-            throw new IllegalArgumentException("Job duration must not be lower than one.");
+        if (duration < 0) {
+            throw new IllegalArgumentException("Job duration must not be lower than zero.");
         }
         this.duration = duration;
         this.resources = Collections.unmodifiableList(resources);

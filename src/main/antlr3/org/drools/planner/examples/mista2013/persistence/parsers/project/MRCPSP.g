@@ -12,6 +12,9 @@ package org.drools.planner.examples.mista2013.persistence.parsers.project;
 }
 
 @members {
+
+  int numberOfResourcesToLookFor;
+
   public Integer toInteger(Token t) {
     return Integer.valueOf(t.getText());
   }
@@ -44,8 +47,10 @@ summary returns [SituationMetadata value]:
   WHITESPACE '- renewable' WHITESPACE             ':' WHITESPACE rr=number WHITESPACE 'R' NEWLINE
   WHITESPACE '- nonrenewable' WHITESPACE          ':' WHITESPACE nr=number WHITESPACE 'N' NEWLINE
   WHITESPACE '- doubly constrained' WHITESPACE    ':' WHITESPACE dr=number WHITESPACE 'D'
-  { value = new SituationMetadata($pn.value, $jn.value, $hz.value, $rr.value, $nr.value, $dr.value); }
-  ;
+  { 
+    value = new SituationMetadata($pn.value, $jn.value, $hz.value, $rr.value, $nr.value, $dr.value);
+    numberOfResourcesToLookFor = $rr.value + $nr.value + $dr.value;
+  };
 
 projects returns [ProjectMetadata value]:
   'PROJECT INFORMATION:' NEWLINE
@@ -56,7 +61,7 @@ projects returns [ProjectMetadata value]:
   WHITESPACE dd=number
   WHITESPACE tc=number
   WHITESPACE mt=number
-  {value = new ProjectMetadata($nr.value, $jb.value, $rd.value, $dd.value, $tc.value, $mt.value);};
+  { value = new ProjectMetadata($nr.value, $jb.value, $rd.value, $dd.value, $tc.value, $mt.value);};
 
 precedence returns [List<Precedence> value]:
   'PRECEDENCE RELATIONS:' NEWLINE
@@ -82,13 +87,19 @@ requestsAndDurations returns [List<Request> value]:
   {int jobNumber = 1;}
   (
   NEWLINE 
-    (WHITESPACE jn=number {jobNumber = $jn.value;}| WHITESPACE) 
-    md=number
-    WHITESPACE dr=number
     { List<Integer> resources = new ArrayList<Integer>(); } 
     (WHITESPACE rr=number {resources.add($rr.value);})+
     {
-      Request r = new Request(jobNumber, $md.value, $dr.value, resources);
+      /* the file format is so stupid that we must first load all the numbers 
+        and only after that decide which mean what. */
+      Request r = null;
+      int totalResources = numberOfResourcesToLookFor + 3;
+      if (resources.size() == totalResources) {
+        jobNumber = resources.get(0);
+        r = new Request(jobNumber, resources.get(1), resources.get(2), resources.subList(3, resources.size()));
+      } else {
+        r = new Request(jobNumber, resources.get(0), resources.get(1), resources.subList(2, resources.size()));
+      }
       value.add(r);
     }
   )+;
