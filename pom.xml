@@ -12,12 +12,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.6</java.version>
+    <antlr.version>3.5</antlr.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
+      <version>${antlr.version}</version>
     </dependency>    
     <dependency>
       <groupId>commons-io</groupId>
@@ -47,7 +49,7 @@
         <plugin>
           <groupId>org.antlr</groupId>
           <artifactId>antlr3-maven-plugin</artifactId>
-          <version>3.4</version>
+          <version>${antlr.version}</version>
           <executions>
             <execution>
               <goals>
