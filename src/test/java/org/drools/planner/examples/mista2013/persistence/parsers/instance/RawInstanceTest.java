@@ -25,7 +25,7 @@ public class RawInstanceTest {
 
     };
 
-    @Parameters
+    @Parameters(name= "{index} ({0})")
     public static Collection<Object[]> retrieveInstanceFiles() {
         final Collection<Object[]> instanceFiles = new ArrayList<Object[]>();
         for (final File f : RawInstanceTest.dataFolder.listFiles(RawInstanceTest.filter)) {

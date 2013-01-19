@@ -11,6 +11,22 @@ public class ProjectMetadata {
 
     public ProjectMetadata(final int number, final int jobCount, final int releaseDate, final int dueDate,
             final int tardinessCost, final int mpmTime) {
+        if (number < 1) {
+            throw new IllegalArgumentException("Project number too low: " + number);
+        }
+        if (jobCount < 1) {
+            throw new IllegalArgumentException("Project is empty.");
+        }
+        if (releaseDate < 0) {
+            throw new IllegalArgumentException("Project release date may not be in the past.");
+        }
+        if (dueDate < 1) {
+            throw new IllegalArgumentException("Project due date must be in the future.");
+        }
+        if (tardinessCost < 0) {
+            throw new IllegalArgumentException("Tardiness cost cannot be lower than zero.");
+        }
+        // FIXME what is MPM Time and how to validate it???
         this.number = number;
         this.jobCount = jobCount;
         this.releaseDate = releaseDate;

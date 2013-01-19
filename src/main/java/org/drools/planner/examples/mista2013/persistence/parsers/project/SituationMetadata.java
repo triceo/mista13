@@ -12,6 +12,18 @@ public class SituationMetadata {
     public SituationMetadata(final int projectCount, final int jobCount, final int horizon,
             final int renewableResourceCount, final int nonRenewableResourceCount,
             final int doubleConstrainedResourceCount) {
+        if (projectCount != 1) {
+            throw new IllegalArgumentException("Unsupported project count: " + projectCount);
+        }
+        if (jobCount < 1) {
+            throw new IllegalArgumentException("The project is empty!");
+        }
+        if (horizon < 1) {
+            throw new IllegalArgumentException("Project horizon must be larger than zero!");
+        }
+        if (renewableResourceCount < 0 || nonRenewableResourceCount < 0 || doubleConstrainedResourceCount < 0) {
+            throw new IllegalArgumentException("Number of resources can never be sub-zero.");
+        }
         this.projectCount = projectCount;
         this.jobCount = jobCount;
         this.horizon = horizon;
