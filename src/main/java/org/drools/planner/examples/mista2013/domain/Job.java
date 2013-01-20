@@ -33,6 +33,10 @@ public class Job {
         }
         return this.jobModes.get(id);
     }
+    
+    public int countModes() {
+        return this.jobModes.size();
+    }
 
     public Project getParentProject() {
         return this.parentProject;
