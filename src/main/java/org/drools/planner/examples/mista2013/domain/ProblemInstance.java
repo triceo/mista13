@@ -7,13 +7,13 @@ import java.util.Set;
 
 public class ProblemInstance {
 
-    private final int releaseDate;
-    private final int criticalPathDuration;
     private final Set<Project> projects;
 
-    public ProblemInstance(final int releaseDate, final int criticalPathDuration, final Collection<Project> projects) {
-        this.releaseDate = releaseDate;
-        this.criticalPathDuration = criticalPathDuration;
+    /*
+     * FIXME how do duedate/criticalPathDuration from instance data map to 
+     * attributes in project data? both have duedate, each have different values.
+     */
+    public ProblemInstance(final Collection<Project> projects) {
         final Set<Project> tmp = new HashSet<Project>();
         for (final Project p : projects) {
             p.setParentInstance(this);
@@ -22,16 +22,8 @@ public class ProblemInstance {
         this.projects = Collections.unmodifiableSet(tmp);
     }
 
-    public int getCriticalPathDuration() {
-        return this.criticalPathDuration;
-    }
-
     public Set<Project> getProjects() {
         return this.projects;
-    }
-
-    public int getReleaseDate() {
-        return this.releaseDate;
     }
 
 }
