@@ -42,7 +42,7 @@ public class Job {
         return this.successors;
     }
 
-    public void setParentProject(final Project p) {
+    protected void setParentProject(final Project p) {
         if (this.parentProject == null) {
             this.parentProject = p;
         } else {

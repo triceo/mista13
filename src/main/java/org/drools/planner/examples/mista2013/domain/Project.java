@@ -73,7 +73,7 @@ public class Project {
         return this.tardinessCost;
     }
 
-    public void setParentInstance(final ProblemInstance parent) {
+    protected void setParentInstance(final ProblemInstance parent) {
         if (parent == null) {
             this.parentInstance = parent;
         } else {

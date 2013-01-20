@@ -35,7 +35,7 @@ public class JobMode {
         return this.resourceRequirements.get(r);
     }
 
-    public void setParentJob(final Job parentJob) {
+    protected void setParentJob(final Job parentJob) {
         if (parentJob == null) {
             this.parentJob = parentJob;
         } else {
