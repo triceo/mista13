@@ -20,10 +20,14 @@ public class Project {
 
     private final Collection<Job> jobs;
 
+    private final int criticalPathDuration;
+
     private ProblemInstance parentInstance;
 
-    public Project(final int horizon, final int releaseDate, final int dueDate, final int tardinessCost,
-            final int mpmTime, final Map<Resource, Integer> resourceAvailabilities, final Collection<Job> jobs) {
+    public Project(final int criticalPathDuration, final int horizon, final int releaseDate, final int dueDate,
+            final int tardinessCost, final int mpmTime, final Map<Resource, Integer> resourceAvailabilities,
+            final Collection<Job> jobs) {
+        this.criticalPathDuration = criticalPathDuration;
         this.horizon = horizon;
         this.releaseDate = releaseDate;
         this.dueDate = dueDate;
@@ -42,6 +46,10 @@ public class Project {
             throw new IllegalArgumentException("Project " + this + " doesn't have resource " + r);
         }
         return this.resourceAvailabilities.get(r);
+    }
+
+    public int getCriticalPathDuration() {
+        return this.criticalPathDuration;
     }
 
     public int getDueDate() {
