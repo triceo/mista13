@@ -27,11 +27,8 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
     private class Mista2013TxtInputBuilder extends TxtInputBuilder {
 
         private List<Job> buildJobs(final RawProjectData data, final List<Resource> resources) {
-            final List<Request> request = data.getRequestsAndDurations();
+            final List<Request> requests = data.getRequestsAndDurations();
             final List<Precedence> precedence = data.getPrecedences();
-            if (request.size() != precedence.size()) {
-                throw new IllegalArgumentException("Number of jobs in two sources differs. Undetected parser problem?");
-            }
             // traverse the jobs backwards; successors need to be created first
             final Map<Integer, Job> jobCache = new HashMap<Integer, Job>();
             for (int jobId = precedence.size() - 1; jobId >= 0; jobId--) {
@@ -42,7 +39,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                 }
                 // prepare job modes
                 final List<JobMode> modes = new ArrayList<JobMode>();
-                for (final Request r : request) {
+                for (final Request r : requests) {
                     if (r.getJobNumber() != jobId) {
                         continue;
                     }
@@ -55,7 +52,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     }
                     modes.add(new JobMode(r.getMode(), r.getDuration(), resourceConsumption));
                 }
-                final Job job = new Job(jobId, null, successors);
+                final Job job = new Job(jobId, modes, successors);
                 jobCache.put(jobId, job);
             }
             return new ArrayList<Job>(jobCache.values());

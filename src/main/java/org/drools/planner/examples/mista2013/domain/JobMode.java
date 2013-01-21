@@ -36,7 +36,7 @@ public class JobMode {
     }
 
     protected void setParentJob(final Job parentJob) {
-        if (parentJob == null) {
+        if (this.parentJob == null) {
             this.parentJob = parentJob;
         } else {
             throw new IllegalStateException("Cannot override job mode's parent job.");

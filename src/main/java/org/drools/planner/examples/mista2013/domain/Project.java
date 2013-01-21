@@ -76,7 +76,7 @@ public class Project {
     }
 
     protected void setParentInstance(final ProblemInstance parent) {
-        if (parent == null) {
+        if (this.parentInstance == null) {
             this.parentInstance = parent;
         } else {
             throw new IllegalStateException("Cannot override job's parent instance.");

@@ -46,7 +46,7 @@ public class Resource {
      * which, how are they different?
      */
     public void setCapacity(final int capacity) {
-        if (capacity == -1) {
+        if (this.capacity == -1) {
             this.capacity = capacity;
         } else {
             throw new IllegalStateException("Cannot override an already set resource capacity.");

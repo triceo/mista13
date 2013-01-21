@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.drools.planner.examples.mista2013.Properties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -12,8 +13,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class RawProjectDataTest {
-
-    private static final File dataFolder = new File("data/mista2013/input");
 
     private static final FileFilter fileFilter = new FileFilter() {
 
@@ -36,7 +35,7 @@ public class RawProjectDataTest {
     @Parameters(name = "{index} ({0})")
     public static Collection<Object[]> retrieveInstanceFiles() {
         final Collection<Object[]> instanceFiles = new ArrayList<Object[]>();
-        for (final File folder : RawProjectDataTest.dataFolder.listFiles(RawProjectDataTest.folderFilter)) {
+        for (final File folder : Properties.DATA_FOLDER.listFiles(RawProjectDataTest.folderFilter)) {
             for (final File f : folder.listFiles(RawProjectDataTest.fileFilter)) {
                 final Object[] instance = new Object[] { f };
                 instanceFiles.add(instance);
