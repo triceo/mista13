@@ -1,8 +1,7 @@
 package org.drools.planner.examples.mista2013.domain;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
 public class Project {
 
@@ -16,36 +15,27 @@ public class Project {
 
     private final int mpmTime;
 
-    private final Map<Resource, Integer> resourceAvailabilities;
+    private final List<Resource> resources;
 
-    private final Collection<Job> jobs;
+    private final List<Job> jobs;
 
     private final int criticalPathDuration;
 
     private ProblemInstance parentInstance;
 
     public Project(final int criticalPathDuration, final int horizon, final int releaseDate, final int dueDate,
-            final int tardinessCost, final int mpmTime, final Map<Resource, Integer> resourceAvailabilities,
-            final Collection<Job> jobs) {
+            final int tardinessCost, final int mpmTime, final List<Resource> resources, final List<Job> jobs) {
         this.criticalPathDuration = criticalPathDuration;
         this.horizon = horizon;
         this.releaseDate = releaseDate;
         this.dueDate = dueDate;
         this.tardinessCost = tardinessCost;
         this.mpmTime = mpmTime;
-        this.resourceAvailabilities = Collections.unmodifiableMap(resourceAvailabilities);
-        this.jobs = Collections.unmodifiableCollection(jobs);
+        this.resources = Collections.unmodifiableList(resources);
+        this.jobs = Collections.unmodifiableList(jobs);
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-    }
-
-    public int getAvailability(final Resource r) {
-        if (!this.resourceAvailabilities.containsKey(r)) {
-            // little bit of defensive programming
-            throw new IllegalArgumentException("Project " + this + " doesn't have resource " + r);
-        }
-        return this.resourceAvailabilities.get(r);
     }
 
     public int getCriticalPathDuration() {
@@ -60,7 +50,7 @@ public class Project {
         return this.horizon;
     }
 
-    public Collection<Job> getJobs() {
+    public List<Job> getJobs() {
         // FIXME return also source and sink? currently yes, but undecided.
         return this.jobs;
     }
@@ -75,6 +65,10 @@ public class Project {
 
     public int getReleaseDate() {
         return this.releaseDate;
+    }
+
+    public List<Resource> getResources() {
+        return this.resources;
     }
 
     public int getTardinessCost() {

@@ -17,6 +17,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.drools.planner</groupId>
+      <artifactId>drools-planner-examples</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
       <version>${antlr.version}</version>
