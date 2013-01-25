@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Project {
 
+    private final int id;
+
     private final int horizon;
 
     private final int releaseDate;
@@ -23,8 +25,10 @@ public class Project {
 
     private ProblemInstance parentInstance;
 
-    public Project(final int criticalPathDuration, final int horizon, final int releaseDate, final int dueDate,
-            final int tardinessCost, final int mpmTime, final List<Resource> resources, final List<Job> jobs) {
+    public Project(final int id, final int criticalPathDuration, final int horizon, final int releaseDate,
+            final int dueDate, final int tardinessCost, final int mpmTime, final List<Resource> resources,
+            final List<Job> jobs) {
+        this.id = id;
         this.criticalPathDuration = criticalPathDuration;
         this.horizon = horizon;
         this.releaseDate = releaseDate;
@@ -48,6 +52,10 @@ public class Project {
 
     public int getHorizon() {
         return this.horizon;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public List<Job> getJobs() {

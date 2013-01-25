@@ -90,8 +90,9 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             }
             // build jobs and project
             final List<Job> jobs = this.buildJobs(data, resultingResources);
-            final Project p = new Project(raw.getCriticalPathDuration(), situation.getHorizon(), raw.getReleaseDate(),
-                    project.getDueDate(), project.getTardinessCost(), project.getMpmTime(), resultingResources, jobs);
+            final Project p = new Project(raw.getId(), raw.getCriticalPathDuration(), situation.getHorizon(),
+                    raw.getReleaseDate(), project.getDueDate(), project.getTardinessCost(), project.getMpmTime(),
+                    resultingResources, jobs);
             return p;
         }
 

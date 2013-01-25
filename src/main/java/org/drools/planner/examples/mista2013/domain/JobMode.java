@@ -11,6 +11,9 @@ public class JobMode {
     private final Map<Resource, Integer> resourceRequirements;
 
     public JobMode(final int id, final int duration, final Map<Resource, Integer> resourceRequirements) {
+        if (id < 0) {
+            throw new IllegalArgumentException("Job mode id must be >= 0.");
+        }
         this.id = id;
         this.duration = duration;
         this.resourceRequirements = Collections.unmodifiableMap(resourceRequirements);

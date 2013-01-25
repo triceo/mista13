@@ -20,8 +20,8 @@ public class RawInstance {
     public static RawInstance parse(final File input) {
         List<String> lines;
         try {
-           lines = FileUtils.readLines(input);
-        } catch (IOException e) {
+            lines = FileUtils.readLines(input);
+        } catch (final IOException e) {
             throw new IllegalStateException("Instance file " + input + " cannot be read.");
         }
         // trim lines as a precaution
@@ -47,7 +47,7 @@ public class RawInstance {
             final int criticalPathDuration = Integer.valueOf(lines.get(criticalPathDurationLine));
             final int projectFileLine = criticalPathDurationLine + 1;
             final File projectFile = new File(baseFolder, lines.get(projectFileLine));
-            projects.add(new RawProject(releaseDate, criticalPathDuration, projectFile));
+            projects.add(new RawProject(projectNumber, releaseDate, criticalPathDuration, projectFile));
         }
         if (projects.size() != expectedNumberOfProjects) {
             throw new IllegalStateException("Instance file " + input + " doesn't have the stated number of projects: "

@@ -6,12 +6,17 @@ import org.drools.planner.examples.mista2013.persistence.parsers.project.RawProj
 
 public class RawProject {
 
+    private final int id;
     private final int releaseDate;
     private final int criticalPathDuration;
     private final File projectFile;
     private RawProjectData data;
 
-    public RawProject(final int releaseDate, final int criticalPathDuration, final File projectFile) {
+    public RawProject(final int id, final int releaseDate, final int criticalPathDuration, final File projectFile) {
+        if (id < 0) {
+            throw new IllegalArgumentException("Project id must be >= 0.");
+        }
+        this.id = id;
         if (releaseDate < 0) {
             throw new IllegalArgumentException("Cannot have release dates < 0: " + releaseDate);
         }
@@ -28,6 +33,10 @@ public class RawProject {
 
     public int getCriticalPathDuration() {
         return this.criticalPathDuration;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public RawProjectData getProjectData() {
