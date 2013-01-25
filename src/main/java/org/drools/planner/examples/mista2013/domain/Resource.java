@@ -9,6 +9,7 @@ public class Resource {
     }
 
     private final int id;
+
     private int capacity = -1;
     private final boolean isGlobal;
     private final boolean isRenewable;
@@ -28,12 +29,50 @@ public class Resource {
         this.isRenewable = (type == ResourceType.RENEWABLE);
     }
 
+    /**
+     * Resources are equal when they share globality, renewability and ID.
+     * Capacity is irrelevant to equality.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Resource)) {
+            return false;
+        }
+        final Resource other = (Resource) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.isGlobal != other.isGlobal) {
+            return false;
+        }
+        if (this.isRenewable != other.isRenewable) {
+            return false;
+        }
+        return true;
+    }
+
     public int getCapacity() {
         return this.capacity;
     }
 
     public int getId() {
         return this.id;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.id;
+        result = prime * result + (this.isGlobal ? 1231 : 1237);
+        result = prime * result + (this.isRenewable ? 1231 : 1237);
+        return result;
     }
 
     public boolean isGlobal() {
@@ -54,6 +93,18 @@ public class Resource {
         } else {
             throw new IllegalStateException("Cannot override an already set resource capacity.");
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(this.isGlobal ? "G" : "L");
+        builder.append("R");
+        builder.append(this.isRenewable ? "R" : "N");
+        builder.append(this.id);
+        builder.append("-");
+        builder.append(this.capacity);
+        return builder.toString();
     }
 
 }

@@ -11,8 +11,9 @@ import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
 import org.drools.planner.api.domain.solution.PlanningSolution;
 import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.drools.planner.core.solution.Solution;
+import org.drools.planner.examples.mista2013.solver.solution.Mista2013SolutionCloner;
 
-@PlanningSolution
+@PlanningSolution(solutionCloner = Mista2013SolutionCloner.class)
 public class Mista2013 implements Solution<HardMediumSoftScore> {
 
     private final ProblemInstance problem;
@@ -37,6 +38,9 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
     }
 
     public Allocation getAllocation(final Job job) {
+        if (!this.allocationsPerJob.containsKey(job)) {
+            throw new IllegalArgumentException("Job allocation not found, this is a bug in our solution code: " + job);
+        }
         return this.allocationsPerJob.get(job);
     }
 

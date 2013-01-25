@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver>
+  <environmentMode>FULL_ASSERT</environmentMode>
+  <solutionClass>org.drools.planner.examples.mista2013.domain.Mista2013</solutionClass>
+  <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
+
+  <scoreDirectorFactory>
+    <scoreDefinitionType>HARD_MEDIUM_SOFT</scoreDefinitionType>
+    <simpleScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013ScoreCalculator</simpleScoreCalculatorClass>
+  </scoreDirectorFactory>
+  <termination>
+    <maximumMinutesSpend>5</maximumMinutesSpend>
+  </termination>
+  
+  <constructionHeuristic>
+    <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>-->
+  </constructionHeuristic>
+  <localSearch>
+    <unionMoveSelector>
+      <changeMoveSelector>
+        <valueSelector>
+          <variableName>jobMode</variableName>
+        </valueSelector>
+      </changeMoveSelector>
+      <changeMoveSelector>
+        <valueSelector>
+          <variableName>startDate</variableName>
+        </valueSelector>
+      </changeMoveSelector>
+      <swapMoveSelector/>
+    </unionMoveSelector>
+    <acceptor>
+      <planningEntityTabuSize>7</planningEntityTabuSize>
+    </acceptor>
+    <forager>
+      <minimalAcceptedSelection>2000</minimalAcceptedSelection>
+    </forager>
+  </localSearch>
+</solver>

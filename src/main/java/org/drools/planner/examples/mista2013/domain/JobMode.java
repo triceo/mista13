@@ -43,4 +43,13 @@ public class JobMode {
         }
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("JobMode [id=").append(this.id).append(", duration=").append(this.duration)
+                .append(", parentJob=").append(this.parentJob.getId()).append(", resourceRequirements=")
+                .append(this.resourceRequirements).append("]");
+        return builder.toString();
+    }
+
 }

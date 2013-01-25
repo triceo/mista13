@@ -31,10 +31,10 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             final List<Precedence> precedence = data.getPrecedences();
             // traverse the jobs backwards; successors need to be created first
             final Map<Integer, Job> jobCache = new HashMap<Integer, Job>();
-            for (int jobId = precedence.size() - 1; jobId >= 0; jobId--) {
+            for (int jobId = precedence.size(); jobId > 0; jobId--) {
                 // gather successors
                 final List<Job> successors = new ArrayList<Job>();
-                for (final Integer successorId : precedence.get(jobId).getSuccessors()) {
+                for (final Integer successorId : precedence.get(jobId - 1).getSuccessors()) {
                     successors.add(jobCache.get(successorId));
                 }
                 // prepare job modes

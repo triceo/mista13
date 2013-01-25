@@ -59,7 +59,8 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount(solution);
         final int brokenTotal = brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4 + brokenHard5 + brokenHard7;
-        final int medium = this.getTotalProjectDelay(solution);
+        // FIXME are we interested in projects being actually ahead?
+        final int medium = Math.max(0, this.getTotalProjectDelay(solution));
         final int soft = this.getTotalMakespan(solution);
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
@@ -90,6 +91,9 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     private int findMaxStartDate(final Mista2013 solution, final Project p) {
         int maxStartDate = Integer.MIN_VALUE;
         for (final Allocation a : solution.getAllocations()) {
+            if (a.getStartDate() == null) {
+                continue;
+            }
             maxStartDate = Math.max(maxStartDate, a.getStartDate());
         }
         return maxStartDate;
@@ -115,11 +119,23 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
             for (final Job j : p.getJobs()) {
                 final Allocation a = solution.getAllocation(j);
                 for (final Job successor : j.getSuccessors()) {
+                    if (a.getJobMode() == null) {
+                        // not yet initialized
+                        total++;
+                        continue;
+                    }
                     // find its successors
                     final Allocation successing = solution.getAllocation(successor);
-                    final int jobDoneBy = a.getStartDate() + a.getJobMode().getDuration();
-                    if (jobDoneBy > successing.getStartDate()) { // FIXME > or
-                                                                 // >=
+                    if (successing.getStartDate() == null) {
+                        // not yet initialized
+                        total++;
+                        continue;
+                    }
+                    final int previousJobDoneBy = a.getStartDate() + a.getJobMode().getDuration();
+                    /*
+                     * FIXME > or >= ?
+                     */
+                    if (previousJobDoneBy > successing.getStartDate()) {
                         // and mark them if they don't actually succeed
                         total++;
                     }

@@ -17,10 +17,17 @@ public class Job {
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
         this.id = id;
         this.successors = Collections.unmodifiableSet(new HashSet<Job>(successors));
+        if (this.successors.contains(null)) {
+            throw new IllegalStateException("Cannot have null as a successor!");
+        }
         for (final JobMode m : modes) {
             m.setParentJob(this);
             this.jobModes.put(m.getId(), m);
         }
+    }
+
+    public int countModes() {
+        return this.jobModes.size();
     }
 
     public int getId() {
@@ -32,10 +39,6 @@ public class Job {
             throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
         }
         return this.jobModes.get(id);
-    }
-    
-    public int countModes() {
-        return this.jobModes.size();
     }
 
     public Project getParentProject() {
@@ -52,6 +55,13 @@ public class Job {
         } else {
             throw new IllegalStateException("Cannot override parent project!");
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Job [id=").append(this.id).append(", successors=").append(this.successors).append("]");
+        return builder.toString();
     }
 
 }

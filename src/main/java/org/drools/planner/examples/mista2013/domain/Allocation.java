@@ -14,7 +14,7 @@ public class Allocation {
 
     private final Job job;
     private JobMode jobMode;
-    private int startDate;
+    private Integer startDate;
 
     private final Collection<JobMode> jobModes;
     private final Collection<Integer> startDates;
@@ -52,7 +52,7 @@ public class Allocation {
 
     @PlanningVariable
     @ValueRange(planningEntityProperty = "startDates", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
-    public int getStartDate() {
+    public Integer getStartDate() {
         return this.startDate;
     }
 
@@ -64,7 +64,7 @@ public class Allocation {
         this.jobMode = jobMode;
     }
 
-    public void setStartDate(final int startDate) {
+    public void setStartDate(final Integer startDate) {
         this.startDate = startDate;
     }
 
