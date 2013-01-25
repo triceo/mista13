@@ -11,18 +11,21 @@ public class Resource {
     private final int id;
     private int capacity = -1;
     private final boolean isGlobal;
-    private final ResourceType type;
+    private final boolean isRenewable;
 
     public Resource(final int id) {
         this.isGlobal = true;
         this.id = id;
-        this.type = ResourceType.RENEWABLE;
+        this.isRenewable = true;
     }
 
     public Resource(final int id, final ResourceType type) {
+        if (type == ResourceType.DOUBLE_CONSTRAINED) {
+            throw new IllegalArgumentException("Double-constrained resources aren't yet supported.");
+        }
         this.isGlobal = false;
         this.id = id;
-        this.type = type;
+        this.isRenewable = (type == ResourceType.RENEWABLE);
     }
 
     public int getCapacity() {
@@ -33,12 +36,12 @@ public class Resource {
         return this.id;
     }
 
-    public ResourceType getType() {
-        return this.type;
-    }
-
     public boolean isGlobal() {
         return this.isGlobal;
+    }
+
+    public boolean isRenewable() {
+        return this.isRenewable;
     }
 
     /*

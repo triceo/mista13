@@ -51,7 +51,6 @@ public class Project {
     }
 
     public List<Job> getJobs() {
-        // FIXME return also source and sink? currently yes, but undecided.
         return this.jobs;
     }
 
