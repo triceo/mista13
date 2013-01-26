@@ -13,7 +13,7 @@
   </termination>
   
   <constructionHeuristic>
-    <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>-->
+    <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
@@ -29,11 +29,8 @@
       </changeMoveSelector>
       <swapMoveSelector/>
     </unionMoveSelector>
-    <acceptor>
-      <planningEntityTabuSize>7</planningEntityTabuSize>
-    </acceptor>
     <forager>
-      <minimalAcceptedSelection>2000</minimalAcceptedSelection>
+      <minimalAcceptedSelection>4000</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>

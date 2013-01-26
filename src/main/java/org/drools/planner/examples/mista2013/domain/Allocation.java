@@ -3,6 +3,7 @@ package org.drools.planner.examples.mista2013.domain;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
 import org.drools.planner.api.domain.variable.PlanningVariable;
@@ -29,7 +30,7 @@ public class Allocation {
         }
         this.jobModes = Collections.unmodifiableCollection(jobModes);
         // list available start dates
-        final Collection<Integer> startDates = new HashSet<Integer>();
+        final Collection<Integer> startDates = new TreeSet<Integer>();
         for (int i = job.getParentProject().getReleaseDate(); i < job.getParentProject().getHorizon(); i++) {
             startDates.add(i);
         }

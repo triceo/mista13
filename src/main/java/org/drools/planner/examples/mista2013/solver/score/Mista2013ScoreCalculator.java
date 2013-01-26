@@ -115,29 +115,41 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     private int getBrokenPrecedenceRelationsCount(final Mista2013 solution) {
         int total = 0;
         for (final Project p : solution.getProblem().getProjects()) {
-            // for each job in each project
-            for (final Job j : p.getJobs()) {
-                final Allocation a = solution.getAllocation(j);
-                for (final Job successor : j.getSuccessors()) {
-                    if (a.getJobMode() == null) {
-                        // not yet initialized
-                        total++;
-                        continue;
-                    }
+            for (final Job currentJob : p.getJobs()) {
+                final Allocation currentJobAllocation = solution.getAllocation(currentJob);
+                final JobMode currentMode = currentJobAllocation.getJobMode();
+                if (currentMode == null) {
+                    // not yet initialized
+                    total++;
+                    continue;
+                }
+                if (currentJobAllocation.getStartDate() < p.getReleaseDate()) {
+                    // make sure we never start before we're allowed to
+                    total++;
+                }
+                int currentDoneBy = currentJobAllocation.getStartDate() + currentMode.getDuration();
+                boolean successorCanFollowImmediately = (currentMode.getDuration() == 0);
+                for (final Job succeedingJob : currentJob.getSuccessors()) {
                     // find its successors
-                    final Allocation successing = solution.getAllocation(successor);
-                    if (successing.getStartDate() == null) {
+                    final Allocation succeedingJobAllocation = solution.getAllocation(succeedingJob);
+                    final Integer nextStartedAt = succeedingJobAllocation.getStartDate();
+                    final JobMode nextMode = succeedingJobAllocation.getJobMode();
+                    if (nextStartedAt == null || nextMode == null) {
                         // not yet initialized
                         total++;
                         continue;
                     }
-                    final int previousJobDoneBy = a.getStartDate() + a.getJobMode().getDuration();
-                    /*
-                     * FIXME > or >= ?
-                     */
-                    if (previousJobDoneBy > successing.getStartDate()) {
-                        // and mark them if they don't actually succeed
-                        total++;
+                    boolean successorCanStartImmediately = (nextMode.getDuration() == 0);
+                    if (successorCanStartImmediately || successorCanFollowImmediately) {
+                        // only validate if the job doesn't end after its successor begins
+                        if (currentDoneBy > nextStartedAt) {
+                            total++;
+                        }
+                    } else {
+                        // make sure the job properly follows
+                        if (currentDoneBy >= nextStartedAt) {
+                            total++;
+                        }
                     }
                 }
             }
