@@ -127,8 +127,8 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                     // make sure we never start before we're allowed to
                     total++;
                 }
-                int currentDoneBy = currentJobAllocation.getStartDate() + currentMode.getDuration();
-                boolean successorCanFollowImmediately = (currentMode.getDuration() == 0);
+                final int currentDoneBy = currentJobAllocation.getStartDate() + currentMode.getDuration();
+                boolean currentIsZeroLength = (currentMode.getDuration() == 0);
                 for (final Job succeedingJob : currentJob.getSuccessors()) {
                     // find its successors
                     final Allocation succeedingJobAllocation = solution.getAllocation(succeedingJob);
@@ -139,15 +139,29 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                         total++;
                         continue;
                     }
-                    boolean successorCanStartImmediately = (nextMode.getDuration() == 0);
-                    if (successorCanStartImmediately || successorCanFollowImmediately) {
-                        // only validate if the job doesn't end after its successor begins
-                        if (currentDoneBy > nextStartedAt) {
+                    boolean nextIsZeroLength = (nextMode.getDuration() == 0);
+                    if (nextStartedAt > currentDoneBy) {
+                        /*
+                         * successor starts after its predecessor ends. that
+                         * would've been alright, only we want to make sure that
+                         * zero-length jobs don't cause any unnecessary delay.
+                         */
+                        if (nextIsZeroLength || currentIsZeroLength) {
                             total++;
                         }
+                    } else if (nextStartedAt < currentDoneBy) {
+                        /*
+                         * successor starts before its predecessor ends, this is
+                         * always wrong
+                         */
+                        total++;
                     } else {
-                        // make sure the job properly follows
-                        if (currentDoneBy >= nextStartedAt) {
+                        /*
+                         * sucessor starts at the same time its predecessor
+                         * ends. this is only OK when either of them is a
+                         * zero-length job
+                         */
+                        if (!nextIsZeroLength && !currentIsZeroLength) {
                             total++;
                         }
                     }
