@@ -3,6 +3,7 @@ package org.drools.planner.examples.mista2013.persistence;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     }
                     // prepare resource consumption data
                     int resourceId = 0;
-                    final Map<Resource, Integer> resourceConsumption = new HashMap<Resource, Integer>();
+                    final Map<Resource, Integer> resourceConsumption = new LinkedHashMap<Resource, Integer>();
                     for (final Resource resource : resources) {
                         resourceConsumption.put(resource, r.getResources().get(resourceId));
                         resourceId++;
