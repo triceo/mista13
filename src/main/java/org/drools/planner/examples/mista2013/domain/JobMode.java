@@ -1,7 +1,9 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class JobMode {
@@ -12,6 +14,8 @@ public class JobMode {
 
     private Job parentJob;
     private final Map<Resource, Integer> resourceRequirements;
+    private final List<Resource> resources; // much better performance than
+                                            // resourceRequirements.keySet()
 
     public JobMode(final int id, final int duration, final Map<Resource, Integer> resourceRequirements) {
         if (id < 0) {
@@ -20,6 +24,7 @@ public class JobMode {
         this.id = id;
         this.duration = duration;
         this.resourceRequirements = Collections.unmodifiableMap(resourceRequirements);
+        this.resources = Collections.unmodifiableList(new ArrayList<Resource>(resourceRequirements.keySet()));
     }
 
     @Override
@@ -67,7 +72,7 @@ public class JobMode {
     }
 
     public Collection<Resource> getResources() {
-        return Collections.unmodifiableCollection(this.resourceRequirements.keySet());
+        return this.resources;
     }
 
     @Override

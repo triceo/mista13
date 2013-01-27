@@ -3,7 +3,6 @@ package org.drools.planner.examples.mista2013.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -27,7 +26,7 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
 
     public Mista2013(final ProblemInstance input) {
         this.problem = input;
-        final Collection<Allocation> allocations = new LinkedHashSet<Allocation>();
+        final List<Allocation> allocations = new ArrayList<Allocation>();
         this.allocationsIndexed = new Allocation[input.getProjects().size()][];
         for (final Project p : input.getProjects()) {
             this.allocationsIndexed[p.getId()] = new Allocation[p.getJobs().size()];
@@ -41,7 +40,7 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
                 this.allocationsIndexed[p.getId()][j.getId()] = a;
             }
         }
-        this.allocations = Collections.unmodifiableCollection(allocations);
+        this.allocations = Collections.unmodifiableList(allocations);
     }
 
     public Allocation getAllocation(final Job job) {
@@ -66,7 +65,7 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
                 }
             }
         }
-        return Collections.unmodifiableCollection(s);
+        return Collections.unmodifiableList(s);
     }
 
     public ProblemInstance getProblem() {

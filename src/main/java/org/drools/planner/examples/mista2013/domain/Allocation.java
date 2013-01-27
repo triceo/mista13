@@ -1,8 +1,10 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
@@ -24,17 +26,17 @@ public class Allocation {
     public Allocation(final Job job) {
         this.job = job;
         // list available job modes
-        final Collection<JobMode> jobModes = new HashSet<JobMode>();
+        final List<JobMode> jobModes = new ArrayList<JobMode>();
         for (final JobMode jm : job.getJobModes()) {
             jobModes.add(jm);
         }
-        this.jobModes = Collections.unmodifiableCollection(jobModes);
+        this.jobModes = Collections.unmodifiableList(jobModes);
         // list available start dates
-        final Collection<Integer> startDates = new TreeSet<Integer>();
+        final Set<Integer> startDates = new TreeSet<Integer>();
         for (int i = job.getParentProject().getReleaseDate(); i < job.getParentProject().getHorizon(); i++) {
             startDates.add(i);
         }
-        this.startDates = Collections.unmodifiableCollection(startDates);
+        this.startDates = Collections.unmodifiableSet(startDates);
     }
 
     public Job getJob() {

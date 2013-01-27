@@ -232,17 +232,23 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
         // sum up all the resource consumptions that we track
         for (final Allocation a : solution.getAllocations()) {
-            final JobMode jm = a.getJobMode();
-            if (jm == null) {
+            if (!a.isInitialized()) {
                 continue;
             }
+            final JobMode jm = a.getJobMode();
             for (final Resource r : jm.getResources()) {
                 if (!Mista2013ScoreCalculator.LOCAL_NONRENEWABLES.accept(r)) {
                     // not the type of resource we're interested in
                     continue;
                 }
-                final int totalAllocation = totalAllocations.containsKey(r) ? totalAllocations.get(r) : 0;
-                totalAllocations.put(r, totalAllocation + jm.getResourceRequirement(r));
+                final int resourceRequirement = jm.getResourceRequirement(r);
+                if (resourceRequirement == 0) {
+                    // doesn't change anything
+                    continue;
+                }
+                Integer totalAllocation = totalAllocations.get(r);
+                totalAllocation = resourceRequirement + ((totalAllocation == null) ? 0 : totalAllocation);
+                totalAllocations.put(r, totalAllocation);
             }
         }
         // and now find out how many more we have than we should
@@ -284,8 +290,14 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                         // not the type of resource we're interested in
                         continue;
                     }
-                    final int totalAllocation = totalAllocations.containsKey(r) ? totalAllocations.get(r) : 0;
-                    totalAllocations.put(r, totalAllocation + jm.getResourceRequirement(r));
+                    final int resourceRequirement = jm.getResourceRequirement(r);
+                    if (resourceRequirement == 0) {
+                        // doesn't change anything
+                        continue;
+                    }
+                    Integer totalAllocation = totalAllocations.get(r);
+                    totalAllocation = resourceRequirement + ((totalAllocation == null) ? 0 : totalAllocation);
+                    totalAllocations.put(r, totalAllocation);
                 }
             }
             for (final Map.Entry<Resource, Integer> entry : totalAllocations.entrySet()) {
