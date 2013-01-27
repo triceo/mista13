@@ -52,6 +52,25 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     };
 
+    /*
+     * TODO remove when Planner 6.0-SNAPSHOT fixes constr heur and selectors
+     * wrt. planning values
+     */
+    private static int findInvalidEntityVariableValues(final Allocation a) {
+        int total = 0;
+        if (!a.isInitialized()) {
+            total++;
+        } else {
+            if (!a.getJobModes().contains(a.getJobMode())) {
+                total++;
+            }
+            if (!a.getStartDates().contains(a.getStartDate())) {
+                total++;
+            }
+        }
+        return total * 1000000;
+    }
+
     private ProblemInstance problem = null;
 
     private final Set<Allocation> allocations = new LinkedHashSet<Allocation>();
@@ -66,6 +85,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      * @return How many jobs haven't picked a job mode or start date.
      */
     private int unassignedJobModeCount = 0;
+
+    private int invalidValuesAssignedToEntityVariableCount = 0;
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
@@ -111,7 +132,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public HardMediumSoftScore calculateScore() {
-        final int plannerPlanningValueWorkaround = this.findInvalidEntityVariableValues();
+        final int plannerPlanningValueWorkaround = this.invalidValuesAssignedToEntityVariableCount;
         final int brokenHard1 = this.getOverutilizedLocalRenewableResourcesCount();
         final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount();
         final int brokenHard3 = this.getOverutilizedGlobalResourcesCount();
@@ -125,27 +146,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int medium = Math.max(0, this.getTotalProjectDelay());
         final int soft = this.getTotalMakespan();
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
-    }
-
-    /*
-     * TODO remove when Planner 6.0-SNAPSHOT fixes constr heur and selectors
-     * wrt. planning values
-     */
-    private int findInvalidEntityVariableValues() {
-        int total = 0;
-        for (final Allocation a : this.allocations) {
-            if (!a.isInitialized()) {
-                total++;
-                continue;
-            }
-            if (!a.getJobModes().contains(a.getJobMode())) {
-                total++;
-            }
-            if (!a.getStartDates().contains(a.getStartDate())) {
-                total++;
-            }
-        }
-        return total * 1000000;
     }
 
     /**
@@ -392,11 +392,14 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!entity.isInitialized()) {
             this.unassignedJobModeCount += 1;
         }
+        this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
+                .findInvalidEntityVariableValues(entity);
     }
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
         this.unassignedJobModeCount = 0;
+        this.invalidValuesAssignedToEntityVariableCount = 0;
         this.allocations.clear();
         this.allocationsPerJob.clear();
         this.maxDueDateCache.clear();
@@ -414,5 +417,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!entity.isInitialized()) {
             this.unassignedJobModeCount -= 1;
         }
+        this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
+                .findInvalidEntityVariableValues(entity);
     }
 }
