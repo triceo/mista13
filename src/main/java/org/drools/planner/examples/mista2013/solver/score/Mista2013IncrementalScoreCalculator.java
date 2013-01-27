@@ -105,6 +105,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      */
     private int minReleaseDate = 0;
 
+    private int upperBound = Integer.MIN_VALUE;
+
     @Override
     public void afterAllVariablesChanged(final Object entity) {
         this.insert((Allocation) entity);
@@ -166,7 +168,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     /**
      * Find maximum due date for any of the activities in a problem instance.
      * This date (since we ignore project sink) is effectively equivalent to the
-     * end of last of the projects. Results of this call are fully cached and 
+     * end of last of the projects. Results of this call are fully cached and
      * thus needn't be incremental.
      * 
      * @return
@@ -250,23 +252,14 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     /**
      * Validates feasibility requirement (5).
      * 
-     * FIXME will need to be re-checked; what's the
-     * "upper bound on the time horizon of scheduling problem"? this method
-     * assumes that it is the maximum of horizons of all projects in a problem
-     * instance.
-     * 
      * @return How many projects have overrun their horizon.
      */
     private int getHorizonOverrunCount() {
         // find what we think is the upper bound
         int total = 0;
-        int upperBound = Integer.MIN_VALUE;
-        for (final Project p : this.problem.getProjects()) {
-            upperBound = Math.max(upperBound, p.getHorizon());
-        }
         // and now find out the number of projects that went over it
         for (final Project p : this.problem.getProjects()) {
-            if (this.findMaxDueDate(p) > upperBound) {
+            if (this.findMaxDueDate(p) > this.upperBound) {
                 total++;
             }
         }
@@ -411,6 +404,15 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.maxDueDateCache.clear();
         // change to the new problem
         this.problem = workingSolution.getProblem();
+        /*
+         * FIXME what's "upper bound on the time horizon of scheduling problem"?
+         * here we assume that it is the maximum of horizons of all projects in
+         * a problem instance.
+         */
+        this.upperBound = Integer.MIN_VALUE;
+        for (final Project p : this.problem.getProjects()) {
+            this.upperBound = Math.max(this.upperBound, p.getHorizon());
+        }
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         // insert new entities
         for (final Allocation a : workingSolution.getAllocations()) {
