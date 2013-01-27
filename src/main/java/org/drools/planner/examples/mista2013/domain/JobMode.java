@@ -27,31 +27,6 @@ public class JobMode {
         this.resources = Collections.unmodifiableList(new ArrayList<Resource>(resourceRequirements.keySet()));
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof JobMode)) {
-            return false;
-        }
-        final JobMode other = (JobMode) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (this.parentJob == null) {
-            if (other.parentJob != null) {
-                return false;
-            }
-        } else if (!this.parentJob.equals(other.parentJob)) {
-            return false;
-        }
-        return true;
-    }
-
     public int getDuration() {
         return this.duration;
     }
@@ -73,15 +48,6 @@ public class JobMode {
 
     public Collection<Resource> getResources() {
         return this.resources;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.id;
-        result = prime * result + ((this.parentJob == null) ? 0 : this.parentJob.hashCode());
-        return result;
     }
 
     protected void setParentJob(final Job parentJob) {

@@ -23,6 +23,10 @@ public class Allocation {
 
     private final Collection<Integer> startDates;
 
+    private boolean isJobModeSet = false;
+
+    private boolean isStartDateSet = false;
+
     public Allocation(final Job job) {
         this.job = job;
         // list available job modes
@@ -73,14 +77,16 @@ public class Allocation {
     }
 
     public boolean isInitialized() {
-        return !(this.jobMode == null || this.startDate == null);
+        return this.isJobModeSet && this.isStartDateSet;
     }
 
     public void setJobMode(final JobMode jobMode) {
+        this.isJobModeSet = (jobMode != null);
         this.jobMode = jobMode;
     }
 
     public void setStartDate(final Integer startDate) {
+        this.isStartDateSet = (startDate != null);
         this.startDate = startDate;
     }
 

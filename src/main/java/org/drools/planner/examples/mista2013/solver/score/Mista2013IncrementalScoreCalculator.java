@@ -1,5 +1,7 @@
 package org.drools.planner.examples.mista2013.solver.score;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -71,6 +73,44 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return total * 1000000;
     }
 
+    /**
+     * Find maximum due date for any of the activities in a problem instance.
+     * This date (since we ignore project sink) is effectively equivalent to the
+     * end of last of the projects.
+     * 
+     * @return
+     */
+    private static int findMaxDueDate(final ProblemInstance problem, final Map<Project, Integer> maxDueDatesPerProject) {
+        int maxDueDate = Integer.MIN_VALUE;
+        for (final Project p : problem.getProjects()) {
+            maxDueDate = Math.max(maxDueDate, maxDueDatesPerProject.get(p));
+        }
+        return maxDueDate;
+    }
+
+    /**
+     * Find maximum due date for any of the activities in a given project. This
+     * date (since we ignore project sink) is effectively equivalent to the end
+     * of the project. This is very heavily used throughout the calculator,
+     * hence it includes result cache.
+     * 
+     * @return
+     */
+    private static int findMaxDueDate(final Project p, final Map<Job, Allocation> allocations) {
+        int maxDueDate = Integer.MIN_VALUE;
+        for (final Job j : p.getJobs()) {
+            if (j.isSource() || j.isSink()) {
+                continue;
+            }
+            final Allocation a = allocations.get(j);
+            if (a == null || !a.isInitialized()) {
+                continue;
+            }
+            maxDueDate = Math.max(maxDueDate, a.getDueDate());
+        }
+        return maxDueDate;
+    }
+
     private static int findMinReleaseDate(final ProblemInstance instance) {
         int minReleaseDate = Integer.MAX_VALUE;
         for (final Project p : instance.getProjects()) {
@@ -84,11 +124,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private final Set<Allocation> allocations = new LinkedHashSet<Allocation>();
 
     private final Map<Job, Allocation> allocationsPerJob = new LinkedHashMap<Job, Allocation>();
-
-    /**
-     * Null key is used as a global due date cache.
-     */
-    private final Map<Project, Integer> maxDueDateCache = new HashMap<Project, Integer>();
 
     /**
      * Validates feasibility requirement (4).
@@ -106,6 +141,10 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private int minReleaseDate = 0;
 
     private int upperBound = Integer.MIN_VALUE;
+
+    private int maxDueDateGlobal = Integer.MIN_VALUE;
+
+    private final Map<Project, Integer> maxDueDatesPerProject = new HashMap<Project, Integer>();
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
@@ -154,60 +193,18 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount();
         final int brokenHard3 = this.getOverutilizedGlobalResourcesCount();
         final int brokenHard4 = this.unassignedJobModeCount;
-        final int brokenHard5 = this.getHorizonOverrunCount();
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount();
+        /*
+         * the following vars are always recalculated; but they come from cached
+         * values, so it brings near zero overhead.
+         */
+        final int brokenHard5 = this.getHorizonOverrunCount();
+        final int medium = this.getTotalProjectDelay();
+        final int soft = this.getTotalMakespan();
         final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4
                 + brokenHard5 + brokenHard7;
-        // FIXME are we interested in projects being actually ahead?
-        final int medium = Math.max(0, this.getTotalProjectDelay());
-        final int soft = this.getTotalMakespan();
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
-    }
-
-    /**
-     * Find maximum due date for any of the activities in a problem instance.
-     * This date (since we ignore project sink) is effectively equivalent to the
-     * end of last of the projects. Results of this call are fully cached and
-     * thus needn't be incremental.
-     * 
-     * @return
-     */
-    private int findMaxDueDate() {
-        if (!this.maxDueDateCache.containsKey(null)) {
-            int maxDueDate = Integer.MIN_VALUE;
-            for (final Project p : this.problem.getProjects()) {
-                maxDueDate = Math.max(maxDueDate, this.findMaxDueDate(p));
-            }
-            this.maxDueDateCache.put(null, maxDueDate);
-        }
-        return this.maxDueDateCache.get(null);
-    }
-
-    /**
-     * Find maximum due date for any of the activities in a given project. This
-     * date (since we ignore project sink) is effectively equivalent to the end
-     * of the project. This is very heavily used throughout the calculator,
-     * hence it includes result cache.
-     * 
-     * @return
-     */
-    private int findMaxDueDate(final Project p) {
-        if (!this.maxDueDateCache.containsKey(p)) {
-            int maxDueDate = Integer.MIN_VALUE;
-            for (final Job j : p.getJobs()) {
-                if (j.isSource() || j.isSink()) {
-                    continue;
-                }
-                final Allocation a = this.allocationsPerJob.get(j);
-                if (!a.isInitialized()) {
-                    continue;
-                }
-                maxDueDate = Math.max(maxDueDate, a.getDueDate());
-            }
-            this.maxDueDateCache.put(p, maxDueDate);
-        }
-        return this.maxDueDateCache.get(p);
     }
 
     /**
@@ -259,7 +256,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         int total = 0;
         // and now find out the number of projects that went over it
         for (final Project p : this.problem.getProjects()) {
-            if (this.findMaxDueDate(p) > this.upperBound) {
+            if (this.maxDueDatesPerProject.get(p) > this.upperBound) {
                 total++;
             }
         }
@@ -267,7 +264,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private int getMakespan(final Project p) {
-        return this.findMaxDueDate(p) - p.getReleaseDate();
+        return this.maxDueDatesPerProject.get(p) - p.getReleaseDate();
     }
 
     /**
@@ -331,19 +328,27 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private int getOverutilizedRenewableResourceCount(final Filter<Resource> filter) {
         int total = 0;
-        for (int time = this.minReleaseDate; time <= this.findMaxDueDate(); time++) {
+        // don't check for initialized entities in the inner cycle
+        final Collection<Allocation> initializedEntities = new ArrayList<Allocation>();
+        for (final Allocation a : this.allocations) {
+            if (!a.isInitialized()) {
+                continue;
+            }
+            initializedEntities.add(a);
+        }
+        // terminate early
+        if (initializedEntities.size() == 0) {
+            return 0;
+        }
+        final int dueDate = this.maxDueDateGlobal;
+        for (int time = this.minReleaseDate; time <= dueDate; time++) {
             final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
-            for (final Allocation a : this.allocations) {
-                // activity not yet initialized
-                if (!a.isInitialized()) {
-                    continue;
-                }
+            for (final Allocation a : initializedEntities) {
                 // activity not running at the time
-                final JobMode jm = a.getJobMode();
-                final int dueDate = a.getDueDate();
-                if (a.getStartDate() > time || dueDate < time) {
+                if (a.getStartDate() > time || a.getDueDate() < time) {
                     continue;
                 }
+                final JobMode jm = a.getJobMode();
                 for (final Resource r : jm.getResources()) {
                     if (!filter.accept(r)) {
                         // not the type of resource we're interested in
@@ -373,7 +378,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private int getTotalMakespan() {
-        return this.findMaxDueDate() - this.minReleaseDate;
+        return this.maxDueDateGlobal - this.minReleaseDate;
     }
 
     private int getTotalProjectDelay() {
@@ -385,7 +390,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private void insert(final Allocation entity) {
-        this.maxDueDateCache.remove(entity.getJob().getParentProject());
         this.allocations.add(entity);
         this.allocationsPerJob.put(entity.getJob(), entity);
         this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
@@ -394,7 +398,19 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             this.unassignedJobModeCount += 1;
             return;
         }
-        // following operations can not be performed on uninitialized entities
+        /*
+         * following operations can not be performed on uninitialized entities
+         */
+        // find new max due dates
+        final int newDueDate = entity.getDueDate();
+        final Project currentProject = entity.getJob().getParentProject();
+        final int currentProjectMaxDueDate = this.maxDueDatesPerProject.get(currentProject);
+        if (newDueDate > currentProjectMaxDueDate) {
+            this.maxDueDatesPerProject.put(currentProject, newDueDate);
+            if (newDueDate > this.maxDueDateGlobal) {
+                this.maxDueDateGlobal = newDueDate;
+            }
+        }
     }
 
     @Override
@@ -403,9 +419,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.invalidValuesAssignedToEntityVariableCount = 0;
         this.allocations.clear();
         this.allocationsPerJob.clear();
-        this.maxDueDateCache.clear();
         // change to the new problem
         this.problem = workingSolution.getProblem();
+        this.maxDueDateGlobal = Integer.MIN_VALUE;
+        for (final Project p : this.problem.getProjects()) {
+            this.maxDueDatesPerProject.put(p, this.maxDueDateGlobal);
+        }
         /*
          * FIXME what's "upper bound on the time horizon of scheduling problem"?
          * here we assume that it is the maximum of horizons of all projects in
@@ -423,16 +442,27 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private void retract(final Allocation entity) {
-        this.maxDueDateCache.remove(entity.getJob().getParentProject());
-        this.maxDueDateCache.remove(null);
         this.allocations.remove(entity);
-        this.allocationsPerJob.remove(entity);
+        this.allocationsPerJob.remove(entity.getJob());
         this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
         if (!entity.isInitialized()) {
             this.unassignedJobModeCount -= 1;
             return;
         }
-        // following operations can not be performed on uninitialized entities
+        /*
+         * following operations can not be performed on uninitialized entities
+         */
+        // find new due dates
+        final int currentDueDate = entity.getDueDate();
+        final Project currentProject = entity.getJob().getParentProject();
+        if (currentDueDate == this.maxDueDatesPerProject.get(currentProject)) {
+            this.maxDueDatesPerProject.put(currentProject,
+                    Mista2013IncrementalScoreCalculator.findMaxDueDate(currentProject, this.allocationsPerJob));
+            if (currentDueDate == this.maxDueDateGlobal) {
+                this.maxDueDateGlobal = Mista2013IncrementalScoreCalculator.findMaxDueDate(this.problem,
+                        this.maxDueDatesPerProject);
+            }
+        }
     }
 }

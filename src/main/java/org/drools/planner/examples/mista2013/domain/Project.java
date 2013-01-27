@@ -38,31 +38,6 @@ public class Project {
         }
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof Project)) {
-            return false;
-        }
-        final Project other = (Project) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (this.parentInstance == null) {
-            if (other.parentInstance != null) {
-                return false;
-            }
-        } else if (!this.parentInstance.equals(other.parentInstance)) {
-            return false;
-        }
-        return true;
-    }
-
     public int getCriticalPathDuration() {
         return this.criticalPathDuration;
     }
@@ -115,15 +90,6 @@ public class Project {
 
     public int getTardinessCost() {
         return this.tardinessCost;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.id;
-        result = prime * result + ((this.parentInstance == null) ? 0 : this.parentInstance.hashCode());
-        return result;
     }
 
     protected void setParentInstance(final ProblemInstance parent) {

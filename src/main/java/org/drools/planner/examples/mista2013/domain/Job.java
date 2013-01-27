@@ -38,31 +38,6 @@ public class Job {
         this.isSink = type == JobType.SINK;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof Job)) {
-            return false;
-        }
-        final Job other = (Job) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (this.parentProject == null) {
-            if (other.parentProject != null) {
-                return false;
-            }
-        } else if (!this.parentProject.equals(other.parentProject)) {
-            return false;
-        }
-        return true;
-    }
-
     public int getId() {
         return this.id;
     }
@@ -84,15 +59,6 @@ public class Job {
 
     public List<Job> getSuccessors() {
         return this.successors;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.id;
-        result = prime * result + ((this.parentProject == null) ? 0 : this.parentProject.hashCode());
-        return result;
     }
 
     public boolean isSink() {
