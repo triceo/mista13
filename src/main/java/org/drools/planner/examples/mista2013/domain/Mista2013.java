@@ -60,8 +60,8 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
         final List<JobMode> s = new ArrayList<JobMode>();
         for (final Project p : this.getProblem().getProjects()) {
             for (final Job j : p.getJobs()) {
-                for (int i = 1; i <= j.countModes(); i++) {
-                    s.add(j.getMode(i));
+                for (final JobMode jm : j.getJobModes()) {
+                    s.add(jm);
                 }
             }
         }
@@ -86,7 +86,7 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
 
     public Collection<Integer> getStartDates() {
         final SortedSet<Integer> s = new TreeSet<Integer>();
-        for (final Project p: this.getProblem().getProjects()) {
+        for (final Project p : this.getProblem().getProjects()) {
             for (int i = p.getReleaseDate(); i < p.getHorizon(); i++) {
                 s.add(i);
             }

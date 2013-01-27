@@ -38,10 +38,6 @@ public class Job {
         this.isSink = type == JobType.SINK;
     }
 
-    public int countModes() {
-        return this.jobModes.size();
-    }
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -71,11 +67,15 @@ public class Job {
         return this.id;
     }
 
-    public JobMode getMode(final int id) {
+    public JobMode getJobMode(final int id) {
         if (!this.jobModes.containsKey(id)) {
             throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
         }
         return this.jobModes.get(id);
+    }
+
+    public Collection<JobMode> getJobModes() {
+        return Collections.unmodifiableCollection(this.jobModes.values());
     }
 
     public Project getParentProject() {

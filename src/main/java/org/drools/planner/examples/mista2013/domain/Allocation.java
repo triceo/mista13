@@ -20,13 +20,13 @@ public class Allocation {
     private final Collection<JobMode> jobModes;
 
     private final Collection<Integer> startDates;
-    
+
     public Allocation(final Job job) {
         this.job = job;
         // list available job modes
         final Collection<JobMode> jobModes = new HashSet<JobMode>();
-        for (int i = 1; i <= job.countModes(); i++) {
-            jobModes.add(job.getMode(i));
+        for (final JobMode jm : job.getJobModes()) {
+            jobModes.add(jm);
         }
         this.jobModes = Collections.unmodifiableCollection(jobModes);
         // list available start dates
@@ -60,7 +60,7 @@ public class Allocation {
     }
 
     public Collection<Integer> getStartDates() {
-        return startDates;
+        return this.startDates;
     }
 
     public void setJobMode(final JobMode jobMode) {
