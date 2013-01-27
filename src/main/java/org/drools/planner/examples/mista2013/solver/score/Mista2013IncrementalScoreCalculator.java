@@ -1,20 +1,23 @@
 package org.drools.planner.examples.mista2013.solver.score;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
-import org.drools.planner.core.score.Score;
 import org.drools.planner.core.score.buildin.hardmediumsoft.DefaultHardMediumSoftScore;
 import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
-import org.drools.planner.core.score.director.simple.SimpleScoreCalculator;
+import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.drools.planner.examples.mista2013.domain.Allocation;
 import org.drools.planner.examples.mista2013.domain.Job;
 import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
+import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
 import org.drools.planner.examples.mista2013.domain.Resource;
 
-public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013> {
+public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
     private static interface Filter<T> {
 
@@ -49,32 +52,81 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
 
     };
 
+    private ProblemInstance problem = null;
+
+    private final Set<Allocation> allocations = new LinkedHashSet<Allocation>();
+
+    private final Map<Job, Allocation> allocationsPerJob = new LinkedHashMap<Job, Allocation>();
+
     private final Map<Project, Integer> maxDueDateCache = new HashMap<Project, Integer>();
 
     @Override
-    public Score<HardMediumSoftScore> calculateScore(final Mista2013 solution) {
-        this.maxDueDateCache.clear();
-        final int plannerPlanningValueWorkaround = this.findInvalidEntityVariableValues(solution);
-        final int brokenHard1 = this.getOverutilizedLocalRenewableResourcesCount(solution);
-        final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount(solution);
-        final int brokenHard3 = this.getOverutilizedGlobalResourcesCount(solution);
-        final int brokenHard4 = this.getUnassignedJobModeCount(solution);
-        final int brokenHard5 = this.getHorizonOverrunCount(solution);
+    public void afterAllVariablesChanged(final Object entity) {
+        this.insert((Allocation) entity);
+    }
+
+    @Override
+    public void afterEntityAdded(final Object entity) {
+        // TODO the maps should probably be adjusted
+        this.insert((Allocation) entity);
+    }
+
+    @Override
+    public void afterEntityRemoved(final Object entity) {
+        // Do nothing
+        // TODO the maps should probably be adjusted
+    }
+
+    @Override
+    public void afterVariableChanged(final Object entity, final String variableName) {
+        this.insert((Allocation) entity);
+    }
+
+    @Override
+    public void beforeAllVariablesChanged(final Object entity) {
+        this.retract((Allocation) entity);
+    }
+
+    @Override
+    public void beforeEntityAdded(final Object entity) {
+        // Do nothing
+    }
+
+    @Override
+    public void beforeEntityRemoved(final Object entity) {
+        this.retract((Allocation) entity);
+    }
+
+    @Override
+    public void beforeVariableChanged(final Object entity, final String variableName) {
+        this.retract((Allocation) entity);
+    }
+
+    @Override
+    public HardMediumSoftScore calculateScore() {
+        final int plannerPlanningValueWorkaround = this.findInvalidEntityVariableValues();
+        final int brokenHard1 = this.getOverutilizedLocalRenewableResourcesCount();
+        final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount();
+        final int brokenHard3 = this.getOverutilizedGlobalResourcesCount();
+        final int brokenHard4 = this.getUnassignedJobModeCount();
+        final int brokenHard5 = this.getHorizonOverrunCount();
         // FIXME does constraint 6 need to be validated?
-        final int brokenHard7 = this.getBrokenPrecedenceRelationsCount(solution);
+        final int brokenHard7 = this.getBrokenPrecedenceRelationsCount();
         final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4
                 + brokenHard5 + brokenHard7;
         // FIXME are we interested in projects being actually ahead?
-        final int medium = Math.max(0, this.getTotalProjectDelay(solution));
-        final int soft = this.getTotalMakespan(solution);
+        final int medium = Math.max(0, this.getTotalProjectDelay());
+        final int soft = this.getTotalMakespan();
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
 
-    // TODO remove when Planner 6.0-SNAPSHOT fixes contr heur and selectors wrt.
-    // planning values
-    private int findInvalidEntityVariableValues(final Mista2013 solution) {
+    /*
+     * TODO remove when Planner 6.0-SNAPSHOT fixes constr heur and selectors
+     * wrt. planning values
+     */
+    private int findInvalidEntityVariableValues() {
         int total = 0;
-        for (final Allocation a : solution.getAllocations()) {
+        for (final Allocation a : this.allocations) {
             if (!a.isInitialized()) {
                 total++;
                 continue;
@@ -98,10 +150,10 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * @param p
      * @return
      */
-    private int findMaxDueDate(final Mista2013 solution) {
+    private int findMaxDueDate() {
         int maxDueDate = Integer.MIN_VALUE;
-        for (final Project p : solution.getProblem().getProjects()) {
-            maxDueDate = Math.max(maxDueDate, this.findMaxDueDate(solution, p));
+        for (final Project p : this.problem.getProjects()) {
+            maxDueDate = Math.max(maxDueDate, this.findMaxDueDate(p));
         }
         return maxDueDate;
     }
@@ -116,14 +168,14 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * @param p
      * @return
      */
-    private int findMaxDueDate(final Mista2013 solution, final Project p) {
+    private int findMaxDueDate(final Project p) {
         if (!this.maxDueDateCache.containsKey(p)) {
             int maxDueDate = Integer.MIN_VALUE;
             for (final Job j : p.getJobs()) {
                 if (j.isSource() || j.isSink()) {
                     continue;
                 }
-                final Allocation a = solution.getAllocation(j);
+                final Allocation a = this.allocationsPerJob.get(j);
                 if (!a.isInitialized()) {
                     continue;
                 }
@@ -134,9 +186,9 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         return this.maxDueDateCache.get(p);
     }
 
-    private int findMinReleaseDate(final Mista2013 solution) {
+    private int findMinReleaseDate() {
         int minReleaseDate = Integer.MAX_VALUE;
-        for (final Project p : solution.getProblem().getProjects()) {
+        for (final Project p : this.problem.getProjects()) {
             minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
         }
         return minReleaseDate;
@@ -147,9 +199,9 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * 
      * @return How many precedence relations are broken
      */
-    private int getBrokenPrecedenceRelationsCount(final Mista2013 solution) {
+    private int getBrokenPrecedenceRelationsCount() {
         int total = 0;
-        for (final Allocation currentJobAllocation : solution.getAllocations()) {
+        for (final Allocation currentJobAllocation : this.allocations) {
             if (!currentJobAllocation.isInitialized()) {
                 continue;
             }
@@ -166,7 +218,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                     continue;
                 }
                 // find its successors
-                final Allocation succeedingJobAllocation = solution.getAllocation(succeedingJob);
+                final Allocation succeedingJobAllocation = this.allocationsPerJob.get(succeedingJob);
                 if (!succeedingJobAllocation.isInitialized()) {
                     continue;
                 }
@@ -192,24 +244,24 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * 
      * @return How many projects have overrun their horizon.
      */
-    private int getHorizonOverrunCount(final Mista2013 solution) {
+    private int getHorizonOverrunCount() {
         // find what we think is the upper bound
         int total = 0;
         int upperBound = Integer.MIN_VALUE;
-        for (final Project p : solution.getProblem().getProjects()) {
+        for (final Project p : this.problem.getProjects()) {
             upperBound = Math.max(upperBound, p.getHorizon());
         }
         // and now find out the number of projects that went over it
-        for (final Project p : solution.getProblem().getProjects()) {
-            if (this.findMaxDueDate(solution, p) > upperBound) {
+        for (final Project p : this.problem.getProjects()) {
+            if (this.findMaxDueDate(p) > upperBound) {
                 total++;
             }
         }
         return total;
     }
 
-    private int getMakespan(final Mista2013 solution, final Project p) {
-        return this.findMaxDueDate(solution, p) - p.getReleaseDate();
+    private int getMakespan(final Project p) {
+        return this.findMaxDueDate(p) - p.getReleaseDate();
     }
 
     /**
@@ -218,8 +270,8 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * @return How many more global resources would we need than we have
      *         capacity for.
      */
-    private int getOverutilizedGlobalResourcesCount(final Mista2013 solution) {
-        return this.getOverutilizedRenewableResourceCount(solution, Mista2013ScoreCalculator.GLOBALS_ONLY);
+    private int getOverutilizedGlobalResourcesCount() {
+        return this.getOverutilizedRenewableResourceCount(Mista2013IncrementalScoreCalculator.GLOBALS_ONLY);
     }
 
     /**
@@ -228,17 +280,17 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * @return How many more local non-renewable resources would we need than we
      *         have capacity for.
      */
-    private int getOverutilizedLocalNonRenewableResourcesCount(final Mista2013 solution) {
+    private int getOverutilizedLocalNonRenewableResourcesCount() {
         int total = 0;
         final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
         // sum up all the resource consumptions that we track
-        for (final Allocation a : solution.getAllocations()) {
+        for (final Allocation a : this.allocations) {
             if (!a.isInitialized()) {
                 continue;
             }
             final JobMode jm = a.getJobMode();
             for (final Resource r : jm.getResources()) {
-                if (!Mista2013ScoreCalculator.LOCAL_NONRENEWABLES.accept(r)) {
+                if (!Mista2013IncrementalScoreCalculator.LOCAL_NONRENEWABLES.accept(r)) {
                     // not the type of resource we're interested in
                     continue;
                 }
@@ -267,15 +319,15 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * @return How many more local renewable resources would we need than we
      *         have capacity for.
      */
-    private int getOverutilizedLocalRenewableResourcesCount(final Mista2013 solution) {
-        return this.getOverutilizedRenewableResourceCount(solution, Mista2013ScoreCalculator.LOCAL_RENEWABLES);
+    private int getOverutilizedLocalRenewableResourcesCount() {
+        return this.getOverutilizedRenewableResourceCount(Mista2013IncrementalScoreCalculator.LOCAL_RENEWABLES);
     }
 
-    private int getOverutilizedRenewableResourceCount(final Mista2013 solution, final Filter<Resource> filter) {
+    private int getOverutilizedRenewableResourceCount(final Filter<Resource> filter) {
         int total = 0;
-        for (int time = this.findMinReleaseDate(solution); time <= this.findMaxDueDate(solution); time++) {
+        for (int time = this.findMinReleaseDate(); time <= this.findMaxDueDate(); time++) {
             final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
-            for (final Allocation a : solution.getAllocations()) {
+            for (final Allocation a : this.allocations) {
                 // activity not yet initialized
                 if (!a.isInitialized()) {
                     continue;
@@ -310,18 +362,18 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         return total;
     }
 
-    private int getProjectDelay(final Mista2013 solution, final Project p) {
-        return this.getMakespan(solution, p) - p.getCriticalPathDuration();
+    private int getProjectDelay(final Project p) {
+        return this.getMakespan(p) - p.getCriticalPathDuration();
     }
 
-    private int getTotalMakespan(final Mista2013 solution) {
-        return this.findMaxDueDate(solution) - this.findMinReleaseDate(solution);
+    private int getTotalMakespan() {
+        return this.findMaxDueDate() - this.findMinReleaseDate();
     }
 
-    private int getTotalProjectDelay(final Mista2013 solution) {
+    private int getTotalProjectDelay() {
         int total = 0;
-        for (final Project p : solution.getProblem().getProjects()) {
-            total += this.getProjectDelay(solution, p);
+        for (final Project p : this.problem.getProjects()) {
+            total += this.getProjectDelay(p);
         }
         return total;
     }
@@ -331,13 +383,37 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      * 
      * @return How many jobs haven't picked a job mode.
      */
-    private int getUnassignedJobModeCount(final Mista2013 solution) {
+    private int getUnassignedJobModeCount() {
         int total = 0;
-        for (final Allocation a : solution.getAllocations()) {
+        for (final Allocation a : this.allocations) {
             if (a.getJobMode() == null) {
                 total++;
             }
         }
         return total;
+    }
+
+    private void insert(final Allocation entity) {
+        this.maxDueDateCache.remove(entity.getJob().getParentProject());
+        this.allocations.add(entity);
+        this.allocationsPerJob.put(entity.getJob(), entity);
+    }
+
+    @Override
+    public void resetWorkingSolution(final Mista2013 workingSolution) {
+        this.allocations.clear();
+        this.allocationsPerJob.clear();
+        this.maxDueDateCache.clear();
+        // change to the new problem
+        this.problem = workingSolution.getProblem();
+        for (final Allocation a : workingSolution.getAllocations()) {
+            this.insert(a);
+        }
+    }
+
+    private void retract(final Allocation entity) {
+        this.maxDueDateCache.remove(entity.getJob().getParentProject());
+        this.allocations.remove(entity);
+        this.allocationsPerJob.remove(entity);
     }
 }

@@ -6,7 +6,7 @@
 
   <scoreDirectorFactory>
     <scoreDefinitionType>HARD_MEDIUM_SOFT</scoreDefinitionType>
-    <simpleScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013ScoreCalculator</simpleScoreCalculatorClass>
+    <incrementalScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
   </scoreDirectorFactory>
   <termination>
     <maximumMinutesSpend>5</maximumMinutesSpend>
