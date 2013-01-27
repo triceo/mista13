@@ -71,6 +71,14 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return total * 1000000;
     }
 
+    private static int findMinReleaseDate(final ProblemInstance instance) {
+        int minReleaseDate = Integer.MAX_VALUE;
+        for (final Project p : instance.getProjects()) {
+            minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
+        }
+        return minReleaseDate;
+    }
+
     private ProblemInstance problem = null;
 
     private final Set<Allocation> allocations = new LinkedHashSet<Allocation>();
@@ -87,6 +95,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private int unassignedJobModeCount = 0;
 
     private int invalidValuesAssignedToEntityVariableCount = 0;
+
+    /**
+     * Cached minimal release date for all the problem instance's projects. This
+     * only changes when the problem instance changes.
+     */
+    private int minReleaseDate = 0;
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
@@ -191,14 +205,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             this.maxDueDateCache.put(p, maxDueDate);
         }
         return this.maxDueDateCache.get(p);
-    }
-
-    private int findMinReleaseDate() {
-        int minReleaseDate = Integer.MAX_VALUE;
-        for (final Project p : this.problem.getProjects()) {
-            minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
-        }
-        return minReleaseDate;
     }
 
     /**
@@ -332,7 +338,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private int getOverutilizedRenewableResourceCount(final Filter<Resource> filter) {
         int total = 0;
-        for (int time = this.findMinReleaseDate(); time <= this.findMaxDueDate(); time++) {
+        for (int time = this.minReleaseDate; time <= this.findMaxDueDate(); time++) {
             final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
             for (final Allocation a : this.allocations) {
                 // activity not yet initialized
@@ -374,7 +380,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private int getTotalMakespan() {
-        return this.findMaxDueDate() - this.findMinReleaseDate();
+        return this.findMaxDueDate() - this.minReleaseDate;
     }
 
     private int getTotalProjectDelay() {
@@ -405,6 +411,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.maxDueDateCache.clear();
         // change to the new problem
         this.problem = workingSolution.getProblem();
+        this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
+        // insert new entities
         for (final Allocation a : workingSolution.getAllocations()) {
             this.insert(a);
         }
