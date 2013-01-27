@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <solver>
-  <environmentMode>REPRODUCIBLE</environmentMode>
+  <environmentMode>FULL_ASSERT</environmentMode>
   <solutionClass>org.drools.planner.examples.mista2013.domain.Mista2013</solutionClass>
   <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
 

@@ -60,6 +60,13 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private final Map<Project, Integer> maxDueDateCache = new HashMap<Project, Integer>();
 
+    /**
+     * Validates feasibility requirement (4).
+     * 
+     * @return How many jobs haven't picked a job mode or start date.
+     */
+    private int unassignedJobModeCount = 0;
+
     @Override
     public void afterAllVariablesChanged(final Object entity) {
         this.insert((Allocation) entity);
@@ -108,7 +115,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenHard1 = this.getOverutilizedLocalRenewableResourcesCount();
         final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount();
         final int brokenHard3 = this.getOverutilizedGlobalResourcesCount();
-        final int brokenHard4 = this.getUnassignedJobModeCount();
+        final int brokenHard4 = this.unassignedJobModeCount;
         final int brokenHard5 = this.getHorizonOverrunCount();
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount();
@@ -378,29 +385,18 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return total;
     }
 
-    /**
-     * Validates feasibility requirement (4).
-     * 
-     * @return How many jobs haven't picked a job mode.
-     */
-    private int getUnassignedJobModeCount() {
-        int total = 0;
-        for (final Allocation a : this.allocations) {
-            if (a.getJobMode() == null) {
-                total++;
-            }
-        }
-        return total;
-    }
-
     private void insert(final Allocation entity) {
         this.maxDueDateCache.remove(entity.getJob().getParentProject());
         this.allocations.add(entity);
         this.allocationsPerJob.put(entity.getJob(), entity);
+        if (!entity.isInitialized()) {
+            this.unassignedJobModeCount += 1;
+        }
     }
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
+        this.unassignedJobModeCount = 0;
         this.allocations.clear();
         this.allocationsPerJob.clear();
         this.maxDueDateCache.clear();
@@ -415,5 +411,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.maxDueDateCache.remove(entity.getJob().getParentProject());
         this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity);
+        if (!entity.isInitialized()) {
+            this.unassignedJobModeCount -= 1;
+        }
     }
 }
