@@ -15,36 +15,6 @@ public class Project {
 
     private final int tardinessCost;
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        result = prime * result + ((parentInstance == null) ? 0 : parentInstance.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof Project))
-            return false;
-        Project other = (Project) obj;
-        if (id != other.id)
-            return false;
-        if (parentInstance == null) {
-            if (other.parentInstance != null)
-                return false;
-        } else if (!parentInstance.equals(other.parentInstance))
-            return false;
-        return true;
-    }
-
-    private final int mpmTime;
-
     private final List<Resource> resources;
 
     private final List<Job> jobs;
@@ -54,38 +24,43 @@ public class Project {
     private ProblemInstance parentInstance;
 
     public Project(final int id, final int criticalPathDuration, final int horizon, final int releaseDate,
-            final int dueDate, final int tardinessCost, final int mpmTime, final List<Resource> resources,
-            final List<Job> jobs) {
+            final int dueDate, final int tardinessCost, final List<Resource> resources, final List<Job> jobs) {
         this.id = id;
         this.criticalPathDuration = criticalPathDuration;
         this.horizon = horizon;
         this.releaseDate = releaseDate;
         this.dueDate = dueDate;
         this.tardinessCost = tardinessCost;
-        this.mpmTime = mpmTime;
         this.resources = Collections.unmodifiableList(resources);
         this.jobs = Collections.unmodifiableList(jobs);
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
     }
-    
-    public Job getSource() {
-        for (final Job j: jobs) {
-            if (j.isSource()) {
-                return j;
-            }
-        }
-        throw new IllegalStateException("Project has no source!");
-    }
 
-    public Job getSink() {
-        for (final Job j: jobs) {
-            if (j.isSink()) {
-                return j;
-            }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-        throw new IllegalStateException("Project has no sink!");
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Project)) {
+            return false;
+        }
+        final Project other = (Project) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.parentInstance == null) {
+            if (other.parentInstance != null) {
+                return false;
+            }
+        } else if (!this.parentInstance.equals(other.parentInstance)) {
+            return false;
+        }
+        return true;
     }
 
     public int getCriticalPathDuration() {
@@ -108,10 +83,6 @@ public class Project {
         return this.jobs;
     }
 
-    public int getMpmTime() {
-        return this.mpmTime;
-    }
-
     public ProblemInstance getParentInstance() {
         return this.parentInstance;
     }
@@ -124,8 +95,35 @@ public class Project {
         return this.resources;
     }
 
+    public Job getSink() {
+        for (final Job j : this.jobs) {
+            if (j.isSink()) {
+                return j;
+            }
+        }
+        throw new IllegalStateException("Project has no sink!");
+    }
+
+    public Job getSource() {
+        for (final Job j : this.jobs) {
+            if (j.isSource()) {
+                return j;
+            }
+        }
+        throw new IllegalStateException("Project has no source!");
+    }
+
     public int getTardinessCost() {
         return this.tardinessCost;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.id;
+        result = prime * result + ((this.parentInstance == null) ? 0 : this.parentInstance.hashCode());
+        return result;
     }
 
     protected void setParentInstance(final ProblemInstance parent) {

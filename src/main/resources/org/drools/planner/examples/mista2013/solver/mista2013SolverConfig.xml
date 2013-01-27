@@ -31,10 +31,10 @@
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <simulatedAnnealingStartingTemperature>20hard/20medium/20soft</simulatedAnnealingStartingTemperature>
+      <simulatedAnnealingStartingTemperature>100hard/100medium/100soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>1000</minimalAcceptedSelection>
+      <minimalAcceptedSelection>2000</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>

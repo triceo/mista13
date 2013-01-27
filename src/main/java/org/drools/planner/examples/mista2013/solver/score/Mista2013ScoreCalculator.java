@@ -203,8 +203,6 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     /**
      * Validates feasibility requirement (3).
      * 
-     * FIXME is my understanding correct? if not, the whole method is wrong.
-     * 
      * @return How many more global resources would we need than we have
      *         capacity for.
      */
@@ -214,8 +212,6 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
 
     /**
      * Validates feasibility requirement (2).
-     * 
-     * FIXME is my understanding correct? if not, the whole method is wrong.
      * 
      * @return How many more local non-renewable resources would we need than we
      *         have capacity for.
@@ -249,8 +245,6 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
 
     /**
      * Validates feasibility requirement (1).
-     * 
-     * FIXME is my understanding correct? if not, the whole method is wrong.
      * 
      * @return How many more local renewable resources would we need than we
      *         have capacity for.

@@ -58,16 +58,16 @@ public class JobMode {
     public Job getParentJob() {
         return this.parentJob;
     }
-    
-    public Collection<Resource> getResources() {
-        return Collections.unmodifiableCollection(this.resourceRequirements.keySet());
-    }
 
     public int getResourceRequirement(final Resource r) {
         if (!this.resourceRequirements.containsKey(r)) {
             throw new IllegalArgumentException("Job mode " + this + " has no resource " + r);
         }
         return this.resourceRequirements.get(r);
+    }
+
+    public Collection<Resource> getResources() {
+        return Collections.unmodifiableCollection(this.resourceRequirements.keySet());
     }
 
     @Override

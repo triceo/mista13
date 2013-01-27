@@ -9,11 +9,6 @@ public class ProblemInstance {
 
     private final List<Project> projects;
 
-    /*
-     * FIXME how does releasedate from instance data map to the same attribute
-     * in project data? each have different values. currently the one from
-     * instance data file overrides the one from project data file.
-     */
     public ProblemInstance(final Collection<Project> projects) {
         final List<Project> tmp = new ArrayList<Project>();
         for (final Project p : projects) {

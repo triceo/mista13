@@ -10,14 +10,13 @@ import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.Project;
 
-// TODO needs to be implemented
 public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
 
     private final class Mista2013TxtOutputBuilder extends TxtOutputBuilder {
 
         private Mista2013 solution;
 
-        private int getMaxDueDate(final Mista2013 solution, Project p) {
+        private int getMaxDueDate(final Mista2013 solution, final Project p) {
             int max = Integer.MIN_VALUE;
             for (final Allocation a : solution.getAllocations()) {
                 if (a.getJob().getParentProject() != p) {
@@ -28,7 +27,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
             return max;
         }
 
-        private int getMinStartDate(final Mista2013 solution, Project p) {
+        private int getMinStartDate(final Mista2013 solution, final Project p) {
             int min = Integer.MAX_VALUE;
             for (final Allocation a : solution.getAllocations()) {
                 if (a.getJob().getParentProject() != p) {

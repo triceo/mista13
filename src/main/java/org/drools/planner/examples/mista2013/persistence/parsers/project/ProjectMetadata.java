@@ -26,7 +26,6 @@ public class ProjectMetadata {
         if (tardinessCost < 0) {
             throw new IllegalArgumentException("Tardiness cost cannot be lower than zero.");
         }
-        // FIXME what is MPM Time and how to validate it???
         this.number = number;
         this.jobCount = jobCount;
         this.releaseDate = releaseDate;

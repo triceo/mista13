@@ -101,8 +101,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             // build jobs and project
             final List<Job> jobs = this.buildJobs(data, resultingResources);
             final Project p = new Project(raw.getId(), raw.getCriticalPathDuration(), situation.getHorizon(),
-                    raw.getReleaseDate(), project.getDueDate(), project.getTardinessCost(), project.getMpmTime(),
-                    resultingResources, jobs);
+                    raw.getReleaseDate(), project.getDueDate(), project.getTardinessCost(), resultingResources, jobs);
             return p;
         }
 
@@ -114,11 +113,6 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             int i = 1;
             for (final Integer capacity : instance.getResourceCapacities()) {
                 if (capacity < 0) {
-                    /*
-                     * the only global resources are renewable; once -1 first
-                     * appears, it must be the end of globals. FIXME is this
-                     * true???
-                     */
                     break;
                 }
                 final Resource r = new Resource(i);
