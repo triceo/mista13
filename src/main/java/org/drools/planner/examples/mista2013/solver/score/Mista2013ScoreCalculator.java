@@ -51,6 +51,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
 
     @Override
     public Score<HardMediumSoftScore> calculateScore(final Mista2013 solution) {
+        final int plannerPlanningValueWorkaround = this.findInvalidEntityVariableValues(solution);
         final int brokenHard1 = this.getOverutilizedLocalRenewableResourcesCount(solution);
         final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount(solution);
         final int brokenHard3 = this.getOverutilizedGlobalResourcesCount(solution);
@@ -58,11 +59,27 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         final int brokenHard5 = this.getHorizonOverrunCount(solution);
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount(solution);
-        final int brokenTotal = brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4 + brokenHard5 + brokenHard7;
+        final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4
+                + brokenHard5 + brokenHard7;
         // FIXME are we interested in projects being actually ahead?
         final int medium = Math.max(0, this.getTotalProjectDelay(solution));
         final int soft = this.getTotalMakespan(solution);
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
+    }
+
+    // TODO remove when Planner 6.0-SNAPSHOT fixes contr heur and selectors wrt.
+    // planning values
+    private int findInvalidEntityVariableValues(final Mista2013 solution) {
+        int total = 0;
+        for (final Allocation a : solution.getAllocations()) {
+            if (a.getJobMode() == null || !a.getJobModes().contains(a.getJobMode())) {
+                total++;
+            }
+            if (a.getStartDate() == null || !a.getStartDates().contains(a.getStartDate())) {
+                total++;
+            }
+        }
+        return total * 1000000;
     }
 
     /**
@@ -114,57 +131,33 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      */
     private int getBrokenPrecedenceRelationsCount(final Mista2013 solution) {
         int total = 0;
-        for (final Project p : solution.getProblem().getProjects()) {
-            for (final Job currentJob : p.getJobs()) {
-                final Allocation currentJobAllocation = solution.getAllocation(currentJob);
-                final JobMode currentMode = currentJobAllocation.getJobMode();
-                if (currentMode == null) {
-                    // not yet initialized
-                    total++;
+        for (final Allocation currentJobAllocation : solution.getAllocations()) {
+            final Job currentJob = currentJobAllocation.getJob();
+            final Project p = currentJob.getParentProject();
+            final JobMode currentMode = currentJobAllocation.getJobMode();
+            if (currentMode == null) {
+                continue;
+            }
+            if (currentJobAllocation.getStartDate() < p.getReleaseDate()) {
+                // make sure we never start before we're allowed to
+                total++;
+            }
+            final int currentDoneBy = currentJobAllocation.getStartDate() + currentMode.getDuration();
+            for (final Job succeedingJob : currentJob.getSuccessors()) {
+                if (succeedingJob.isSink()) {
                     continue;
                 }
-                if (currentJobAllocation.getStartDate() < p.getReleaseDate()) {
-                    // make sure we never start before we're allowed to
-                    total++;
+                // find its successors
+                final Allocation succeedingJobAllocation = solution.getAllocation(succeedingJob);
+                final Integer nextStartedAt = succeedingJobAllocation.getStartDate();
+                if (nextStartedAt == null) {
+                    continue;
                 }
-                final int currentDoneBy = currentJobAllocation.getStartDate() + currentMode.getDuration();
-                boolean currentIsZeroLength = (currentMode.getDuration() == 0);
-                for (final Job succeedingJob : currentJob.getSuccessors()) {
-                    // find its successors
-                    final Allocation succeedingJobAllocation = solution.getAllocation(succeedingJob);
-                    final Integer nextStartedAt = succeedingJobAllocation.getStartDate();
-                    final JobMode nextMode = succeedingJobAllocation.getJobMode();
-                    if (nextStartedAt == null || nextMode == null) {
-                        // not yet initialized
-                        total++;
-                        continue;
-                    }
-                    boolean nextIsZeroLength = (nextMode.getDuration() == 0);
-                    if (nextStartedAt > currentDoneBy) {
-                        /*
-                         * successor starts after its predecessor ends. that
-                         * would've been alright, only we want to make sure that
-                         * zero-length jobs don't cause any unnecessary delay.
-                         */
-                        if (nextIsZeroLength || currentIsZeroLength) {
-                            total++;
-                        }
-                    } else if (nextStartedAt < currentDoneBy) {
-                        /*
-                         * successor starts before its predecessor ends, this is
-                         * always wrong
-                         */
-                        total++;
-                    } else {
-                        /*
-                         * sucessor starts at the same time its predecessor
-                         * ends. this is only OK when either of them is a
-                         * zero-length job
-                         */
-                        if (!nextIsZeroLength && !currentIsZeroLength) {
-                            total++;
-                        }
-                    }
+                if (nextStartedAt <= currentDoneBy) {
+                    /*
+                     * successor starts before its predecessor ends
+                     */
+                    total++;
                 }
             }
         }
@@ -249,21 +242,19 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         int total = 0;
         final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
         // sum up all the resource consumptions that we track
-        for (final Project p : solution.getProblem().getProjects()) {
-            for (final Job j : p.getJobs()) {
-                final Allocation a = solution.getAllocation(j);
-                final JobMode jm = a.getJobMode();
-                if (jm == null) {
+        for (final Allocation a : solution.getAllocations()) {
+            final Project p = a.getJob().getParentProject();
+            final JobMode jm = a.getJobMode();
+            if (jm == null) {
+                continue;
+            }
+            for (final Resource r : p.getResources()) {
+                if (!filter.accept(r)) {
+                    // not the type of resource we're interested in
                     continue;
                 }
-                for (final Resource r : p.getResources()) {
-                    if (!filter.accept(r)) {
-                        // not the type of resource we're interested in
-                        continue;
-                    }
-                    final int totalAllocation = totalAllocations.containsKey(r) ? totalAllocations.get(r) : 0;
-                    totalAllocations.put(r, totalAllocation + jm.getResourceRequirement(r));
-                }
+                final int totalAllocation = totalAllocations.containsKey(r) ? totalAllocations.get(r) : 0;
+                totalAllocations.put(r, totalAllocation + jm.getResourceRequirement(r));
             }
         }
         // and now find out how many more we have than we should

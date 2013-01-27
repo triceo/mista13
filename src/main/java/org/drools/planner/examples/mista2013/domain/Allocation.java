@@ -18,14 +18,14 @@ public class Allocation {
     private Integer startDate;
 
     private final Collection<JobMode> jobModes;
-    private final Collection<Integer> startDates;
 
+    private final Collection<Integer> startDates;
+    
     public Allocation(final Job job) {
         this.job = job;
         // list available job modes
         final Collection<JobMode> jobModes = new HashSet<JobMode>();
         for (int i = 1; i <= job.countModes(); i++) {
-            // FIXME = 0 or 1???
             jobModes.add(job.getMode(i));
         }
         this.jobModes = Collections.unmodifiableCollection(jobModes);
@@ -41,8 +41,9 @@ public class Allocation {
         return this.job;
     }
 
+    // FIXME convert to from_entity when it works
     @PlanningVariable
-    @ValueRange(planningEntityProperty = "jobModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    @ValueRange(solutionProperty = "jobModes", type = ValueRangeType.FROM_SOLUTION_PROPERTY)
     public JobMode getJobMode() {
         return this.jobMode;
     }
@@ -51,14 +52,15 @@ public class Allocation {
         return this.jobModes;
     }
 
+    // FIXME convert to from_entity when it works
     @PlanningVariable
-    @ValueRange(planningEntityProperty = "startDates", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    @ValueRange(solutionProperty = "startDates", type = ValueRangeType.FROM_SOLUTION_PROPERTY)
     public Integer getStartDate() {
         return this.startDate;
     }
 
     public Collection<Integer> getStartDates() {
-        return this.startDates;
+        return startDates;
     }
 
     public void setJobMode(final JobMode jobMode) {
@@ -67,6 +69,14 @@ public class Allocation {
 
     public void setStartDate(final Integer startDate) {
         this.startDate = startDate;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Allocation [job=").append(this.job).append(", jobMode=").append(this.jobMode)
+                .append(", startDate=").append(this.startDate).append("]");
+        return builder.toString();
     }
 
 }

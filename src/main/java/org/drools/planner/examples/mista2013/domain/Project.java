@@ -15,6 +15,34 @@ public class Project {
 
     private final int tardinessCost;
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        result = prime * result + ((parentInstance == null) ? 0 : parentInstance.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Project))
+            return false;
+        Project other = (Project) obj;
+        if (id != other.id)
+            return false;
+        if (parentInstance == null) {
+            if (other.parentInstance != null)
+                return false;
+        } else if (!parentInstance.equals(other.parentInstance))
+            return false;
+        return true;
+    }
+
     private final int mpmTime;
 
     private final List<Resource> resources;
@@ -40,6 +68,24 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
+    }
+    
+    public Job getSource() {
+        for (final Job j: jobs) {
+            if (j.isSource()) {
+                return j;
+            }
+        }
+        throw new IllegalStateException("Project has no source!");
+    }
+
+    public Job getSink() {
+        for (final Job j: jobs) {
+            if (j.isSink()) {
+                return j;
+            }
+        }
+        throw new IllegalStateException("Project has no sink!");
     }
 
     public int getCriticalPathDuration() {

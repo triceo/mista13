@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <solver>
-  <environmentMode>FULL_ASSERT</environmentMode>
+  <environmentMode>REPRODUCIBLE</environmentMode>
   <solutionClass>org.drools.planner.examples.mista2013.domain.Mista2013</solutionClass>
   <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
 
@@ -18,19 +18,23 @@
   <localSearch>
     <unionMoveSelector>
       <changeMoveSelector>
+        <filterClass>org.drools.planner.examples.mista2013.solver.move.ValueSelectorWorkaroundFilter</filterClass>
         <valueSelector>
           <variableName>jobMode</variableName>
         </valueSelector>
       </changeMoveSelector>
       <changeMoveSelector>
+        <filterClass>org.drools.planner.examples.mista2013.solver.move.ValueSelectorWorkaroundFilter</filterClass>
         <valueSelector>
           <variableName>startDate</variableName>
         </valueSelector>
       </changeMoveSelector>
-      <swapMoveSelector/>
     </unionMoveSelector>
+    <acceptor>
+      <simulatedAnnealingStartingTemperature>20hard/20medium/20soft</simulatedAnnealingStartingTemperature>
+    </acceptor>
     <forager>
-      <minimalAcceptedSelection>4000</minimalAcceptedSelection>
+      <minimalAcceptedSelection>1000</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.drools.planner.examples.common.persistence.AbstractTxtSolutionImporter;
 import org.drools.planner.examples.mista2013.domain.Job;
+import org.drools.planner.examples.mista2013.domain.Job.JobType;
 import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
@@ -52,7 +53,15 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     }
                     modes.add(new JobMode(r.getMode(), r.getDuration(), resourceConsumption));
                 }
-                final Job job = new Job(jobId, modes, successors);
+                JobType jt = null;
+                if (jobId == precedence.size()) {
+                    jt = JobType.SINK;
+                } else if (jobId == 1) {
+                    jt = JobType.SOURCE;
+                } else {
+                    jt = JobType.STANDARD;
+                }
+                final Job job = new Job(jobId, modes, successors, jt);
                 jobCache.put(jobId, job);
             }
             return new ArrayList<Job>(jobCache.values());

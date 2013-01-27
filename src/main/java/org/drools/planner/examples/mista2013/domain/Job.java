@@ -1,22 +1,32 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Job {
 
+    public static enum JobType {
+        SOURCE, SINK, STANDARD
+    };
+
     private final int id;
-    private final Set<Job> successors;
+    private final List<Job> successors;
     private final Map<Integer, JobMode> jobModes = new HashMap<Integer, JobMode>();
     private Project parentProject;
+    private final boolean isSource;
+    private final boolean isSink;
 
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
+        this(id, modes, successors, JobType.STANDARD);
+    }
+
+    public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors, final JobType type) {
         this.id = id;
-        this.successors = Collections.unmodifiableSet(new HashSet<Job>(successors));
+        this.successors = Collections.unmodifiableList(new ArrayList<Job>(successors));
         if (this.successors.contains(null)) {
             throw new IllegalStateException("Cannot have null as a successor!");
         }
@@ -24,10 +34,37 @@ public class Job {
             m.setParentJob(this);
             this.jobModes.put(m.getId(), m);
         }
+        this.isSource = type == JobType.SOURCE;
+        this.isSink = type == JobType.SINK;
     }
 
     public int countModes() {
         return this.jobModes.size();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Job)) {
+            return false;
+        }
+        final Job other = (Job) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.parentProject == null) {
+            if (other.parentProject != null) {
+                return false;
+            }
+        } else if (!this.parentProject.equals(other.parentProject)) {
+            return false;
+        }
+        return true;
     }
 
     public int getId() {
@@ -45,8 +82,25 @@ public class Job {
         return this.parentProject;
     }
 
-    public Set<Job> getSuccessors() {
+    public List<Job> getSuccessors() {
         return this.successors;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.id;
+        result = prime * result + ((this.parentProject == null) ? 0 : this.parentProject.hashCode());
+        return result;
+    }
+
+    public boolean isSink() {
+        return this.isSink;
+    }
+
+    public boolean isSource() {
+        return this.isSource;
     }
 
     protected void setParentProject(final Project p) {
@@ -60,7 +114,7 @@ public class Job {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Job [id=").append(this.id).append(", successors=").append(this.successors).append("]");
+        builder.append("Job [id=").append(this.id).append(", parentProject=").append(this.parentProject).append("]");
         return builder.toString();
     }
 

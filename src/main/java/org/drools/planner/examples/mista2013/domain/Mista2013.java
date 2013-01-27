@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
 import org.drools.planner.api.domain.solution.PlanningSolution;
@@ -24,10 +27,14 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
 
     public Mista2013(final ProblemInstance input) {
         this.problem = input;
-        final Collection<Allocation> allocations = new HashSet<Allocation>();
+        final Collection<Allocation> allocations = new LinkedHashSet<Allocation>();
         final Map<Job, Allocation> allocationsPerJob = new HashMap<Job, Allocation>();
         for (final Project p : input.getProjects()) {
             for (final Job j : p.getJobs()) {
+                if (j.isSink() || j.isSource()) {
+                    // don't create allocations from pseudo-jobs
+                    continue;
+                }
                 final Allocation a = new Allocation(j);
                 allocations.add(a);
                 allocationsPerJob.put(j, a);
@@ -49,6 +56,18 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
         return this.allocations;
     }
 
+    public Collection<JobMode> getJobModes() {
+        final List<JobMode> s = new ArrayList<JobMode>();
+        for (final Project p : this.getProblem().getProjects()) {
+            for (final Job j : p.getJobs()) {
+                for (int i = 1; i <= j.countModes(); i++) {
+                    s.add(j.getMode(i));
+                }
+            }
+        }
+        return Collections.unmodifiableCollection(s);
+    }
+
     public ProblemInstance getProblem() {
         return this.problem;
     }
@@ -63,6 +82,16 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
     @Override
     public HardMediumSoftScore getScore() {
         return this.score;
+    }
+
+    public Collection<Integer> getStartDates() {
+        final SortedSet<Integer> s = new TreeSet<Integer>();
+        for (final Project p: this.getProblem().getProjects()) {
+            for (int i = p.getReleaseDate(); i < p.getHorizon(); i++) {
+                s.add(i);
+            }
+        }
+        return Collections.unmodifiableSortedSet(s);
     }
 
     @Override

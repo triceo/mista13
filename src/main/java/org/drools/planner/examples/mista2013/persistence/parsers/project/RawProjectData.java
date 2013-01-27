@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -89,7 +89,7 @@ public class RawProjectData {
                     + projectJobCount + ".");
         }
         // make sure that there are exactly as many precedence relations
-        final Set<Integer> jobNumbersFromPrecedence = new HashSet<Integer>();
+        final Set<Integer> jobNumbersFromPrecedence = new TreeSet<Integer>();
         for (final Precedence p : this.precedences) {
             jobNumbersFromPrecedence.add(p.getJobNumber());
         }
@@ -117,7 +117,7 @@ public class RawProjectData {
                 throw new IllegalArgumentException("Job " + p.getJobNumber() + " is never requested.");
             }
             // every job must have the same modes as requested
-            final Set<Integer> requiredModes = new HashSet<Integer>();
+            final Set<Integer> requiredModes = new TreeSet<Integer>();
             for (int i = 1; i < p.getNumberOfModes(); i++) {
                 requiredModes.add(i);
             }
