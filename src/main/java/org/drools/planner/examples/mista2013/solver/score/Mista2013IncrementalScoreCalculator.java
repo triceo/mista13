@@ -85,6 +85,9 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private final Map<Job, Allocation> allocationsPerJob = new LinkedHashMap<Job, Allocation>();
 
+    /**
+     * Null key is used as a global due date cache.
+     */
     private final Map<Project, Integer> maxDueDateCache = new HashMap<Project, Integer>();
 
     /**
@@ -109,14 +112,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public void afterEntityAdded(final Object entity) {
-        // TODO the maps should probably be adjusted
         this.insert((Allocation) entity);
     }
 
     @Override
     public void afterEntityRemoved(final Object entity) {
         // Do nothing
-        // TODO the maps should probably be adjusted
     }
 
     @Override
@@ -165,18 +166,20 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     /**
      * Find maximum due date for any of the activities in a problem instance.
      * This date (since we ignore project sink) is effectively equivalent to the
-     * end of last of the projects.
+     * end of last of the projects. Results of this call are fully cached and 
+     * thus needn't be incremental.
      * 
-     * @param solution
-     * @param p
      * @return
      */
     private int findMaxDueDate() {
-        int maxDueDate = Integer.MIN_VALUE;
-        for (final Project p : this.problem.getProjects()) {
-            maxDueDate = Math.max(maxDueDate, this.findMaxDueDate(p));
+        if (!this.maxDueDateCache.containsKey(null)) {
+            int maxDueDate = Integer.MIN_VALUE;
+            for (final Project p : this.problem.getProjects()) {
+                maxDueDate = Math.max(maxDueDate, this.findMaxDueDate(p));
+            }
+            this.maxDueDateCache.put(null, maxDueDate);
         }
-        return maxDueDate;
+        return this.maxDueDateCache.get(null);
     }
 
     /**
@@ -185,8 +188,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      * of the project. This is very heavily used throughout the calculator,
      * hence it includes result cache.
      * 
-     * @param solution
-     * @param p
      * @return
      */
     private int findMaxDueDate(final Project p) {
@@ -419,6 +420,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private void retract(final Allocation entity) {
         this.maxDueDateCache.remove(entity.getJob().getParentProject());
+        this.maxDueDateCache.remove(null);
         this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity);
         if (!entity.isInitialized()) {
