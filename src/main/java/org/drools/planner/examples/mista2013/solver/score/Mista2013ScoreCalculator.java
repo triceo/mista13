@@ -127,7 +127,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                 if (!a.isInitialized()) {
                     continue;
                 }
-                maxDueDate = Math.max(maxDueDate, a.getStartDate() + a.getJobMode().getDuration());
+                maxDueDate = Math.max(maxDueDate, a.getDueDate());
             }
             this.maxDueDateCache.put(p, maxDueDate);
         }
@@ -155,12 +155,11 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
             }
             final Job currentJob = currentJobAllocation.getJob();
             final Project p = currentJob.getParentProject();
-            final JobMode currentMode = currentJobAllocation.getJobMode();
             if (currentJobAllocation.getStartDate() < p.getReleaseDate()) {
                 // make sure we never start before we're allowed to
                 total++;
             }
-            final int currentDoneBy = currentJobAllocation.getStartDate() + currentMode.getDuration();
+            final int currentDoneBy = currentJobAllocation.getDueDate();
             for (final Job succeedingJob : currentJob.getSuccessors()) {
                 if (succeedingJob.isSink()) {
                     continue;
@@ -282,7 +281,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                 }
                 // activity not running at the time
                 final JobMode jm = a.getJobMode();
-                final int dueDate = a.getStartDate() + jm.getDuration();
+                final int dueDate = a.getDueDate();
                 if (a.getStartDate() > time || dueDate < time) {
                     continue;
                 }

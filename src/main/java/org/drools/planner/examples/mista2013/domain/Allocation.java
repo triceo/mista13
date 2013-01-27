@@ -39,6 +39,13 @@ public class Allocation {
         this.startDates = Collections.unmodifiableSet(startDates);
     }
 
+    public int getDueDate() {
+        if (!this.isInitialized()) {
+            throw new IllegalStateException("Planning entity not yet initialized.");
+        }
+        return this.getStartDate() + this.getJobMode().getDuration();
+    }
+
     public Job getJob() {
         return this.job;
     }

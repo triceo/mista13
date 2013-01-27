@@ -22,7 +22,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
                 if (a.getJob().getParentProject() != p) {
                     continue;
                 }
-                max = Math.max(max, a.getStartDate() + a.getJobMode().getDuration());
+                max = Math.max(max, a.getDueDate());
             }
             return max;
         }
