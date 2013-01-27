@@ -59,6 +59,14 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         final int brokenHard5 = this.getHorizonOverrunCount(solution);
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount(solution);
+
+        System.out.print(brokenHard1 + " ");
+        System.out.print(brokenHard2 + " ");
+        System.out.print(brokenHard3 + " ");
+        System.out.print(brokenHard4 + " ");
+        System.out.print(brokenHard5 + " ");
+        System.out.println(brokenHard7);
+
         final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4
                 + brokenHard5 + brokenHard7;
         // FIXME are we interested in projects being actually ahead?
@@ -83,37 +91,43 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     }
 
     /**
-     * Finds the maximum starting date for any of the activities in the problem
-     * instance.
+     * Find maximum due date for any of the activities in a problem instance.
+     * This date (since we ignore project sink) is effectively equivalent to the
+     * end of last of the projects.
      * 
      * @param solution
+     * @param p
      * @return
      */
-    private int findMaxStartDate(final Mista2013 solution) {
-        int maxStartDate = Integer.MIN_VALUE;
+    private int findMaxDueDate(final Mista2013 solution) {
+        int maxDueDate = Integer.MIN_VALUE;
         for (final Project p : solution.getProblem().getProjects()) {
-            maxStartDate = Math.max(maxStartDate, this.findMaxStartDate(solution, p));
+            maxDueDate = Math.max(maxDueDate, this.findMaxDueDate(solution, p));
         }
-        return maxStartDate;
+        return maxDueDate;
     }
 
     /**
-     * Finds the maximum starting date for any of the activities of a project.
-     * This will look up the starting date of the sink of each project,
-     * effectively location the end of the project.
+     * Find maximum due date for any of the activities in a given project. This
+     * date (since we ignore project sink) is effectively equivalent to the end
+     * of the project.
      * 
      * @param solution
+     * @param p
      * @return
      */
-    private int findMaxStartDate(final Mista2013 solution, final Project p) {
-        int maxStartDate = Integer.MIN_VALUE;
+    private int findMaxDueDate(final Mista2013 solution, final Project p) {
+        int maxDueDate = Integer.MIN_VALUE;
         for (final Allocation a : solution.getAllocations()) {
-            if (a.getStartDate() == null) {
+            if (a.getJob().getParentProject() != p) {
                 continue;
             }
-            maxStartDate = Math.max(maxStartDate, a.getStartDate());
+            if (a.getStartDate() == null || a.getJobMode() == null) {
+                continue;
+            }
+            maxDueDate = Math.max(maxDueDate, a.getStartDate() + a.getJobMode().getDuration());
         }
-        return maxStartDate;
+        return maxDueDate;
     }
 
     private int findMinReleaseDate(final Mista2013 solution) {
@@ -161,15 +175,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                 }
             }
         }
-        return total;
-    }
-
-    private int getCriticalPathDuration(final Project p) {
-        /*
-         * FIXME footnote on page 3 of competition description says this is OK.
-         * is it? or should we calculate it, as the competition describes?
-         */
-        return p.getCriticalPathDuration();
+        return total * 1000;
     }
 
     /**
@@ -191,7 +197,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         }
         // and now find out the number of projects that went over it
         for (final Project p : solution.getProblem().getProjects()) {
-            if (this.findMaxStartDate(solution, p) > upperBound) {
+            if (this.findMaxDueDate(solution, p) > upperBound) {
                 total++;
             }
         }
@@ -199,7 +205,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     }
 
     private int getMakespan(final Mista2013 solution, final Project p) {
-        return this.findMaxStartDate(solution, p) - p.getReleaseDate();
+        return this.findMaxDueDate(solution, p) - p.getReleaseDate();
     }
 
     /**
@@ -211,7 +217,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      *         capacity for.
      */
     private int getOverutilizedGlobalResourcesCount(final Mista2013 solution) {
-        return this.getOverutilizedResourceCount(solution, Mista2013ScoreCalculator.GLOBALS_ONLY);
+        return this.getOverutilizedRenewableResourceCount(solution, Mista2013ScoreCalculator.GLOBALS_ONLY);
     }
 
     /**
@@ -223,22 +229,6 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
      *         have capacity for.
      */
     private int getOverutilizedLocalNonRenewableResourcesCount(final Mista2013 solution) {
-        return this.getOverutilizedResourceCount(solution, Mista2013ScoreCalculator.LOCAL_NONRENEWABLES);
-    }
-
-    /**
-     * Validates feasibility requirement (1).
-     * 
-     * FIXME is my understanding correct? if not, the whole method is wrong.
-     * 
-     * @return How many more local renewable resources would we need than we
-     *         have capacity for.
-     */
-    private int getOverutilizedLocalRenewableResourcesCount(final Mista2013 solution) {
-        return this.getOverutilizedResourceCount(solution, Mista2013ScoreCalculator.LOCAL_RENEWABLES);
-    }
-
-    private int getOverutilizedResourceCount(final Mista2013 solution, final Filter<Resource> filter) {
         int total = 0;
         final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
         // sum up all the resource consumptions that we track
@@ -249,7 +239,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                 continue;
             }
             for (final Resource r : p.getResources()) {
-                if (!filter.accept(r)) {
+                if (!Mista2013ScoreCalculator.LOCAL_NONRENEWABLES.accept(r)) {
                     // not the type of resource we're interested in
                     continue;
                 }
@@ -266,12 +256,58 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         return total;
     }
 
+    /**
+     * Validates feasibility requirement (1).
+     * 
+     * FIXME is my understanding correct? if not, the whole method is wrong.
+     * 
+     * @return How many more local renewable resources would we need than we
+     *         have capacity for.
+     */
+    private int getOverutilizedLocalRenewableResourcesCount(final Mista2013 solution) {
+        return this.getOverutilizedRenewableResourceCount(solution, Mista2013ScoreCalculator.LOCAL_RENEWABLES);
+    }
+
+    private int getOverutilizedRenewableResourceCount(final Mista2013 solution, final Filter<Resource> filter) {
+        int total = 0;
+        for (int time = this.findMinReleaseDate(solution); time <= this.findMaxDueDate(solution); time++) {
+            final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
+            for (final Allocation a : solution.getAllocations()) {
+                // activity not yet initialized
+                final JobMode jm = a.getJobMode();
+                if (a.getStartDate() == null || jm == null) {
+                    continue;
+                }
+                // activity not running at the time
+                final int dueDate = a.getStartDate() + jm.getDuration();
+                if (a.getStartDate() > time || dueDate < time) {
+                    continue;
+                }
+                final Project p = a.getJob().getParentProject();
+                for (final Resource r : p.getResources()) {
+                    if (!filter.accept(r)) {
+                        // not the type of resource we're interested in
+                        continue;
+                    }
+                    final int totalAllocation = totalAllocations.containsKey(r) ? totalAllocations.get(r) : 0;
+                    totalAllocations.put(r, totalAllocation + jm.getResourceRequirement(r));
+                }
+            }
+            for (final Map.Entry<Resource, Integer> entry : totalAllocations.entrySet()) {
+                final Resource r = entry.getKey();
+                final int allocation = entry.getValue();
+                total += Math.max(0, allocation - r.getCapacity());
+            }
+        }
+        return total;
+    }
+
     private int getProjectDelay(final Mista2013 solution, final Project p) {
-        return this.getMakespan(solution, p) - this.getCriticalPathDuration(p);
+        return this.getMakespan(solution, p) - p.getCriticalPathDuration();
     }
 
     private int getTotalMakespan(final Mista2013 solution) {
-        return this.findMaxStartDate(solution) - this.findMinReleaseDate(solution);
+        return this.findMaxDueDate(solution) - this.findMinReleaseDate(solution);
     }
 
     private int getTotalProjectDelay(final Mista2013 solution) {
