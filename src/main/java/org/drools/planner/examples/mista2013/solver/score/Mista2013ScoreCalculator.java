@@ -233,12 +233,11 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
         // sum up all the resource consumptions that we track
         for (final Allocation a : solution.getAllocations()) {
-            final Project p = a.getJob().getParentProject();
             final JobMode jm = a.getJobMode();
             if (jm == null) {
                 continue;
             }
-            for (final Resource r : p.getResources()) {
+            for (final Resource r : jm.getResources()) {
                 if (!Mista2013ScoreCalculator.LOCAL_NONRENEWABLES.accept(r)) {
                     // not the type of resource we're interested in
                     continue;
@@ -283,8 +282,7 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                 if (a.getStartDate() > time || dueDate < time) {
                     continue;
                 }
-                final Project p = a.getJob().getParentProject();
-                for (final Resource r : p.getResources()) {
+                for (final Resource r : jm.getResources()) {
                     if (!filter.accept(r)) {
                         // not the type of resource we're interested in
                         continue;

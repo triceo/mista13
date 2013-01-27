@@ -29,50 +29,12 @@ public class Resource {
         this.isRenewable = (type == ResourceType.RENEWABLE);
     }
 
-    /**
-     * Resources are equal when they share globality, renewability and ID.
-     * Capacity is irrelevant to equality.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof Resource)) {
-            return false;
-        }
-        final Resource other = (Resource) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (this.isGlobal != other.isGlobal) {
-            return false;
-        }
-        if (this.isRenewable != other.isRenewable) {
-            return false;
-        }
-        return true;
-    }
-
     public int getCapacity() {
         return this.capacity;
     }
 
     public int getId() {
         return this.id;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.id;
-        result = prime * result + (this.isGlobal ? 1231 : 1237);
-        result = prime * result + (this.isRenewable ? 1231 : 1237);
-        return result;
     }
 
     public boolean isGlobal() {
@@ -83,10 +45,6 @@ public class Resource {
         return this.isRenewable;
     }
 
-    /*
-     * FIXME resources seem to have a fixed and a variable capacity. which is
-     * which, how are they different?
-     */
     public void setCapacity(final int capacity) {
         if (this.capacity == -1) {
             this.capacity = capacity;

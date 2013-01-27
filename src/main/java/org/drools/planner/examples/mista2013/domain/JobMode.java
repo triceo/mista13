@@ -1,5 +1,6 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -57,6 +58,10 @@ public class JobMode {
     public Job getParentJob() {
         return this.parentJob;
     }
+    
+    public Collection<Resource> getResources() {
+        return Collections.unmodifiableCollection(this.resourceRequirements.keySet());
+    }
 
     public int getResourceRequirement(final Resource r) {
         if (!this.resourceRequirements.containsKey(r)) {
@@ -77,6 +82,13 @@ public class JobMode {
     protected void setParentJob(final Job parentJob) {
         if (this.parentJob == null) {
             this.parentJob = parentJob;
+            System.out.print(parentJob.getId() + " ");
+            System.out.print(id + " ");
+            System.out.println(duration + " ");
+            for (Map.Entry<Resource, Integer> entry: this.resourceRequirements.entrySet()) {
+                System.out.println(entry.getValue() + " " + entry.getKey());
+            }
+            System.out.println();
         } else {
             throw new IllegalStateException("Cannot override job mode's parent job.");
         }
