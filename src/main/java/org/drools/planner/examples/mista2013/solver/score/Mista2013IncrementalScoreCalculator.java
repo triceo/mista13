@@ -388,11 +388,13 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.maxDueDateCache.remove(entity.getJob().getParentProject());
         this.allocations.add(entity);
         this.allocationsPerJob.put(entity.getJob(), entity);
-        if (!entity.isInitialized()) {
-            this.unassignedJobModeCount += 1;
-        }
         this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
+        if (!entity.isInitialized()) {
+            this.unassignedJobModeCount += 1;
+            return;
+        }
+        // following operations can not be performed on uninitialized entities
     }
 
     @Override
@@ -425,10 +427,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.maxDueDateCache.remove(null);
         this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity);
-        if (!entity.isInitialized()) {
-            this.unassignedJobModeCount -= 1;
-        }
         this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
+        if (!entity.isInitialized()) {
+            this.unassignedJobModeCount -= 1;
+            return;
+        }
+        // following operations can not be performed on uninitialized entities
     }
 }
