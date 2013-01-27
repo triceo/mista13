@@ -21,39 +21,6 @@ import org.drools.planner.examples.mista2013.domain.Resource;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
-    private static interface Filter<T> {
-
-        public boolean accept(T what);
-
-    }
-
-    private static final Filter<Resource> GLOBALS_ONLY = new Filter<Resource>() {
-
-        @Override
-        public boolean accept(final Resource what) {
-            return (what.isGlobal());
-        }
-
-    };
-
-    private static final Filter<Resource> LOCAL_RENEWABLES = new Filter<Resource>() {
-
-        @Override
-        public boolean accept(final Resource what) {
-            return (!what.isGlobal() && what.isRenewable());
-        }
-
-    };
-
-    private static final Filter<Resource> LOCAL_NONRENEWABLES = new Filter<Resource>() {
-
-        @Override
-        public boolean accept(final Resource what) {
-            return !(what.isGlobal() || what.isRenewable());
-        }
-
-    };
-
     /*
      * TODO remove when Planner 6.0-SNAPSHOT fixes constr heur and selectors
      * wrt. planning values
@@ -189,9 +156,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     @Override
     public HardMediumSoftScore calculateScore() {
         final int plannerPlanningValueWorkaround = this.invalidValuesAssignedToEntityVariableCount;
-        final int brokenHard1 = this.getOverutilizedLocalRenewableResourcesCount();
-        final int brokenHard2 = this.getOverutilizedLocalNonRenewableResourcesCount();
-        final int brokenHard3 = this.getOverutilizedGlobalResourcesCount();
+        final int brokenHard1and3 = this.getOverutilizedRenewableResourcesCount();
+        final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
         final int brokenHard4 = this.unassignedJobModeCount;
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount();
@@ -202,7 +168,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenHard5 = this.getHorizonOverrunCount();
         final int medium = this.getTotalProjectDelay();
         final int soft = this.getTotalMakespan();
-        final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4
+        final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1and3 + brokenHard2 + brokenHard4
                 + brokenHard5 + brokenHard7;
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
@@ -268,22 +234,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     /**
-     * Validates feasibility requirement (3).
-     * 
-     * @return How many more global resources would we need than we have
-     *         capacity for.
-     */
-    private int getOverutilizedGlobalResourcesCount() {
-        return this.getOverutilizedRenewableResourceCount(Mista2013IncrementalScoreCalculator.GLOBALS_ONLY);
-    }
-
-    /**
      * Validates feasibility requirement (2).
      * 
-     * @return How many more local non-renewable resources would we need than we
-     *         have capacity for.
+     * @return How many more non-renewable resources would we need than we have
+     *         capacity for.
      */
-    private int getOverutilizedLocalNonRenewableResourcesCount() {
+    private int getOverutilizedNonRenewableResourcesCount() {
         int total = 0;
         final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
         // sum up all the resource consumptions that we track
@@ -293,7 +249,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             }
             final JobMode jm = a.getJobMode();
             for (final Resource r : jm.getResources()) {
-                if (!Mista2013IncrementalScoreCalculator.LOCAL_NONRENEWABLES.accept(r)) {
+                if (r.isRenewable()) {
                     // not the type of resource we're interested in
                     continue;
                 }
@@ -317,16 +273,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     /**
-     * Validates feasibility requirement (1).
+     * Validates feasibility requirements (1) and (3).
      * 
-     * @return How many more local renewable resources would we need than we
-     *         have capacity for.
+     * @return How many more local and global non-renewable resources would we
+     *         need than we have capacity for.
      */
-    private int getOverutilizedLocalRenewableResourcesCount() {
-        return this.getOverutilizedRenewableResourceCount(Mista2013IncrementalScoreCalculator.LOCAL_RENEWABLES);
-    }
-
-    private int getOverutilizedRenewableResourceCount(final Filter<Resource> filter) {
+    private int getOverutilizedRenewableResourcesCount() {
         int total = 0;
         // don't check for initialized entities in the inner cycle
         final Collection<Allocation> initializedEntities = new ArrayList<Allocation>();
@@ -350,7 +302,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
                 }
                 final JobMode jm = a.getJobMode();
                 for (final Resource r : jm.getResources()) {
-                    if (!filter.accept(r)) {
+                    if (!r.isRenewable()) {
                         // not the type of resource we're interested in
                         continue;
                     }
