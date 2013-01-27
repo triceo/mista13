@@ -59,14 +59,6 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
         final int brokenHard5 = this.getHorizonOverrunCount(solution);
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.getBrokenPrecedenceRelationsCount(solution);
-
-        System.out.print(brokenHard1 + " ");
-        System.out.print(brokenHard2 + " ");
-        System.out.print(brokenHard3 + " ");
-        System.out.print(brokenHard4 + " ");
-        System.out.print(brokenHard5 + " ");
-        System.out.println(brokenHard7);
-
         final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1 + brokenHard2 + brokenHard3 + brokenHard4
                 + brokenHard5 + brokenHard7;
         // FIXME are we interested in projects being actually ahead?
