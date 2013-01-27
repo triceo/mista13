@@ -49,6 +49,8 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
 
     };
 
+    private final Map<Project, Integer> maxDueDateCache = new HashMap<Project, Integer>();
+
     @Override
     public Score<HardMediumSoftScore> calculateScore(final Mista2013 solution) {
         final int plannerPlanningValueWorkaround = this.findInvalidEntityVariableValues(solution);
@@ -72,10 +74,14 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     private int findInvalidEntityVariableValues(final Mista2013 solution) {
         int total = 0;
         for (final Allocation a : solution.getAllocations()) {
-            if (a.getJobMode() == null || !a.getJobModes().contains(a.getJobMode())) {
+            if (!a.isInitialized()) {
+                total++;
+                continue;
+            }
+            if (!a.getJobModes().contains(a.getJobMode())) {
                 total++;
             }
-            if (a.getStartDate() == null || !a.getStartDates().contains(a.getStartDate())) {
+            if (!a.getStartDates().contains(a.getStartDate())) {
                 total++;
             }
         }
@@ -102,24 +108,29 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     /**
      * Find maximum due date for any of the activities in a given project. This
      * date (since we ignore project sink) is effectively equivalent to the end
-     * of the project.
+     * of the project. This is very heavily used throughout the calculator,
+     * hence it includes result cache.
      * 
      * @param solution
      * @param p
      * @return
      */
     private int findMaxDueDate(final Mista2013 solution, final Project p) {
-        int maxDueDate = Integer.MIN_VALUE;
-        for (final Allocation a : solution.getAllocations()) {
-            if (a.getJob().getParentProject() != p) {
-                continue;
+        if (!this.maxDueDateCache.containsKey(p)) {
+            int maxDueDate = Integer.MIN_VALUE;
+            for (final Job j : p.getJobs()) {
+                if (j.isSource() || j.isSink()) {
+                    continue;
+                }
+                final Allocation a = solution.getAllocation(j);
+                if (!a.isInitialized()) {
+                    continue;
+                }
+                maxDueDate = Math.max(maxDueDate, a.getStartDate() + a.getJobMode().getDuration());
             }
-            if (a.getStartDate() == null || a.getJobMode() == null) {
-                continue;
-            }
-            maxDueDate = Math.max(maxDueDate, a.getStartDate() + a.getJobMode().getDuration());
+            this.maxDueDateCache.put(p, maxDueDate);
         }
-        return maxDueDate;
+        return this.maxDueDateCache.get(p);
     }
 
     private int findMinReleaseDate(final Mista2013 solution) {
@@ -138,12 +149,12 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
     private int getBrokenPrecedenceRelationsCount(final Mista2013 solution) {
         int total = 0;
         for (final Allocation currentJobAllocation : solution.getAllocations()) {
+            if (!currentJobAllocation.isInitialized()) {
+                continue;
+            }
             final Job currentJob = currentJobAllocation.getJob();
             final Project p = currentJob.getParentProject();
             final JobMode currentMode = currentJobAllocation.getJobMode();
-            if (currentMode == null) {
-                continue;
-            }
             if (currentJobAllocation.getStartDate() < p.getReleaseDate()) {
                 // make sure we never start before we're allowed to
                 total++;
@@ -155,10 +166,10 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
                 }
                 // find its successors
                 final Allocation succeedingJobAllocation = solution.getAllocation(succeedingJob);
-                final Integer nextStartedAt = succeedingJobAllocation.getStartDate();
-                if (nextStartedAt == null) {
+                if (!succeedingJobAllocation.isInitialized()) {
                     continue;
                 }
+                final Integer nextStartedAt = succeedingJobAllocation.getStartDate();
                 if (nextStartedAt <= currentDoneBy) {
                     /*
                      * successor starts before its predecessor ends
@@ -259,11 +270,11 @@ public class Mista2013ScoreCalculator implements SimpleScoreCalculator<Mista2013
             final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
             for (final Allocation a : solution.getAllocations()) {
                 // activity not yet initialized
-                final JobMode jm = a.getJobMode();
-                if (a.getStartDate() == null || jm == null) {
+                if (!a.isInitialized()) {
                     continue;
                 }
                 // activity not running at the time
+                final JobMode jm = a.getJobMode();
                 final int dueDate = a.getStartDate() + jm.getDuration();
                 if (a.getStartDate() > time || dueDate < time) {
                     continue;

@@ -63,6 +63,10 @@ public class Allocation {
         return this.startDates;
     }
 
+    public boolean isInitialized() {
+        return !(this.jobMode == null || this.startDate == null);
+    }
+
     public void setJobMode(final JobMode jobMode) {
         this.jobMode = jobMode;
     }

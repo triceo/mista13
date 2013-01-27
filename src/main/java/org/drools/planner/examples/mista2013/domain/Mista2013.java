@@ -3,10 +3,8 @@ package org.drools.planner.examples.mista2013.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -21,15 +19,18 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
 
     private final ProblemInstance problem;
     private final Collection<Allocation> allocations;
-    private final Map<Job, Allocation> allocationsPerJob;
-
+    /**
+     * Much better for performance than HashMap.
+     */
+    private final Allocation[][] allocationsIndexed;
     private HardMediumSoftScore score;
 
     public Mista2013(final ProblemInstance input) {
         this.problem = input;
         final Collection<Allocation> allocations = new LinkedHashSet<Allocation>();
-        final Map<Job, Allocation> allocationsPerJob = new HashMap<Job, Allocation>();
+        this.allocationsIndexed = new Allocation[input.getProjects().size()][];
         for (final Project p : input.getProjects()) {
+            this.allocationsIndexed[p.getId()] = new Allocation[p.getJobs().size()];
             for (final Job j : p.getJobs()) {
                 if (j.isSink() || j.isSource()) {
                     // don't create allocations from pseudo-jobs
@@ -37,18 +38,18 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
                 }
                 final Allocation a = new Allocation(j);
                 allocations.add(a);
-                allocationsPerJob.put(j, a);
+                this.allocationsIndexed[p.getId()][j.getId()] = a;
             }
         }
-        this.allocationsPerJob = Collections.unmodifiableMap(allocationsPerJob);
         this.allocations = Collections.unmodifiableCollection(allocations);
     }
 
     public Allocation getAllocation(final Job job) {
-        if (!this.allocationsPerJob.containsKey(job)) {
+        final Allocation a = this.allocationsIndexed[job.getParentProject().getId()][job.getId()];
+        if (a == null) {
             throw new IllegalArgumentException("Job allocation not found, this is a bug in our solution code: " + job);
         }
-        return this.allocationsPerJob.get(job);
+        return a;
     }
 
     @PlanningEntityCollectionProperty
