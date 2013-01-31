@@ -16,6 +16,7 @@ public class Allocation {
     private final Job job;
     private JobMode jobMode;
     private Integer startDate;
+    private Integer dueDate;
 
     private final Collection<JobMode> jobModes;
 
@@ -45,7 +46,7 @@ public class Allocation {
         if (!this.isInitialized()) {
             throw new IllegalStateException("Planning entity not yet initialized.");
         }
-        return this.getStartDate() + this.getJobMode().getDuration();
+        return this.dueDate;
     }
 
     public Job getJob() {
@@ -79,11 +80,17 @@ public class Allocation {
     public void setJobMode(final JobMode jobMode) {
         this.isJobModeSet = (jobMode != null);
         this.jobMode = jobMode;
+        if (this.isInitialized()) {
+            this.dueDate = this.getStartDate() + this.jobMode.getDuration();
+        }
     }
 
     public void setStartDate(final Integer startDate) {
         this.isStartDateSet = (startDate != null);
         this.startDate = startDate;
+        if (this.isInitialized()) {
+            this.dueDate = this.getStartDate() + this.jobMode.getDuration();
+        }
     }
 
     @Override
