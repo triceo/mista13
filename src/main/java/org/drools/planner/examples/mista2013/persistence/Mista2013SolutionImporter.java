@@ -74,28 +74,20 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             final ProjectMetadata project = data.getProject();
             // set resource capacities
             final List<Resource> resultingResources = new ArrayList<Resource>();
-            for (final Resource r : globalResources) {
-                // global; always renewable
-                resultingResources.add(r);
-            }
-            for (int i = resultingResources.size(); i < situation.getRenewableResourceCount(); i++) {
-                // local; renewable
-                final Resource r = new Resource(i + 1, ResourceType.RENEWABLE);
-                r.setCapacity(data.getResourceAvailability().get(i));
-                resultingResources.add(r);
-            }
-            int i = resultingResources.size();
-            for (int j = i; j < situation.getNonRenewableResourceCount() + i; j++) {
-                // local; non-renewable
-                final Resource r = new Resource(j + 1, ResourceType.NONRENEWABLE);
-                r.setCapacity(data.getResourceAvailability().get(j));
-                resultingResources.add(r);
-            }
-            i = resultingResources.size();
-            for (int j = i; j < situation.getDoublyConstrainedResourceCount() + i; j++) {
-                // local; doubly-constrained
-                final Resource r = new Resource(j + 1, ResourceType.DOUBLE_CONSTRAINED);
-                r.setCapacity(data.getResourceAvailability().get(j));
+            for (int i = 0; i < globalResources.size(); i++) {
+                Resource r = globalResources.get(i);
+                if (r == null) {
+                    if (i < 2) {
+                        r = new Resource(i + 1, ResourceType.RENEWABLE);
+                        r.setCapacity(data.getResourceAvailability().get(i));
+                    } else if (i < 4) {
+                        r = new Resource(i + 1, ResourceType.NONRENEWABLE);
+                        r.setCapacity(data.getResourceAvailability().get(i));
+                    } else {
+                        r = new Resource(i + 1, ResourceType.DOUBLE_CONSTRAINED);
+                        r.setCapacity(data.getResourceAvailability().get(i));
+                    }
+                }
                 resultingResources.add(r);
             }
             // build jobs and project
@@ -113,12 +105,12 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             int i = 1;
             for (final Integer capacity : instance.getResourceCapacities()) {
                 if (capacity < 0) {
-                    // FIXME this assumption is wrong. A-6.txt: -1 13 -1 -1
-                    break;
+                    globalResources.add(null);
+                } else {
+                    final Resource r = new Resource(i);
+                    r.setCapacity(capacity);
+                    globalResources.add(r);
                 }
-                final Resource r = new Resource(i);
-                r.setCapacity(capacity);
-                globalResources.add(r);
                 i++;
             }
             // build projects from raw data
