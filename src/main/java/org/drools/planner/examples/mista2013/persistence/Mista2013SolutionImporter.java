@@ -113,6 +113,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             int i = 1;
             for (final Integer capacity : instance.getResourceCapacities()) {
                 if (capacity < 0) {
+                    // FIXME this assumption is wrong. A-6.txt: -1 13 -1 -1
                     break;
                 }
                 final Resource r = new Resource(i);
