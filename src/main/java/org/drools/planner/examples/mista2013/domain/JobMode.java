@@ -1,9 +1,6 @@
 package org.drools.planner.examples.mista2013.domain;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public class JobMode {
@@ -14,8 +11,6 @@ public class JobMode {
 
     private Job parentJob;
     private final Map<Resource, Integer> resourceRequirements;
-    private final List<Resource> resources; // much better performance than
-                                            // resourceRequirements.keySet()
 
     public JobMode(final int id, final int duration, final Map<Resource, Integer> resourceRequirements) {
         if (id < 0) {
@@ -24,7 +19,6 @@ public class JobMode {
         this.id = id;
         this.duration = duration;
         this.resourceRequirements = Collections.unmodifiableMap(resourceRequirements);
-        this.resources = Collections.unmodifiableList(new ArrayList<Resource>(resourceRequirements.keySet()));
     }
 
     public int getDuration() {
@@ -38,16 +32,9 @@ public class JobMode {
     public Job getParentJob() {
         return this.parentJob;
     }
-
-    public int getResourceRequirement(final Resource r) {
-        if (!this.resourceRequirements.containsKey(r)) {
-            throw new IllegalArgumentException("Job mode " + this + " has no resource " + r);
-        }
-        return this.resourceRequirements.get(r);
-    }
-
-    public Collection<Resource> getResources() {
-        return this.resources;
+    
+    public Map<Resource, Integer> getResourceRequirements() {
+        return this.resourceRequirements;
     }
 
     protected void setParentJob(final Job parentJob) {

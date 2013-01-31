@@ -1,7 +1,5 @@
 package org.drools.planner.examples.mista2013.solver.score;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -13,11 +11,11 @@ import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.drools.planner.examples.mista2013.domain.Allocation;
 import org.drools.planner.examples.mista2013.domain.Job;
-import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
 import org.drools.planner.examples.mista2013.domain.Resource;
+import org.drools.planner.examples.mista2013.solver.score.util.RenewableResourceUsageTracker;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
@@ -113,6 +111,9 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private final Map<Project, Integer> maxDueDatesPerProject = new HashMap<Project, Integer>();
 
+    private RenewableResourceUsageTracker renewableResourceUsage;
+    private final Map<Resource, Integer> nonRenewableResourceUsage = new HashMap<Resource, Integer>();
+
     @Override
     public void afterAllVariablesChanged(final Object entity) {
         this.insert((Allocation) entity);
@@ -156,7 +157,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     @Override
     public HardMediumSoftScore calculateScore() {
         final int plannerPlanningValueWorkaround = this.invalidValuesAssignedToEntityVariableCount;
-        final int brokenHard1and3 = this.getOverutilizedRenewableResourcesCount();
+        final int brokenHard1and3 = this.renewableResourceUsage.countResourceOveruse();
         final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
         final int brokenHard4 = this.unassignedJobModeCount;
         // FIXME does constraint 6 need to be validated?
@@ -241,86 +242,10 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      */
     private int getOverutilizedNonRenewableResourcesCount() {
         int total = 0;
-        final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
-        // sum up all the resource consumptions that we track
-        for (final Allocation a : this.allocations) {
-            if (!a.isInitialized()) {
-                continue;
-            }
-            final JobMode jm = a.getJobMode();
-            for (final Resource r : jm.getResources()) {
-                if (r.isRenewable()) {
-                    // not the type of resource we're interested in
-                    continue;
-                }
-                final int resourceRequirement = jm.getResourceRequirement(r);
-                if (resourceRequirement == 0) {
-                    // doesn't change anything
-                    continue;
-                }
-                Integer totalAllocation = totalAllocations.get(r);
-                totalAllocation = resourceRequirement + ((totalAllocation == null) ? 0 : totalAllocation);
-                totalAllocations.put(r, totalAllocation);
-            }
-        }
-        // and now find out how many more we have than we should
-        for (final Map.Entry<Resource, Integer> entry : totalAllocations.entrySet()) {
+        for (final Map.Entry<Resource, Integer> entry : this.nonRenewableResourceUsage.entrySet()) {
             final Resource r = entry.getKey();
             final int allocation = entry.getValue();
             total += Math.max(0, allocation - r.getCapacity());
-        }
-        return total;
-    }
-
-    /**
-     * Validates feasibility requirements (1) and (3).
-     * 
-     * @return How many more local and global non-renewable resources would we
-     *         need than we have capacity for.
-     */
-    private int getOverutilizedRenewableResourcesCount() {
-        int total = 0;
-        // don't check for initialized entities in the inner cycle
-        final Collection<Allocation> initializedEntities = new ArrayList<Allocation>();
-        for (final Allocation a : this.allocations) {
-            if (!a.isInitialized()) {
-                continue;
-            }
-            initializedEntities.add(a);
-        }
-        // terminate early
-        if (initializedEntities.size() == 0) {
-            return 0;
-        }
-        final int dueDate = this.maxDueDateGlobal;
-        for (int time = this.minReleaseDate; time <= dueDate; time++) {
-            final Map<Resource, Integer> totalAllocations = new HashMap<Resource, Integer>();
-            for (final Allocation a : initializedEntities) {
-                // activity not running at the time
-                if (a.getStartDate() > time || a.getDueDate() < time) {
-                    continue;
-                }
-                final JobMode jm = a.getJobMode();
-                for (final Resource r : jm.getResources()) {
-                    if (!r.isRenewable()) {
-                        // not the type of resource we're interested in
-                        continue;
-                    }
-                    final int resourceRequirement = jm.getResourceRequirement(r);
-                    if (resourceRequirement == 0) {
-                        // doesn't change anything
-                        continue;
-                    }
-                    Integer totalAllocation = totalAllocations.get(r);
-                    totalAllocation = resourceRequirement + ((totalAllocation == null) ? 0 : totalAllocation);
-                    totalAllocations.put(r, totalAllocation);
-                }
-            }
-            for (final Map.Entry<Resource, Integer> entry : totalAllocations.entrySet()) {
-                final Resource r = entry.getKey();
-                final int allocation = entry.getValue();
-                total += Math.max(0, allocation - r.getCapacity());
-            }
         }
         return total;
     }
@@ -346,6 +271,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.allocationsPerJob.put(entity.getJob(), entity);
         this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
+        this.renewableResourceUsage.updateAllocation(entity);
         if (!entity.isInitialized()) {
             this.unassignedJobModeCount += 1;
             return;
@@ -361,6 +287,22 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             this.maxDueDatesPerProject.put(currentProject, newDueDate);
             if (newDueDate > this.maxDueDateGlobal) {
                 this.maxDueDateGlobal = newDueDate;
+            }
+        }
+        // cache non-renewable resource use
+        for (final Map.Entry<Resource, Integer> entry : entity.getJobMode().getResourceRequirements().entrySet()) {
+            final Resource r = entry.getKey();
+            if (r.isRenewable()) {
+                continue;
+            }
+            final int value = entry.getValue();
+            if (value == 0) {
+                continue;
+            }
+            if (this.nonRenewableResourceUsage.containsKey(r)) {
+                this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) + value);
+            } else {
+                this.nonRenewableResourceUsage.put(r, value);
             }
         }
     }
@@ -387,6 +329,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             this.upperBound = Math.max(this.upperBound, p.getHorizon());
         }
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
+        this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getTheoreticalMaximumDueDate());
+        this.nonRenewableResourceUsage.clear();
         // insert new entities
         for (final Allocation a : workingSolution.getAllocations()) {
             this.insert(a);
@@ -396,6 +340,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private void retract(final Allocation entity) {
         this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity.getJob());
+        this.renewableResourceUsage.removeAllocation(entity);
         this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
         if (!entity.isInitialized()) {
@@ -415,6 +360,18 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
                 this.maxDueDateGlobal = Mista2013IncrementalScoreCalculator.findMaxDueDate(this.problem,
                         this.maxDueDatesPerProject);
             }
+        }
+        // update cache of non-renewable resource use
+        for (final Map.Entry<Resource, Integer> entry : entity.getJobMode().getResourceRequirements().entrySet()) {
+            final Resource r = entry.getKey();
+            if (r.isRenewable()) {
+                continue;
+            }
+            final int value = entry.getValue();
+            if (value == 0) {
+                continue;
+            }
+            this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) - value);
         }
     }
 }
