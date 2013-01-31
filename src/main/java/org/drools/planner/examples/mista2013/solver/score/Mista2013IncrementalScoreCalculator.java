@@ -1,5 +1,6 @@
 package org.drools.planner.examples.mista2013.solver.score;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -86,9 +87,9 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private ProblemInstance problem = null;
 
-    private final Set<Allocation> allocations = new LinkedHashSet<Allocation>();
+    private Set<Allocation> allocations;
 
-    private final Map<Job, Allocation> allocationsPerJob = new LinkedHashMap<Job, Allocation>();
+    private Map<Job, Allocation> allocationsPerJob;
 
     /**
      * Validates feasibility requirement (4).
@@ -112,7 +113,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private final Map<Project, Integer> maxDueDatesPerProject = new HashMap<Project, Integer>();
 
     private RenewableResourceUsageTracker renewableResourceUsage;
-    private final Map<Resource, Integer> nonRenewableResourceUsage = new HashMap<Resource, Integer>();
+    private Map<Resource, Integer> nonRenewableResourceUsage;
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
@@ -311,8 +312,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     public void resetWorkingSolution(final Mista2013 workingSolution) {
         this.unassignedJobModeCount = 0;
         this.invalidValuesAssignedToEntityVariableCount = 0;
-        this.allocations.clear();
-        this.allocationsPerJob.clear();
         // change to the new problem
         this.problem = workingSolution.getProblem();
         this.maxDueDateGlobal = Integer.MIN_VALUE;
@@ -330,9 +329,13 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         }
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getTheoreticalMaximumDueDate());
-        this.nonRenewableResourceUsage.clear();
+        this.nonRenewableResourceUsage = new LinkedHashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
         // insert new entities
-        for (final Allocation a : workingSolution.getAllocations()) {
+        final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
+        final int size = allocationsToProcess.size();
+        this.allocations = new LinkedHashSet<Allocation>(size);
+        this.allocationsPerJob = new LinkedHashMap<Job, Allocation>(size);
+        for (final Allocation a : allocationsToProcess) {
             this.insert(a);
         }
     }
