@@ -13,6 +13,9 @@ import org.drools.planner.examples.mista2013.domain.Resource;
  */
 public class RenewableResourceUsageTracker {
 
+    private int minTime = Integer.MAX_VALUE;
+    private int maxTime = Integer.MIN_VALUE;
+
     @SuppressWarnings("rawtypes")
     private final Map[] resourceUsagesInTime;
     private final int[] usageCache;
@@ -28,9 +31,9 @@ public class RenewableResourceUsageTracker {
 
     public int countResourceOveruse() {
         int total = 0;
-        for (int time = 0; time < this.resourceUsagesInTime.length; time++) {
+        for (int time = this.minTime; time <= this.maxTime; time++) {
             final Map<Job, Map<Resource, Integer>> resourceUsage = this.getResourceUsage(time);
-            if (resourceUsage == null) {
+            if (resourceUsage == null || resourceUsage.size() == 0) {
                 continue;
             }
             final int cache = this.getCached(time);
@@ -85,13 +88,12 @@ public class RenewableResourceUsageTracker {
     }
 
     public void removeAllocation(final Allocation a) {
-        for (int time = 0; time < this.resourceUsagesInTime.length; time++) {
+        for (int time = this.minTime; time <= this.maxTime; time++) {
             final Map<Job, Map<Resource, Integer>> resourceUsage = this.getResourceUsage(time);
             if (resourceUsage == null) {
                 continue;
-            }
-            final Map<Resource, Integer> r = resourceUsage.remove(a.getJob());
-            if (r != null && !r.isEmpty()) {
+            } else if (resourceUsage.containsKey(a.getJob())) {
+                resourceUsage.remove(a.getJob());
                 this.invalidateCache(time);
             }
         }
@@ -102,15 +104,15 @@ public class RenewableResourceUsageTracker {
             this.removeAllocation(a);
             return;
         }
+        this.minTime = Math.min(this.minTime, a.getStartDate());
+        this.maxTime = Math.max(this.maxTime, a.getDueDate());
         for (int time = a.getStartDate(); time <= a.getDueDate(); time++) {
             Map<Job, Map<Resource, Integer>> resourceUsagePerJob = this.getResourceUsage(time);
             if (resourceUsagePerJob == null) { // new time information
                 resourceUsagePerJob = new HashMap<Job, Map<Resource, Integer>>();
-                resourceUsagePerJob.put(a.getJob(), a.getJobMode().getResourceRequirements());
                 this.resourceUsagesInTime[time] = resourceUsagePerJob;
-            } else {
-                resourceUsagePerJob.put(a.getJob(), a.getJobMode().getResourceRequirements());
             }
+            resourceUsagePerJob.put(a.getJob(), a.getJobMode().getResourceRequirements());
             this.invalidateCache(time);
         }
     }
