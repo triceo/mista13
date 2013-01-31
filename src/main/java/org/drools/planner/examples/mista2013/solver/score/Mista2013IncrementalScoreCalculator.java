@@ -37,7 +37,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
                 total++;
             }
         }
-        return total * 1000000;
+        return total * 100000;
     }
 
     /**
@@ -209,7 +209,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
                 }
             }
         }
-        return total * 1000;
+        return total;
     }
 
     /**

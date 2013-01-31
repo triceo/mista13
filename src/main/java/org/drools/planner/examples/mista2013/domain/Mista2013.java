@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
 import org.drools.planner.api.domain.solution.PlanningSolution;
@@ -56,18 +54,6 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
         return this.allocations;
     }
 
-    public Collection<JobMode> getJobModes() {
-        final List<JobMode> s = new ArrayList<JobMode>();
-        for (final Project p : this.getProblem().getProjects()) {
-            for (final Job j : p.getJobs()) {
-                for (final JobMode jm : j.getJobModes()) {
-                    s.add(jm);
-                }
-            }
-        }
-        return Collections.unmodifiableList(s);
-    }
-
     public ProblemInstance getProblem() {
         return this.problem;
     }
@@ -82,16 +68,6 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
     @Override
     public HardMediumSoftScore getScore() {
         return this.score;
-    }
-
-    public Collection<Integer> getStartDates() {
-        final SortedSet<Integer> s = new TreeSet<Integer>();
-        for (final Project p : this.getProblem().getProjects()) {
-            for (int i = p.getReleaseDate(); i < p.getHorizon(); i++) {
-                s.add(i);
-            }
-        }
-        return Collections.unmodifiableSortedSet(s);
     }
 
     @Override

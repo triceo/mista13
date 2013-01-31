@@ -54,9 +54,8 @@ public class Allocation {
         return this.job;
     }
 
-    // FIXME convert to from_entity when it works
     @PlanningVariable
-    @ValueRange(solutionProperty = "jobModes", type = ValueRangeType.FROM_SOLUTION_PROPERTY)
+    @ValueRange(planningEntityProperty = "jobModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public JobMode getJobMode() {
         return this.jobMode;
     }
@@ -65,9 +64,8 @@ public class Allocation {
         return this.jobModes;
     }
 
-    // FIXME convert to from_entity when it works
     @PlanningVariable
-    @ValueRange(solutionProperty = "startDates", type = ValueRangeType.FROM_SOLUTION_PROPERTY)
+    @ValueRange(planningEntityProperty = "startDates", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public Integer getStartDate() {
         return this.startDate;
     }

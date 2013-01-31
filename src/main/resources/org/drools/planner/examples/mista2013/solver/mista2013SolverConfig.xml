@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <solver>
-  <environmentMode>FULL_ASSERT</environmentMode>
+  <environmentMode>REPRODUCIBLE</environmentMode>
   <solutionClass>org.drools.planner.examples.mista2013.domain.Mista2013</solutionClass>
   <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
 
@@ -14,17 +14,16 @@
   
   <constructionHeuristic>
     <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
+    <constructionHeuristicPickEarlyType>FIRST_LAST_STEP_SCORE_EQUAL_OR_IMPROVING</constructionHeuristicPickEarlyType>
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
       <changeMoveSelector>
-        <filterClass>org.drools.planner.examples.mista2013.solver.move.ValueSelectorWorkaroundFilter</filterClass>
         <valueSelector>
           <variableName>jobMode</variableName>
         </valueSelector>
       </changeMoveSelector>
       <changeMoveSelector>
-        <filterClass>org.drools.planner.examples.mista2013.solver.move.ValueSelectorWorkaroundFilter</filterClass>
         <valueSelector>
           <variableName>startDate</variableName>
         </valueSelector>
@@ -34,7 +33,7 @@
       <simulatedAnnealingStartingTemperature>100hard/100medium/100soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>2000</minimalAcceptedSelection>
+      <minimalAcceptedSelection>4</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>
