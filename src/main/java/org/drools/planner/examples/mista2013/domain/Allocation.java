@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
 import org.drools.planner.api.domain.variable.PlanningVariable;
@@ -36,11 +34,11 @@ public class Allocation {
         }
         this.jobModes = Collections.unmodifiableList(jobModes);
         // list available start dates
-        final Set<Integer> startDates = new TreeSet<Integer>();
+        final List<Integer> startDates = new ArrayList<Integer>();
         for (int i = job.getParentProject().getReleaseDate(); i < job.getParentProject().getHorizon(); i++) {
             startDates.add(i);
         }
-        this.startDates = Collections.unmodifiableSet(startDates);
+        this.startDates = Collections.unmodifiableList(startDates);
     }
 
     public int getDueDate() {
