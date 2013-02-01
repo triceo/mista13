@@ -13,8 +13,7 @@
   </termination>
   
   <constructionHeuristic>
-    <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
-    <constructionHeuristicPickEarlyType>FIRST_LAST_STEP_SCORE_EQUAL_OR_IMPROVING</constructionHeuristicPickEarlyType>
+    <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
@@ -30,10 +29,11 @@
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <simulatedAnnealingStartingTemperature>100hard/100medium/100soft</simulatedAnnealingStartingTemperature>
+      <planningEntityTabuSize>7</planningEntityTabuSize>
+      <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>4</minimalAcceptedSelection>
+      <minimalAcceptedSelection>32</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>

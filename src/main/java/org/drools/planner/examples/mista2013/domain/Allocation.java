@@ -9,8 +9,11 @@ import org.drools.planner.api.domain.entity.PlanningEntity;
 import org.drools.planner.api.domain.variable.PlanningVariable;
 import org.drools.planner.api.domain.variable.ValueRange;
 import org.drools.planner.api.domain.variable.ValueRangeType;
+import org.drools.planner.examples.mista2013.domain.solver.AllocationComparator;
+import org.drools.planner.examples.mista2013.domain.solver.JobModeComparator;
+import org.drools.planner.examples.mista2013.domain.solver.StartDateComparator;
 
-@PlanningEntity
+@PlanningEntity(difficultyComparatorClass = AllocationComparator.class)
 public class Allocation {
 
     private final Job job;
@@ -53,7 +56,7 @@ public class Allocation {
         return this.job;
     }
 
-    @PlanningVariable
+    @PlanningVariable(strengthComparatorClass = JobModeComparator.class)
     @ValueRange(planningEntityProperty = "jobModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public JobMode getJobMode() {
         return this.jobMode;
@@ -63,7 +66,7 @@ public class Allocation {
         return this.jobModes;
     }
 
-    @PlanningVariable
+    @PlanningVariable(strengthComparatorClass = StartDateComparator.class)
     @ValueRange(planningEntityProperty = "startDates", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public Integer getStartDate() {
         return this.startDate;

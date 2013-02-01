@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Job {
 
@@ -13,11 +15,21 @@ public class Job {
         SOURCE, SINK, STANDARD
     };
 
+    private static Set<Job> countSuccessorsRecursively(final Job j) {
+        final Set<Job> result = new HashSet<Job>();
+        for (final Job successor : j.getSuccessors()) {
+            result.addAll(Job.countSuccessorsRecursively(successor));
+        }
+        return Collections.unmodifiableSet(result);
+    }
+
     private final int id;
     private final List<Job> successors;
+    private final List<Job> recursiveSuccessors;
     private final Map<Integer, JobMode> jobModes = new HashMap<Integer, JobMode>();
     private Project parentProject;
     private final boolean isSource;
+
     private final boolean isSink;
 
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
@@ -30,6 +42,8 @@ public class Job {
         if (this.successors.contains(null)) {
             throw new IllegalStateException("Cannot have null as a successor!");
         }
+        this.recursiveSuccessors = Collections
+                .unmodifiableList(new ArrayList<Job>(Job.countSuccessorsRecursively(this)));
         for (final JobMode m : modes) {
             m.setParentJob(this);
             this.jobModes.put(m.getId(), m);
@@ -55,6 +69,10 @@ public class Job {
 
     public Project getParentProject() {
         return this.parentProject;
+    }
+
+    public List<Job> getRecursiveSuccessors() {
+        return this.recursiveSuccessors;
     }
 
     public List<Job> getSuccessors() {
