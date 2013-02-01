@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plannerBenchmark>
+  <parallelBenchmarkCount>3</parallelBenchmarkCount>
+  <benchmarkDirectory>data/benchmark/</benchmarkDirectory>
+  <warmUpSecondsSpend>30</warmUpSecondsSpend>
+  <inheritedSolverBenchmark>
+    <problemBenchmarks>
+      <problemIOClass>org.drools.planner.examples.mista2013.persistence.Mista2013ProblemIO</problemIOClass>
+      <inputSolutionFile>data/mista2013/input/A-1.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-2.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-3.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-4.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-5.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-6.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-7.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-8.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-9.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-10.txt</inputSolutionFile>
+      <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
+    </problemBenchmarks>
+    <solver>
+      <solutionClass>org.drools.planner.examples.mista2013.domain.Mista2013</solutionClass>
+      <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
+    
+      <scoreDirectorFactory>
+        <scoreDefinitionType>HARD_MEDIUM_SOFT</scoreDefinitionType>
+        <incrementalScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
+      </scoreDirectorFactory>
+      <termination>
+        <maximumMinutesSpend>5</maximumMinutesSpend>
+      </termination>
+    </solver>
+  </inheritedSolverBenchmark>
+
+  <solverBenchmark>
+    <name>FF</name>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
+      </constructionHeuristic>
+    </solver>
+  </solverBenchmark>
+  
+  <solverBenchmark>
+    <name>FFD</name>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+    </solver>
+  </solverBenchmark>
+  
+  <solverBenchmark>
+    <name>BF</name>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
+      </constructionHeuristic>
+    </solver>
+  </solverBenchmark>
+  
+  <solverBenchmark>
+    <name>BFD</name>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+    </solver>
+  </solverBenchmark>
+</plannerBenchmark>
