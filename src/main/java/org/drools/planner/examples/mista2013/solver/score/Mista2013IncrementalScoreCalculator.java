@@ -16,6 +16,7 @@ import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
 import org.drools.planner.examples.mista2013.domain.Resource;
+import org.drools.planner.examples.mista2013.solver.score.util.PrecedenceRelationsTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.RenewableResourceUsageTracker;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
@@ -115,6 +116,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private RenewableResourceUsageTracker renewableResourceUsage;
     private Map<Resource, Integer> nonRenewableResourceUsage;
 
+    private PrecedenceRelationsTracker precedenceRelations;
+
     @Override
     public void afterAllVariablesChanged(final Object entity) {
         this.insert((Allocation) entity);
@@ -162,7 +165,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
         final int brokenHard4 = this.unassignedJobModeCount;
         // FIXME does constraint 6 need to be validated?
-        final int brokenHard7 = this.getBrokenPrecedenceRelationsCount();
+        final int brokenHard7 = this.precedenceRelations.countBrokenPrecedenceRelations();
         /*
          * the following vars are always recalculated; but they come from cached
          * values, so it brings near zero overhead.
@@ -173,45 +176,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1and3 + brokenHard2 + brokenHard4
                 + brokenHard5 + brokenHard7;
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
-    }
-
-    /**
-     * Validates feasibility requirement (7).
-     * 
-     * @return How many precedence relations are broken
-     */
-    private int getBrokenPrecedenceRelationsCount() {
-        int total = 0;
-        for (final Allocation currentJobAllocation : this.allocations) {
-            if (!currentJobAllocation.isInitialized()) {
-                continue;
-            }
-            final Job currentJob = currentJobAllocation.getJob();
-            final Project p = currentJob.getParentProject();
-            if (currentJobAllocation.getStartDate() < p.getReleaseDate()) {
-                // make sure we never start before we're allowed to
-                total++;
-            }
-            final int currentDoneBy = currentJobAllocation.getDueDate();
-            for (final Job succeedingJob : currentJob.getSuccessors()) {
-                if (succeedingJob.isSink()) {
-                    continue;
-                }
-                // find its successors
-                final Allocation succeedingJobAllocation = this.allocationsPerJob.get(succeedingJob);
-                if (!succeedingJobAllocation.isInitialized()) {
-                    continue;
-                }
-                final Integer nextStartedAt = succeedingJobAllocation.getStartDate();
-                if (nextStartedAt <= currentDoneBy) {
-                    /*
-                     * successor starts before its predecessor ends
-                     */
-                    total++;
-                }
-            }
-        }
-        return total;
     }
 
     /**
@@ -280,6 +244,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         /*
          * following operations can not be performed on uninitialized entities
          */
+        this.precedenceRelations.add(entity);
         // find new max due dates
         final int newDueDate = entity.getDueDate();
         final Project currentProject = entity.getJob().getParentProject();
@@ -330,6 +295,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getTheoreticalMaximumDueDate());
         this.nonRenewableResourceUsage = new LinkedHashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
+        this.precedenceRelations = new PrecedenceRelationsTracker();
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
         final int size = allocationsToProcess.size();
@@ -353,6 +319,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         /*
          * following operations can not be performed on uninitialized entities
          */
+        this.precedenceRelations.remove(entity);
         // find new due dates
         final int currentDueDate = entity.getDueDate();
         final Project currentProject = entity.getJob().getParentProject();
