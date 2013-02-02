@@ -236,7 +236,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.allocationsPerJob.put(entity.getJob(), entity);
         this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
-        this.renewableResourceUsage.updateAllocation(entity);
         if (!entity.isInitialized()) {
             this.unassignedJobModeCount += 1;
             return;
@@ -244,6 +243,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         /*
          * following operations can not be performed on uninitialized entities
          */
+        this.renewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
         // find new max due dates
         final int newDueDate = entity.getDueDate();
@@ -309,7 +309,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private void retract(final Allocation entity) {
         this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity.getJob());
-        this.renewableResourceUsage.removeAllocation(entity);
         this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
         if (!entity.isInitialized()) {
@@ -319,6 +318,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         /*
          * following operations can not be performed on uninitialized entities
          */
+        this.renewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
         // find new due dates
         final int currentDueDate = entity.getDueDate();
