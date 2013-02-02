@@ -15,13 +15,14 @@ public class Mista2013ProblemIO implements ProblemIO {
         return "txt";
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Solution read(final File inputSolutionFile) {
         return this.importer.readSolution(inputSolutionFile);
     }
 
     @Override
-    public void write(final Solution solution, final File outputSolutionFile) {
+    public void write(@SuppressWarnings("rawtypes") final Solution solution, final File outputSolutionFile) {
         this.exporter.writeSolution(solution, outputSolutionFile);
     }
 

@@ -39,7 +39,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
         }
 
         @Override
-        public void setSolution(final Solution solution) {
+        public void setSolution(@SuppressWarnings("rawtypes") final Solution solution) {
             if (!(solution instanceof Mista2013)) {
                 throw new IllegalArgumentException("Please provide a valid Mista2013 solution instance.");
             }
