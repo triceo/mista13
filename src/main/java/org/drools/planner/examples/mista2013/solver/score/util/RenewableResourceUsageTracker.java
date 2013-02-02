@@ -32,41 +32,45 @@ public class RenewableResourceUsageTracker {
     public int countResourceOveruse() {
         int total = 0;
         for (int time = this.minTime; time <= this.maxTime; time++) {
-            final Map<Job, Map<Resource, Integer>> resourceUsage = this.getResourceUsage(time);
-            if (resourceUsage == null || resourceUsage.size() == 0) {
-                continue;
+            int cache = this.getCached(time);
+            if (cache < 0) {
+                cache = this.countResourceOveruseInTime(time);
+                this.cache(time, cache);
             }
-            final int cache = this.getCached(time);
-            if (cache >= 0) { // we already have the result from previous runs
-                total += cache;
-                continue;
-            }
-            final Map<Resource, Integer> renewableAllocations = new HashMap<Resource, Integer>();
-            for (final Map<Resource, Integer> resources : resourceUsage.values()) {
-                for (final Map.Entry<Resource, Integer> entry : resources.entrySet()) {
-                    final Resource r = entry.getKey();
-                    if (!r.isRenewable()) {
-                        // this class only tracks renewables
-                        continue;
-                    }
-                    final int resourceRequirement = entry.getValue();
-                    if (resourceRequirement == 0) {
-                        // doesn't change anything
-                        continue;
-                    }
-                    Integer totalAllocation = renewableAllocations.get(r);
-                    totalAllocation = resourceRequirement + ((totalAllocation == null) ? 0 : totalAllocation);
-                    renewableAllocations.put(r, totalAllocation);
-                }
-            }
-            int result = 0;
-            for (final Map.Entry<Resource, Integer> entry : renewableAllocations.entrySet()) {
+            total += cache;
+        }
+        return total;
+    }
+
+    private int countResourceOveruseInTime(final int time) {
+        @SuppressWarnings("unchecked")
+        final Map<Job, Map<Resource, Integer>> resourceUsage = this.resourceUsagesInTime[time];
+        if (resourceUsage == null || resourceUsage.size() == 0) {
+            return 0;
+        }
+        int total = 0;
+        final Map<Resource, Integer> renewableAllocations = new HashMap<Resource, Integer>();
+        for (final Map<Resource, Integer> resources : resourceUsage.values()) {
+            for (final Map.Entry<Resource, Integer> entry : resources.entrySet()) {
                 final Resource r = entry.getKey();
-                final int allocation = entry.getValue();
-                result += Math.max(0, allocation - r.getCapacity());
+                if (!r.isRenewable()) {
+                    // this class only tracks renewables
+                    continue;
+                }
+                final int resourceRequirement = entry.getValue();
+                if (resourceRequirement == 0) {
+                    // doesn't change anything
+                    continue;
+                }
+                Integer totalAllocation = renewableAllocations.get(r);
+                totalAllocation = resourceRequirement + ((totalAllocation == null) ? 0 : totalAllocation);
+                renewableAllocations.put(r, totalAllocation);
             }
-            this.cache(time, result); // cache the result for the future
-            total += result;
+        }
+        for (final Map.Entry<Resource, Integer> entry : renewableAllocations.entrySet()) {
+            final Resource r = entry.getKey();
+            final int allocation = entry.getValue();
+            total += Math.max(0, allocation - r.getCapacity());
         }
         return total;
     }
@@ -88,12 +92,15 @@ public class RenewableResourceUsageTracker {
     }
 
     public void removeAllocation(final Allocation a) {
+        final Job j = a.getJob();
         for (int time = this.minTime; time <= this.maxTime; time++) {
-            final Map<Job, Map<Resource, Integer>> resourceUsage = this.getResourceUsage(time);
+            @SuppressWarnings("unchecked")
+            final Map<Job, Map<Resource, Integer>> resourceUsage = this.resourceUsagesInTime[time];
             if (resourceUsage == null) {
                 continue;
-            } else if (resourceUsage.containsKey(a.getJob())) {
-                resourceUsage.remove(a.getJob());
+            }
+            final Map<Resource, Integer> previous = resourceUsage.remove(j);
+            if (previous != null && previous.size() > 0) {
                 this.invalidateCache(time);
             }
         }
