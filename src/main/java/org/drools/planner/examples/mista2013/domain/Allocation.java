@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
+import org.drools.planner.api.domain.value.ValueRange;
+import org.drools.planner.api.domain.value.ValueRangeType;
 import org.drools.planner.api.domain.variable.PlanningVariable;
-import org.drools.planner.api.domain.variable.ValueRange;
-import org.drools.planner.api.domain.variable.ValueRangeType;
 import org.drools.planner.examples.mista2013.domain.solver.AllocationComparator;
 import org.drools.planner.examples.mista2013.domain.solver.JobModeComparator;
 import org.drools.planner.examples.mista2013.domain.solver.StartDateComparator;
