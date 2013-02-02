@@ -33,7 +33,7 @@
       <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>32</minimalAcceptedSelection>
+      <minimalAcceptedSelection>64</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>
