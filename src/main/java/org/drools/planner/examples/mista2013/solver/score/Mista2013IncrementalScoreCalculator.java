@@ -31,7 +31,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!a.getStartDates().contains(a.getStartDate())) {
             total++;
         }
-        return total * 100000;
+        return total;
     }
 
     /**
@@ -83,13 +83,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private ProblemInstance problem = null;
 
     private Map<Job, Allocation> allocationsPerJob;
-
-    /**
-     * Validates feasibility requirement (4).
-     * 
-     * @return How many jobs haven't picked a job mode or start date.
-     */
-    private int uninitializedCount = 0;
 
     private int invalidValuesAssignedToEntityVariableCount = 0;
 
@@ -152,11 +145,10 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public HardMediumSoftScore calculateScore() {
+        // requirements (4) and (6) won't be validated, as planner does that
         final int plannerPlanningValueWorkaround = this.invalidValuesAssignedToEntityVariableCount;
         final int brokenHard1and3 = this.renewableResourceUsage.countResourceOveruse();
         final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
-        final int brokenHard4 = this.uninitializedCount;
-        // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.precedenceRelations.countBrokenPrecedenceRelations();
         /*
          * the following vars are always recalculated; but they come from cached
@@ -165,7 +157,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenHard5 = this.getHorizonOverrunCount();
         final int medium = this.getTotalProjectDelay();
         final int soft = this.getTotalMakespan();
-        final int brokenTotal = plannerPlanningValueWorkaround + brokenHard1and3 + brokenHard2 + brokenHard4
+        final int brokenTotal = (plannerPlanningValueWorkaround * 100000000) + brokenHard1and3 + brokenHard2
                 + brokenHard5 + brokenHard7;
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
@@ -176,9 +168,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      * @return How many projects have overrun their horizon.
      */
     private int getHorizonOverrunCount() {
-        // find what we think is the upper bound
         int total = 0;
-        // and now find out the number of projects that went over it
         for (final Project p : this.problem.getProjects()) {
             if (this.maxDueDatesPerProject.get(p) > this.upperBound) {
                 total++;
@@ -225,7 +215,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private void insert(final Allocation entity) {
         if (!entity.isInitialized()) {
-            this.uninitializedCount += 1;
             return;
         }
         this.allocationsPerJob.put(entity.getJob(), entity);
@@ -263,7 +252,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
-        this.uninitializedCount = 0;
         this.invalidValuesAssignedToEntityVariableCount = 0;
         // change to the new problem
         this.problem = workingSolution.getProblem();
@@ -295,7 +283,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     private void retract(final Allocation entity) {
         if (!entity.isInitialized()) {
-            this.uninitializedCount -= 1;
             return;
         }
         this.allocationsPerJob.remove(entity.getJob());
