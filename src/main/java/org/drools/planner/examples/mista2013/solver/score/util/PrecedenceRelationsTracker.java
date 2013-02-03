@@ -111,14 +111,12 @@ public class PrecedenceRelationsTracker {
             for (final Job j : this.predecessors.remove(current)) {
                 this.invalidateCache(j);
             }
-            for (final Job j : this.allocations.keySet()) {
-                final boolean contained = this.predecessors.get(j).remove(current);
-                if (contained) {
+            for (final Job j : current.getSuccessors()) {
+                final Collection<Job> predecessors = this.predecessors.get(j);
+                if (predecessors != null && predecessors.size() > 0) {
+                    predecessors.remove(current);
                     this.invalidateCache(j);
                 }
-            }
-            for (final Job j : current.getSuccessors()) {
-                this.invalidateCache(j);
             }
             this.invalidateCache(current);
         }
