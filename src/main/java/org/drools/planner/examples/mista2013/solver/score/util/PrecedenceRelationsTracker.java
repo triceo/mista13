@@ -1,5 +1,6 @@
 package org.drools.planner.examples.mista2013.solver.score.util;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -17,11 +18,14 @@ public class PrecedenceRelationsTracker {
 
     private class PerProjectTracker {
 
-        Map<Job, Allocation> allocations = new LinkedHashMap<Job, Allocation>();
-        Map<Job, Set<Job>> predecessors = new LinkedHashMap<Job, Set<Job>>();
-        Map<Job, Integer> cache = new LinkedHashMap<Job, Integer>();
+        private final Map<Job, Allocation> allocations;
+        private final Map<Job, Set<Job>> predecessors;
+        private final Map<Job, Integer> cache;
 
-        public PerProjectTracker() {
+        public PerProjectTracker(final int numJobs) {
+            this.allocations = new LinkedHashMap<Job, Allocation>(numJobs);
+            this.predecessors = new LinkedHashMap<Job, Set<Job>>(numJobs);
+            this.cache = new LinkedHashMap<Job, Integer>(numJobs);
         }
 
         public void add(final Allocation a) {
@@ -111,19 +115,20 @@ public class PrecedenceRelationsTracker {
         }
     }
 
-    private final Map<Project, PerProjectTracker> trackers = new LinkedHashMap<Project, PerProjectTracker>();
+    private final Map<Project, PerProjectTracker> trackers;
 
-    private final Map<Project, Integer> cache = new LinkedHashMap<Project, Integer>();
+    private final Map<Project, Integer> cache;
 
-    public PrecedenceRelationsTracker() {
-
+    public PrecedenceRelationsTracker(final Collection<Project> projects) {
+        this.trackers = new LinkedHashMap<Project, PerProjectTracker>(projects.size());
+        this.cache = new LinkedHashMap<Project, Integer>(projects.size());
     }
 
     public void add(final Allocation a) {
         final Project p = a.getJob().getParentProject();
         PerProjectTracker prtpp = this.trackers.get(p);
         if (prtpp == null) {
-            prtpp = new PerProjectTracker();
+            prtpp = new PerProjectTracker(p.getJobs().size());
             this.trackers.put(p, prtpp);
         }
         prtpp.add(a);

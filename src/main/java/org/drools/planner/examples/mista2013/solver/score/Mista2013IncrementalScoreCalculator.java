@@ -27,15 +27,11 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      */
     private static int findInvalidEntityVariableValues(final Allocation a) {
         int total = 0;
-        if (!a.isInitialized()) {
+        if (!a.getJobModes().contains(a.getJobMode())) {
             total++;
-        } else {
-            if (!a.getJobModes().contains(a.getJobMode())) {
-                total++;
-            }
-            if (!a.getStartDates().contains(a.getStartDate())) {
-                total++;
-            }
+        }
+        if (!a.getStartDates().contains(a.getStartDate())) {
+            total++;
         }
         return total * 100000;
     }
@@ -97,7 +93,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      * 
      * @return How many jobs haven't picked a job mode or start date.
      */
-    private int unassignedJobModeCount = 0;
+    private int uninitializedCount = 0;
 
     private int invalidValuesAssignedToEntityVariableCount = 0;
 
@@ -163,7 +159,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int plannerPlanningValueWorkaround = this.invalidValuesAssignedToEntityVariableCount;
         final int brokenHard1and3 = this.renewableResourceUsage.countResourceOveruse();
         final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
-        final int brokenHard4 = this.unassignedJobModeCount;
+        final int brokenHard4 = this.uninitializedCount;
         // FIXME does constraint 6 need to be validated?
         final int brokenHard7 = this.precedenceRelations.countBrokenPrecedenceRelations();
         /*
@@ -234,15 +230,15 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private void insert(final Allocation entity) {
         this.allocations.add(entity);
         this.allocationsPerJob.put(entity.getJob(), entity);
-        this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
-                .findInvalidEntityVariableValues(entity);
         if (!entity.isInitialized()) {
-            this.unassignedJobModeCount += 1;
+            this.uninitializedCount += 1;
             return;
         }
         /*
          * following operations can not be performed on uninitialized entities
          */
+        this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
+                .findInvalidEntityVariableValues(entity);
         this.renewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
         // find new max due dates
@@ -275,7 +271,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
-        this.unassignedJobModeCount = 0;
+        this.uninitializedCount = 0;
         this.invalidValuesAssignedToEntityVariableCount = 0;
         // change to the new problem
         this.problem = workingSolution.getProblem();
@@ -295,7 +291,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getTheoreticalMaximumDueDate());
         this.nonRenewableResourceUsage = new LinkedHashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
-        this.precedenceRelations = new PrecedenceRelationsTracker();
+        this.precedenceRelations = new PrecedenceRelationsTracker(this.problem.getProjects());
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
         final int size = allocationsToProcess.size();
@@ -309,15 +305,15 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private void retract(final Allocation entity) {
         this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity.getJob());
-        this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
-                .findInvalidEntityVariableValues(entity);
         if (!entity.isInitialized()) {
-            this.unassignedJobModeCount -= 1;
+            this.uninitializedCount -= 1;
             return;
         }
         /*
          * following operations can not be performed on uninitialized entities
          */
+        this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
+                .findInvalidEntityVariableValues(entity);
         this.renewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
         // find new due dates
