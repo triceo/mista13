@@ -2,7 +2,9 @@ package org.drools.planner.examples.mista2013.solver.score.util;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.math.IntRange;
 import org.drools.planner.examples.mista2013.domain.Allocation;
@@ -47,15 +49,6 @@ public class RenewableResourceUsageTracker {
         return resourceRequirements;
     }
 
-    /**
-     * Minimal time for which we have any resource usage tracked.
-     */
-    private int minTime = Integer.MAX_VALUE;
-
-    /**
-     * Maximal time for which we have any resource usage tracked.
-     */
-    private int maxTime = Integer.MIN_VALUE;
     @SuppressWarnings("rawtypes")
     private final Map[] resourceUseInTime;
     /**
@@ -65,6 +58,18 @@ public class RenewableResourceUsageTracker {
 
     private final int[] usageCache;
 
+    /**
+     * Times for which the {@link #countResourceOveruseInTime(int)} will need to
+     * be called.
+     */
+    private final Set<Integer> invalidCaches = new HashSet<Integer>();
+
+    /**
+     * Result of {@link #countResourceOveruse()} excluding those times that are
+     * in {@link #invalidCaches} which will need to be recalculated.
+     */
+    private int totalCachedResult = 0;
+
     public RenewableResourceUsageTracker(final int horizon) {
         this.resourceUseInTime = new HashMap[horizon];
         this.usageCache = new int[horizon];
@@ -73,8 +78,6 @@ public class RenewableResourceUsageTracker {
 
     public void add(final Allocation a) {
         final IntRange times = new IntRange(a.getStartDate().intValue(), a.getDueDate());
-        this.minTime = Math.min(this.minTime, times.getMinimumInteger());
-        this.maxTime = Math.max(this.maxTime, times.getMaximumInteger());
         this.jobOccurrences.put(a.getJob(), times);
         final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
                 .getJobMode().getResourceRequirements());
@@ -107,16 +110,13 @@ public class RenewableResourceUsageTracker {
     }
 
     public int countResourceOveruse() {
-        int total = 0;
-        for (int time = this.minTime; time <= this.maxTime; time++) {
-            int cache = this.usageCache[time];
-            if (cache < 0) {
-                cache = this.countResourceOveruseInTime(time);
-                this.usageCache[time] = cache;
-            }
-            total += cache;
+        for (final int time : this.invalidCaches) {
+            int cache = this.countResourceOveruseInTime(time);
+            this.usageCache[time] = cache;
+            this.totalCachedResult += cache;
         }
-        return total;
+        this.invalidCaches.clear();
+        return this.totalCachedResult;
     }
 
     private int countResourceOveruseInTime(final int time) {
@@ -135,6 +135,11 @@ public class RenewableResourceUsageTracker {
     }
 
     protected void invalidateCache(final int time) {
+        this.invalidCaches.add(time);
+        final int cache = this.usageCache[time];
+        if (cache > 0) {
+            this.totalCachedResult -= cache;
+        }
         this.usageCache[time] = -1;
     }
 
