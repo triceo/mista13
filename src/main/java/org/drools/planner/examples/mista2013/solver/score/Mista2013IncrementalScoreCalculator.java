@@ -64,7 +64,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
                 continue;
             }
             final Allocation a = allocations.get(j);
-            if (a == null || !a.isInitialized()) {
+            if (a == null) {
                 continue;
             }
             maxDueDate = Math.max(maxDueDate, a.getDueDate());
@@ -224,14 +224,11 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private void insert(final Allocation entity) {
-        this.allocationsPerJob.put(entity.getJob(), entity);
         if (!entity.isInitialized()) {
             this.uninitializedCount += 1;
             return;
         }
-        /*
-         * following operations can not be performed on uninitialized entities
-         */
+        this.allocationsPerJob.put(entity.getJob(), entity);
         this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
         this.renewableResourceUsage.add(entity);
@@ -297,14 +294,11 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private void retract(final Allocation entity) {
-        this.allocationsPerJob.remove(entity.getJob());
         if (!entity.isInitialized()) {
             this.uninitializedCount -= 1;
             return;
         }
-        /*
-         * following operations can not be performed on uninitialized entities
-         */
+        this.allocationsPerJob.remove(entity.getJob());
         this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
                 .findInvalidEntityVariableValues(entity);
         this.renewableResourceUsage.remove(entity);
