@@ -19,21 +19,6 @@ import org.drools.planner.examples.mista2013.solver.score.util.RenewableResource
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
-    /*
-     * TODO remove when Planner 6.0-SNAPSHOT fixes constr heur and selectors
-     * wrt. planning values
-     */
-    private static int findInvalidEntityVariableValues(final Allocation a) {
-        int total = 0;
-        if (!a.getJobModes().contains(a.getJobMode())) {
-            total++;
-        }
-        if (!a.getStartDates().contains(a.getStartDate())) {
-            total++;
-        }
-        return total;
-    }
-
     /**
      * Find maximum due date for any of the activities in a problem instance.
      * This date (since we ignore project sink) is effectively equivalent to the
@@ -83,8 +68,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private ProblemInstance problem = null;
 
     private Map<Job, Allocation> allocationsPerJob;
-
-    private int invalidValuesAssignedToEntityVariableCount = 0;
 
     /**
      * Cached minimal release date for all the problem instance's projects. This
@@ -146,7 +129,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     @Override
     public HardMediumSoftScore calculateScore() {
         // requirements (4) and (6) won't be validated, as planner does that
-        final int plannerPlanningValueWorkaround = this.invalidValuesAssignedToEntityVariableCount;
         final int brokenHard1and3 = this.renewableResourceUsage.countResourceOveruse();
         final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
         final int brokenHard7 = this.precedenceRelations.countBrokenPrecedenceRelations();
@@ -157,8 +139,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenHard5 = this.getHorizonOverrunCount();
         final int medium = this.getTotalProjectDelay();
         final int soft = this.getTotalMakespan();
-        final int brokenTotal = (plannerPlanningValueWorkaround * 100000000) + brokenHard1and3 + brokenHard2
-                + brokenHard5 + brokenHard7;
+        final int brokenTotal = brokenHard1and3 + brokenHard2 + brokenHard5 + brokenHard7;
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
 
@@ -218,8 +199,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             return;
         }
         this.allocationsPerJob.put(entity.getJob(), entity);
-        this.invalidValuesAssignedToEntityVariableCount += Mista2013IncrementalScoreCalculator
-                .findInvalidEntityVariableValues(entity);
         this.renewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
         // find new max due dates
@@ -252,7 +231,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
-        this.invalidValuesAssignedToEntityVariableCount = 0;
         // change to the new problem
         this.problem = workingSolution.getProblem();
         this.maxDueDateGlobal = Integer.MIN_VALUE;
@@ -286,8 +264,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             return;
         }
         this.allocationsPerJob.remove(entity.getJob());
-        this.invalidValuesAssignedToEntityVariableCount -= Mista2013IncrementalScoreCalculator
-                .findInvalidEntityVariableValues(entity);
         this.renewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
         // find new due dates

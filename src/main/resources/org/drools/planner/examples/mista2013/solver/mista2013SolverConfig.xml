@@ -17,6 +17,7 @@
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
+      <filterClass>org.drools.planner.examples.mista2013.solver.score.move.FromEntityWorkaroundFilter</filterClass>
       <changeMoveSelector>
         <valueSelector>
           <variableName>jobMode</variableName>
@@ -29,7 +30,8 @@
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <planningEntityTabuSize>7</planningEntityTabuSize>
+      <planningEntityTabuSize>10</planningEntityTabuSize>
+      <planningValueTabuSize>100</planningValueTabuSize>
       <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
