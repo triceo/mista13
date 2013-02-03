@@ -33,14 +33,16 @@
     </solver>
   </inheritedSolverBenchmark>
 
+<#list [64, 128, 256, 512] as minimalAcceptedSelection>
   <solverBenchmark>
-    <name>MAS48</name>
+    <name>MAS${minimalAcceptedSelection}</name>
     <solver>
       <constructionHeuristic>
         <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
+        <filterClass>org.drools.planner.examples.mista2013.solver.score.move.FromEntityWorkaroundFilter</filterClass>
         <changeMoveSelector>
           <valueSelector>
             <variableName>jobMode</variableName>
@@ -56,155 +58,10 @@
         <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
       </acceptor>
       <forager>
-        <minimalAcceptedSelection>48</minimalAcceptedSelection>
+        <minimalAcceptedSelection>${minimalAcceptedSelection}</minimalAcceptedSelection>
       </forager>
     </localSearch>
     </solver>
   </solverBenchmark>
-
-  <solverBenchmark>
-    <name>MAS64</name>
-    <solver>
-      <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
-      </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>jobMode</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>64</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
-    </solver>
-  </solverBenchmark>
-
-  <solverBenchmark>
-    <name>MAS96</name>
-    <solver>
-      <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
-      </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>jobMode</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>96</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
-    </solver>
-  </solverBenchmark>
-
-  <solverBenchmark>
-    <name>MAS128</name>
-    <solver>
-      <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
-      </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>jobMode</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>128</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
-    </solver>
-  </solverBenchmark>
-
-  <solverBenchmark>
-    <name>MAS256</name>
-    <solver>
-      <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
-      </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>jobMode</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>256</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
-    </solver>
-  </solverBenchmark>
-
-  <solverBenchmark>
-    <name>MAS512</name>
-    <solver>
-      <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
-      </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>jobMode</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>512</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
-    </solver>
-  </solverBenchmark>
-
+</#list>
 </plannerBenchmark>
