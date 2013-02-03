@@ -1,9 +1,8 @@
 package org.drools.planner.examples.mista2013.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
 import org.drools.planner.api.domain.value.ValueRange;
@@ -32,19 +31,23 @@ public class Allocation {
     public Allocation(final Job job) {
         this.job = job;
         // list available job modes
-        final List<JobMode> jobModes = new ArrayList<JobMode>();
+        final Collection<JobMode> jobModes = new LinkedHashSet<JobMode>();
         for (final JobMode jm : job.getJobModes()) {
             jobModes.add(jm);
         }
-        this.jobModes = Collections.unmodifiableList(jobModes);
+        this.jobModes = Collections.unmodifiableCollection(jobModes);
         // list available start dates
-        final List<Integer> startDates = new ArrayList<Integer>();
+        final Collection<Integer> startDates = new LinkedHashSet<Integer>();
         for (int i = job.getParentProject().getReleaseDate(); i < job.getParentProject().getHorizon(); i++) {
             startDates.add(i);
         }
-        this.startDates = Collections.unmodifiableList(startDates);
+        this.startDates = Collections.unmodifiableCollection(startDates);
     }
 
+    /**
+     * The first time that this job isn't running.
+     * @return
+     */
     public int getDueDate() {
         if (!this.isInitialized()) {
             throw new IllegalStateException("Planning entity not yet initialized.");
