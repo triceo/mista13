@@ -3,9 +3,7 @@ package org.drools.planner.examples.mista2013.solver.score;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.drools.planner.core.score.buildin.hardmediumsoft.DefaultHardMediumSoftScore;
 import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
@@ -83,8 +81,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private ProblemInstance problem = null;
-
-    private Set<Allocation> allocations;
 
     private Map<Job, Allocation> allocationsPerJob;
 
@@ -228,7 +224,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private void insert(final Allocation entity) {
-        this.allocations.add(entity);
         this.allocationsPerJob.put(entity.getJob(), entity);
         if (!entity.isInitialized()) {
             this.uninitializedCount += 1;
@@ -295,7 +290,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
         final int size = allocationsToProcess.size();
-        this.allocations = new LinkedHashSet<Allocation>(size);
         this.allocationsPerJob = new LinkedHashMap<Job, Allocation>(size);
         for (final Allocation a : allocationsToProcess) {
             this.insert(a);
@@ -303,7 +297,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private void retract(final Allocation entity) {
-        this.allocations.remove(entity);
         this.allocationsPerJob.remove(entity.getJob());
         if (!entity.isInitialized()) {
             this.uninitializedCount -= 1;
