@@ -56,7 +56,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
                     if (j.isSource()) {
                         startDate = this.getMinStartDate(this.solution, p);
                     } else if (j.isSink()) {
-                        startDate = this.getMaxDueDate(this.solution, p);
+                        startDate = this.getMaxDueDate(this.solution, p) + 1;
                     } else {
                         final Allocation a = this.solution.getAllocation(j);
                         startDate = a.getStartDate();

@@ -45,7 +45,8 @@ public class Allocation {
     }
 
     /**
-     * The first time that this job isn't running.
+     * The biggest time that this job is still running at.
+     * 
      * @return
      */
     public int getDueDate() {
@@ -87,7 +88,7 @@ public class Allocation {
         this.isJobModeSet = (jobMode != null);
         this.jobMode = jobMode;
         if (this.isInitialized()) {
-            this.dueDate = this.getStartDate() + this.jobMode.getDuration();
+            this.dueDate = this.getStartDate() + this.jobMode.getDuration() - 1;
         }
     }
 
@@ -95,7 +96,7 @@ public class Allocation {
         this.isStartDateSet = (startDate != null);
         this.startDate = startDate;
         if (this.isInitialized()) {
-            this.dueDate = this.getStartDate() + this.jobMode.getDuration();
+            this.dueDate = this.getStartDate() + this.jobMode.getDuration() - 1;
         }
     }
 

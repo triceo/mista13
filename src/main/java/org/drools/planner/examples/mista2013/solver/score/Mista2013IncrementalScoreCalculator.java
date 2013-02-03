@@ -159,7 +159,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private int getMakespan(final Project p) {
-        return this.maxDueDatesPerProject.get(p) - p.getReleaseDate();
+        /*
+         * due date for a task is the latest time when the task is still
+         * running. due date of a project is the time after the last job
+         * finishes, hence +1.
+         */
+        return (this.maxDueDatesPerProject.get(p) + 1) - p.getReleaseDate();
     }
 
     /**
@@ -183,7 +188,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     private int getTotalMakespan() {
-        return this.maxDueDateGlobal - this.minReleaseDate;
+        /*
+         * due date for a task is the latest time when the task is still
+         * running. due date of a project is the time after the last job
+         * finishes, hence +1.
+         */
+        return (this.maxDueDateGlobal + 1) - this.minReleaseDate;
     }
 
     private int getTotalProjectDelay() {
