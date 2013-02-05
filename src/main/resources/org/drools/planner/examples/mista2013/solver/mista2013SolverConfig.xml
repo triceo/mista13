@@ -30,9 +30,7 @@
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <planningEntityTabuSize>10</planningEntityTabuSize>
-      <planningValueTabuSize>100</planningValueTabuSize>
-      <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
+      <lateAcceptanceSize>50000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <minimalAcceptedSelection>256</minimalAcceptedSelection>
