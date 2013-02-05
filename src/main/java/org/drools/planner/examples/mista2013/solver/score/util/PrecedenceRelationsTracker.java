@@ -72,9 +72,10 @@ public class PrecedenceRelationsTracker {
             int total = 0;
             final Job currentJob = currentAllocation.getJob();
             final Project p = currentJob.getParentProject();
+            int recursiveSuccessors = currentJob.getRecursiveSuccessors().size();
             if (currentAllocation.getStartDate() < p.getReleaseDate()) {
                 // make sure we never start before we're allowed to
-                total++;
+                total += recursiveSuccessors;
             }
             final int currentDoneBy = currentAllocation.getDueDate();
             for (final Job succeedingJob : currentJob.getSuccessors()) {
@@ -91,7 +92,7 @@ public class PrecedenceRelationsTracker {
                     /*
                      * successor starts before its predecessor ends
                      */
-                    total++;
+                    total += recursiveSuccessors;
                 }
             }
             return total;

@@ -18,6 +18,7 @@ public class Job {
     private static Set<Job> countSuccessorsRecursively(final Job j) {
         final Set<Job> result = new HashSet<Job>();
         for (final Job successor : j.getSuccessors()) {
+            result.add(successor);
             result.addAll(Job.countSuccessorsRecursively(successor));
         }
         return Collections.unmodifiableSet(result);
