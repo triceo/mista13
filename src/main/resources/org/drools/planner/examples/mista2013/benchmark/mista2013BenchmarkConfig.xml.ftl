@@ -8,13 +8,9 @@
     <problemBenchmarks>
       <problemIOClass>org.drools.planner.examples.mista2013.persistence.Mista2013ProblemIO</problemIOClass>
       <inputSolutionFile>data/mista2013/input/A-1.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-2.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-3.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-4.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-5.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-6.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-7.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-8.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-9.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
@@ -33,16 +29,16 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [64, 128, 256, 512] as minimalAcceptedSelection>
+<#list [64, 128, 192, 256] as minimalAcceptedSelection>
+<#list [25000, 50000, 75000, 100000, 125000] as lateAcceptance>
   <solverBenchmark>
-    <name>MAS${minimalAcceptedSelection}</name>
+    <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>
       <constructionHeuristic>
         <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
-        <filterClass>org.drools.planner.examples.mista2013.solver.score.move.FromEntityWorkaroundFilter</filterClass>
         <changeMoveSelector>
           <valueSelector>
             <variableName>jobMode</variableName>
@@ -55,7 +51,7 @@
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <simulatedAnnealingStartingTemperature>1000hard/100medium/10soft</simulatedAnnealingStartingTemperature>
+        <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
       </acceptor>
       <forager>
         <minimalAcceptedSelection>${minimalAcceptedSelection}</minimalAcceptedSelection>
@@ -63,5 +59,6 @@
     </localSearch>
     </solver>
   </solverBenchmark>
+</#list>
 </#list>
 </plannerBenchmark>

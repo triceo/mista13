@@ -17,7 +17,6 @@
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
-      <filterClass>org.drools.planner.examples.mista2013.solver.score.move.FromEntityWorkaroundFilter</filterClass>
       <changeMoveSelector>
         <valueSelector>
           <variableName>jobMode</variableName>
@@ -30,10 +29,10 @@
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <lateAcceptanceSize>50000</lateAcceptanceSize>
+      <lateAcceptanceSize>125000</lateAcceptanceSize>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>256</minimalAcceptedSelection>
+      <minimalAcceptedSelection>64</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>
