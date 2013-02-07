@@ -7,6 +7,14 @@ import java.util.List;
 
 public class Project {
 
+    private static Collection<Integer> getStartDates(final int start, final int end) {
+        final Collection<Integer> startDates = new LinkedHashSet<Integer>();
+        for (int i = start; i <= end; i++) {
+            startDates.add(i);
+        }
+        return Collections.unmodifiableCollection(startDates);
+    }
+
     private final int id;
 
     private final int horizon;
@@ -22,9 +30,9 @@ public class Project {
     private final List<Job> jobs;
 
     private final int criticalPathDuration;
-
     private ProblemInstance parentInstance;
-    private final Collection<Integer> startDates;
+
+    private Collection<Integer> startDates;
 
     public Project(final int id, final int criticalPathDuration, final int horizon, final int releaseDate,
             final int dueDate, final int tardinessCost, final List<Resource> resources, final List<Job> jobs) {
@@ -39,11 +47,11 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        final Collection<Integer> startDates = new LinkedHashSet<Integer>();
-        for (int i = this.getReleaseDate(); i < this.getHorizon(); i++) {
-            startDates.add(i);
-        }
-        this.startDates = Collections.unmodifiableCollection(startDates);
+        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getHorizon());
+    }
+
+    public Collection<Integer> getAvailableJobStartDates() {
+        return this.startDates;
     }
 
     public int getCriticalPathDuration() {
@@ -96,10 +104,6 @@ public class Project {
         throw new IllegalStateException("Project has no source!");
     }
 
-    public Collection<Integer> getAvailableJobStartDates() {
-        return this.startDates;
-    }
-
     public int getTardinessCost() {
         return this.tardinessCost;
     }
@@ -107,6 +111,9 @@ public class Project {
     protected void setParentInstance(final ProblemInstance parent) {
         if (this.parentInstance == null) {
             this.parentInstance = parent;
+            // and now that we have a better information on the project horizon,
+            // let's recalculate it
+            this.startDates = Project.getStartDates(this.getReleaseDate(), parent.getHorizonUpperBound());
         } else {
             throw new IllegalStateException("Cannot override job's parent instance.");
         }

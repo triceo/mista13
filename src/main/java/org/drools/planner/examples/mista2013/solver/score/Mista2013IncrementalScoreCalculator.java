@@ -75,8 +75,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
      */
     private int minReleaseDate = 0;
 
-    private int upperBound = Integer.MIN_VALUE;
-
     private int maxDueDateGlobal = Integer.MIN_VALUE;
 
     private final Map<Project, Integer> maxDueDatesPerProject = new HashMap<Project, Integer>();
@@ -151,7 +149,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private int getHorizonOverrunCount() {
         int total = 0;
         for (final Project p : this.problem.getProjects()) {
-            if (this.maxDueDatesPerProject.get(p) > this.upperBound) {
+            if (this.maxDueDatesPerProject.get(p) > this.problem.getHorizonUpperBound()) {
                 total++;
             }
         }
@@ -246,15 +244,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.maxDueDateGlobal = Integer.MIN_VALUE;
         for (final Project p : this.problem.getProjects()) {
             this.maxDueDatesPerProject.put(p, this.maxDueDateGlobal);
-        }
-        /*
-         * FIXME what's "upper bound on the time horizon of scheduling problem"?
-         * here we assume that it is the maximum of horizons of all projects in
-         * a problem instance.
-         */
-        this.upperBound = Integer.MIN_VALUE;
-        for (final Project p : this.problem.getProjects()) {
-            this.upperBound = Math.max(this.upperBound, p.getHorizon());
         }
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getTheoreticalMaximumDueDate());
