@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.drools.planner.core.score.buildin.hardmediumsoft.DefaultHardMediumSoftScore;
 import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.drools.planner.examples.mista2013.domain.Allocation;
@@ -138,7 +137,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int medium = this.getTotalProjectDelay();
         final int soft = this.getTotalMakespan();
         final int brokenTotal = brokenHard1and3 + brokenHard2 + brokenHard5 + brokenHard7;
-        return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
+        return HardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
 
     private void decreaseNonRenewableResourceUsage(final Allocation a) {
