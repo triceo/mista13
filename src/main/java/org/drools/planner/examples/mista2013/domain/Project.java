@@ -1,6 +1,8 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class Project {
@@ -22,6 +24,7 @@ public class Project {
     private final int criticalPathDuration;
 
     private ProblemInstance parentInstance;
+    private final Collection<Integer> startDates;
 
     public Project(final int id, final int criticalPathDuration, final int horizon, final int releaseDate,
             final int dueDate, final int tardinessCost, final List<Resource> resources, final List<Job> jobs) {
@@ -36,6 +39,11 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
+        final Collection<Integer> startDates = new LinkedHashSet<Integer>();
+        for (int i = this.getReleaseDate(); i < this.getHorizon(); i++) {
+            startDates.add(i);
+        }
+        this.startDates = Collections.unmodifiableCollection(startDates);
     }
 
     public int getCriticalPathDuration() {
@@ -86,6 +94,10 @@ public class Project {
             }
         }
         throw new IllegalStateException("Project has no source!");
+    }
+
+    public Collection<Integer> getAvailableJobStartDates() {
+        return this.startDates;
     }
 
     public int getTardinessCost() {

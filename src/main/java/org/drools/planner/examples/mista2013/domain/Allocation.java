@@ -1,8 +1,6 @@
 package org.drools.planner.examples.mista2013.domain;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
 import org.drools.planner.api.domain.value.ValueRange;
@@ -20,28 +18,12 @@ public class Allocation {
     private Integer startDate;
     private Integer dueDate;
 
-    private final Collection<JobMode> jobModes;
-
-    private final Collection<Integer> startDates;
-
     private boolean isJobModeSet = false;
 
     private boolean isStartDateSet = false;
 
     public Allocation(final Job job) {
         this.job = job;
-        // list available job modes
-        final Collection<JobMode> jobModes = new LinkedHashSet<JobMode>();
-        for (final JobMode jm : job.getJobModes()) {
-            jobModes.add(jm);
-        }
-        this.jobModes = Collections.unmodifiableCollection(jobModes);
-        // list available start dates
-        final Collection<Integer> startDates = new LinkedHashSet<Integer>();
-        for (int i = job.getParentProject().getReleaseDate(); i < job.getParentProject().getHorizon(); i++) {
-            startDates.add(i);
-        }
-        this.startDates = Collections.unmodifiableCollection(startDates);
     }
 
     /**
@@ -67,7 +49,7 @@ public class Allocation {
     }
 
     public Collection<JobMode> getJobModes() {
-        return this.jobModes;
+        return this.job.getJobModes();
     }
 
     @PlanningVariable(strengthComparatorClass = StartDateComparator.class)
@@ -77,7 +59,7 @@ public class Allocation {
     }
 
     public Collection<Integer> getStartDates() {
-        return this.startDates;
+        return this.job.getParentProject().getAvailableJobStartDates();
     }
 
     public boolean isInitialized() {
