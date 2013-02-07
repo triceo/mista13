@@ -141,6 +141,20 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return DefaultHardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
     }
 
+    private void decreaseNonRenewableResourceUsage(final Allocation a) {
+        for (final Map.Entry<Resource, Integer> entry : a.getJobMode().getResourceRequirements().entrySet()) {
+            final Resource r = entry.getKey();
+            if (r.isRenewable()) {
+                continue;
+            }
+            final int value = entry.getValue();
+            if (value == 0) {
+                continue;
+            }
+            this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) - value);
+        }
+    }
+
     /**
      * Validates feasibility requirement (5).
      * 
@@ -202,6 +216,25 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return total;
     }
 
+    private void increaseNonRenewableResourceUsage(final Allocation a) {
+        for (final Map.Entry<Resource, Integer> entry : a.getJobMode().getResourceRequirements().entrySet()) {
+            final Resource r = entry.getKey();
+            if (r.isRenewable()) {
+                continue;
+            }
+            int value = entry.getValue();
+            if (value == 0) {
+                continue;
+            }
+            // slightly faster than containsKey(r)
+            final Integer previousValue = this.nonRenewableResourceUsage.get(r);
+            if (previousValue != null) {
+                value += previousValue;
+            }
+            this.nonRenewableResourceUsage.put(r, value);
+        }
+    }
+
     private void insert(final Allocation entity) {
         if (!entity.isInitialized()) {
             return;
@@ -220,21 +253,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             }
         }
         // cache non-renewable resource use
-        for (final Map.Entry<Resource, Integer> entry : entity.getJobMode().getResourceRequirements().entrySet()) {
-            final Resource r = entry.getKey();
-            if (r.isRenewable()) {
-                continue;
-            }
-            final int value = entry.getValue();
-            if (value == 0) {
-                continue;
-            }
-            if (this.nonRenewableResourceUsage.containsKey(r)) {
-                this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) + value);
-            } else {
-                this.nonRenewableResourceUsage.put(r, value);
-            }
-        }
+        this.increaseNonRenewableResourceUsage(entity);
     }
 
     @Override
@@ -277,16 +296,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             }
         }
         // update cache of non-renewable resource use
-        for (final Map.Entry<Resource, Integer> entry : entity.getJobMode().getResourceRequirements().entrySet()) {
-            final Resource r = entry.getKey();
-            if (r.isRenewable()) {
-                continue;
-            }
-            final int value = entry.getValue();
-            if (value == 0) {
-                continue;
-            }
-            this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) - value);
-        }
+        this.decreaseNonRenewableResourceUsage(entity);
     }
 }
