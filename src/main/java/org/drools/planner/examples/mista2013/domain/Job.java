@@ -33,18 +33,26 @@ public class Job {
 
     private final boolean isSink;
 
+    private final Collection<Job> predecessors = new HashSet<Job>();
+
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
         this(id, modes, successors, JobType.STANDARD);
     }
 
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors, final JobType type) {
         this.id = id;
+        // update successor info
         this.successors = Collections.unmodifiableList(new ArrayList<Job>(successors));
         if (this.successors.contains(null)) {
             throw new IllegalStateException("Cannot have null as a successor!");
         }
         this.recursiveSuccessors = Collections
                 .unmodifiableList(new ArrayList<Job>(Job.countSuccessorsRecursively(this)));
+        // update predecessor info
+        for (final Job j : successors) {
+            j.isPreceededBy(this);
+        }
+        // prepare job modes
         for (final JobMode m : modes) {
             m.setParentJob(this);
             this.jobModes.put(m.getId(), m);
@@ -72,12 +80,20 @@ public class Job {
         return this.parentProject;
     }
 
+    public Collection<Job> getPredecessors() {
+        return Collections.unmodifiableCollection(this.predecessors);
+    }
+
     public List<Job> getRecursiveSuccessors() {
         return this.recursiveSuccessors;
     }
 
     public List<Job> getSuccessors() {
         return this.successors;
+    }
+
+    private void isPreceededBy(final Job j) {
+        this.predecessors.add(j);
     }
 
     public boolean isSink() {

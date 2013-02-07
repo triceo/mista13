@@ -3,7 +3,6 @@ package org.drools.planner.examples.mista2013.solver.score.util;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,14 +19,12 @@ public class PrecedenceRelationsTracker {
     private class PerProjectTracker {
 
         private final Map<Job, Allocation> allocations;
-        private final Map<Job, Set<Job>> predecessors;
         private final Map<Job, Integer> cache;
         private final Set<Job> dirtyJobs;
         private int totalCachedResult = 0;
 
         public PerProjectTracker(final int numJobs) {
             this.allocations = new LinkedHashMap<Job, Allocation>(numJobs);
-            this.predecessors = new LinkedHashMap<Job, Set<Job>>(numJobs);
             this.cache = new LinkedHashMap<Job, Integer>(numJobs);
             this.dirtyJobs = new HashSet<Job>(numJobs);
         }
@@ -35,17 +32,9 @@ public class PrecedenceRelationsTracker {
         public void add(final Allocation a) {
             final Job current = a.getJob();
             this.allocations.put(current, a);
-            // retrieve existing predecessors
-            if (!this.predecessors.containsKey(current)) {
-                this.predecessors.put(current, new LinkedHashSet<Job>());
-            }
-            final Set<Job> predecessors = this.predecessors.get(current);
             // find all predecessors
-            for (final Job j : this.allocations.keySet()) {
-                if (j.getSuccessors().contains(current)) {
-                    predecessors.add(j);
-                    this.invalidateCache(j);
-                }
+            for (final Job predecessor : current.getPredecessors()) {
+                this.invalidateCache(predecessor);
             }
             // invalidate cache for all successors
             for (final Job j : current.getSuccessors()) {
@@ -111,15 +100,11 @@ public class PrecedenceRelationsTracker {
         public void remove(final Allocation a) {
             final Job current = a.getJob();
             this.allocations.remove(current);
-            for (final Job j : this.predecessors.remove(current)) {
+            for (final Job j : current.getPredecessors()) {
                 this.invalidateCache(j);
             }
             for (final Job j : current.getSuccessors()) {
-                final Collection<Job> predecessors = this.predecessors.get(j);
-                if (predecessors != null && predecessors.size() > 0) {
-                    predecessors.remove(current);
-                    this.invalidateCache(j);
-                }
+                this.invalidateCache(j);
             }
             this.invalidateCache(current);
         }
