@@ -17,6 +17,7 @@
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
+      <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
         <valueSelector>
           <variableName>jobMode</variableName>
@@ -27,16 +28,18 @@
           <variableName>startDate</variableName>
         </valueSelector>
       </changeMoveSelector>
+      <!--  This swaps start dates. It needn't care about job modes. -->
       <swapMoveSelector>
         <variableNameInclude>startDate</variableNameInclude>
       </swapMoveSelector>
+      <!--  This swaps job modes. Job modes can only be swapped within the same job. -->
       <swapMoveSelector>
         <filterClass>org.drools.planner.examples.mista2013.solver.move.InJobSwapMoveFilter</filterClass>
         <variableNameInclude>jobMode</variableNameInclude>
       </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <lateAcceptanceSize>125000</lateAcceptanceSize>
+      <lateAcceptanceSize>100000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <minimalAcceptedSelection>64</minimalAcceptedSelection>

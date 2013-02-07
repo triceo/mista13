@@ -30,7 +30,7 @@
   </inheritedSolverBenchmark>
 
 <#list [64, 128, 192, 256] as minimalAcceptedSelection>
-<#list [25000, 50000, 75000, 100000, 125000] as lateAcceptance>
+<#list [75000, 100000, 125000, 150000] as lateAcceptance>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>
@@ -49,6 +49,13 @@
             <variableName>startDate</variableName>
           </valueSelector>
         </changeMoveSelector>
+        <swapMoveSelector>
+          <variableNameInclude>startDate</variableNameInclude>
+        </swapMoveSelector>
+        <swapMoveSelector>
+          <filterClass>org.drools.planner.examples.mista2013.solver.move.InJobSwapMoveFilter</filterClass>
+          <variableNameInclude>jobMode</variableNameInclude>
+        </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
