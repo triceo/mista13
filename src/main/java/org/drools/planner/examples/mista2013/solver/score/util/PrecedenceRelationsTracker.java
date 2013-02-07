@@ -69,20 +69,18 @@ public class PrecedenceRelationsTracker {
         }
 
         private int countBrokenPrecedenceRelations(final Allocation currentAllocation) {
-            int total = 0;
             final Job currentJob = currentAllocation.getJob();
             final Project p = currentJob.getParentProject();
-            int recursiveSuccessors = currentJob.getRecursiveSuccessors().size();
             if (currentAllocation.getStartDate() < p.getReleaseDate()) {
                 // make sure we never start before we're allowed to
-                total += recursiveSuccessors;
+                return 1 + currentJob.getRecursiveSuccessors().size();
             }
+            int total = 0;
             final int currentDoneBy = currentAllocation.getDueDate();
             for (final Job succeedingJob : currentJob.getSuccessors()) {
                 if (succeedingJob.isSink()) {
                     continue;
                 }
-                // find its successors
                 final Allocation succeedingAllocation = this.allocations.get(succeedingJob);
                 if (succeedingAllocation == null) {
                     continue;
@@ -92,8 +90,12 @@ public class PrecedenceRelationsTracker {
                     /*
                      * successor starts before its predecessor ends
                      */
-                    total += recursiveSuccessors;
+                    total += Math.max(1, succeedingJob.getRecursiveSuccessors().size());
                 }
+            }
+            // if the successors are broken, then also count this one as broken
+            if (total > 0) {
+                total++;
             }
             return total;
         }
