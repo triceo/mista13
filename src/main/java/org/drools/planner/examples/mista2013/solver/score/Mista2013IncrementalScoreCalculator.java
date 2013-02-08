@@ -244,13 +244,14 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     public void resetWorkingSolution(final Mista2013 workingSolution) {
         // change to the new problem
         this.problem = workingSolution.getProblem();
+        final Collection<Project> projects = this.problem.getProjects();
         this.maxDueDateGlobal = Integer.MIN_VALUE;
-        for (final Project p : this.problem.getProjects()) {
+        for (final Project p : projects) {
             this.maxDueDatesPerProject.put(p, this.maxDueDateGlobal);
         }
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
-        this.nonRenewableResourceUsage = new HashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
-        this.precedenceRelations = new PrecedenceRelationsTracker(this.problem.getProjects());
+        this.nonRenewableResourceUsage = new HashMap<Resource, Integer>(projects.size() * 4);
+        this.precedenceRelations = new PrecedenceRelationsTracker(projects);
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
         final int size = allocationsToProcess.size();
