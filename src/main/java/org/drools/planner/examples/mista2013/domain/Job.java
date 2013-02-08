@@ -3,10 +3,8 @@ package org.drools.planner.examples.mista2013.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Job {
@@ -27,13 +25,13 @@ public class Job {
     private final int id;
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
-    private final Map<Integer, JobMode> jobModes = new HashMap<Integer, JobMode>();
+    private final List<JobMode> jobModes;
     private Project parentProject;
     private final boolean isSource;
 
     private final boolean isSink;
 
-    private final Collection<Job> predecessors = new HashSet<Job>();
+    private Set<Job> predecessors = new HashSet<Job>();
 
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
         this(id, modes, successors, JobType.STANDARD);
@@ -49,14 +47,16 @@ public class Job {
         this.recursiveSuccessors = Collections
                 .unmodifiableList(new ArrayList<Job>(Job.countSuccessorsRecursively(this)));
         // update predecessor info
-        for (final Job j : successors) {
+        for (final Job j : this.successors) {
             j.isPreceededBy(this);
         }
         // prepare job modes
+        final List<JobMode> jobModes = new ArrayList<JobMode>();
         for (final JobMode m : modes) {
             m.setParentJob(this);
-            this.jobModes.put(m.getId(), m);
+            jobModes.add(m.getId() - 1, m);
         }
+        this.jobModes = Collections.unmodifiableList(jobModes);
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
     }
@@ -66,14 +66,14 @@ public class Job {
     }
 
     public JobMode getJobMode(final int id) {
-        if (!this.jobModes.containsKey(id)) {
+        if (id < 1 || id > this.jobModes.size()) {
             throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
         }
-        return this.jobModes.get(id);
+        return this.jobModes.get(id - 1);
     }
 
     public Collection<JobMode> getJobModes() {
-        return Collections.unmodifiableCollection(this.jobModes.values());
+        return this.jobModes;
     }
 
     public Project getParentProject() {
@@ -81,7 +81,7 @@ public class Job {
     }
 
     public Collection<Job> getPredecessors() {
-        return Collections.unmodifiableCollection(this.predecessors);
+        return this.predecessors;
     }
 
     public List<Job> getRecursiveSuccessors() {
@@ -93,7 +93,9 @@ public class Job {
     }
 
     private void isPreceededBy(final Job j) {
-        this.predecessors.add(j);
+        final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
+        predecessors.add(j);
+        this.predecessors = Collections.unmodifiableSet(predecessors);
     }
 
     public boolean isSink() {
