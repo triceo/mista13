@@ -110,19 +110,19 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
 
     @Override
     public HardMediumSoftScore calculateScore() {
-        // requirements (4) and (6) won't be validated, as planner does that
-        final int brokenHard1and3 = this.renewableResourceUsage.countResourceOveruse();
-        final int brokenHard2 = this.getOverutilizedNonRenewableResourcesCount();
-        final int brokenHard7 = this.precedenceRelations.countBrokenPrecedenceRelations();
         /*
-         * the following vars are always recalculated; but they come from cached
-         * values, so it brings near zero overhead.
+         * validate MISTA requirements. Requirements (4) and (6) won't be
+         * validated, as planner does that for us.
          */
-        final int brokenHard5 = this.getHorizonOverrunCount();
-        final int medium = this.getTotalProjectDelay();
+        final int brokenReq1and3Count = this.renewableResourceUsage.countResourceOveruse();
+        final int brokenReq2Count = this.getOverutilizedNonRenewableResourcesCount();
+        final int brokenReq5Count = this.getHorizonOverrunCount();
+        final int brokenReq7Count = this.precedenceRelations.countBrokenPrecedenceRelations();
+        // now assemble the constraints
         final int soft = this.getTotalMakespan();
-        final int brokenTotal = brokenHard1and3 + brokenHard2 + brokenHard5 + brokenHard7;
-        return HardMediumSoftScore.valueOf(-brokenTotal, -medium, -soft);
+        final int medium = this.getTotalProjectDelay();
+        final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq5Count + brokenReq7Count;
+        return HardMediumSoftScore.valueOf(-hard, -medium, -soft);
     }
 
     private void decreaseNonRenewableResourceUsage(final Allocation a) {
