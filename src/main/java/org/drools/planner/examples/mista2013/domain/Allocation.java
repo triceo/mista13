@@ -16,7 +16,7 @@ public class Allocation {
     private final Job job;
     private JobMode jobMode;
     private Integer startDate;
-    private Integer dueDate;
+    private int dueDate;
 
     private boolean isJobModeSet = false;
 
@@ -66,20 +66,23 @@ public class Allocation {
         return this.isJobModeSet && this.isStartDateSet;
     }
 
+    private void setDueDate(final Integer startDate, final JobMode jm) {
+        if (!this.isInitialized()) {
+            return;
+        }
+        this.dueDate = startDate + (jm.getDuration() - 1);
+    }
+
     public void setJobMode(final JobMode jobMode) {
         this.isJobModeSet = (jobMode != null);
         this.jobMode = jobMode;
-        if (this.isInitialized()) {
-            this.dueDate = this.getStartDate() + this.jobMode.getDuration() - 1;
-        }
+        this.setDueDate(this.getStartDate(), this.jobMode);
     }
 
     public void setStartDate(final Integer startDate) {
         this.isStartDateSet = (startDate != null);
         this.startDate = startDate;
-        if (this.isInitialized()) {
-            this.dueDate = this.getStartDate() + this.jobMode.getDuration() - 1;
-        }
+        this.setDueDate(this.getStartDate(), this.jobMode);
     }
 
     @Override

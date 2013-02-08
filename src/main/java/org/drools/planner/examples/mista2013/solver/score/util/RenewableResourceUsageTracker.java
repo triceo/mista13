@@ -39,7 +39,7 @@ public class RenewableResourceUsageTracker {
                 // this class only tracks renewables
                 continue;
             }
-            final int resourceRequirement = entry.getValue();
+            final Integer resourceRequirement = entry.getValue();
             if (resourceRequirement == 0) {
                 // doesn't change anything, don't track it
                 continue;
@@ -97,7 +97,7 @@ public class RenewableResourceUsageTracker {
                  */
                 for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
                     final Resource r = entry.getKey();
-                    final int use = entry.getValue();
+                    final Integer use = entry.getValue();
                     // avoid containsKey(r)
                     Integer newTotalUse = totalUse.get(r);
                     newTotalUse = use + ((newTotalUse == null) ? 0 : newTotalUse);
@@ -154,7 +154,7 @@ public class RenewableResourceUsageTracker {
             // subtract the current resource use from the totals
             for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
                 final Resource r = entry.getKey();
-                final int use = entry.getValue();
+                final Integer use = entry.getValue();
                 totalUse.put(r, totalUse.get(r) - use);
             }
             this.invalidateCache(time);
