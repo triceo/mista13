@@ -55,23 +55,9 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return maxDueDate;
     }
 
-    private static int findMinReleaseDate(final ProblemInstance instance) {
-        int minReleaseDate = Integer.MAX_VALUE;
-        for (final Project p : instance.getProjects()) {
-            minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
-        }
-        return minReleaseDate;
-    }
-
     private ProblemInstance problem = null;
 
     private Map<Job, Allocation> allocationsPerJob;
-
-    /**
-     * Cached minimal release date for all the problem instance's projects. This
-     * only changes when the problem instance changes.
-     */
-    private int minReleaseDate = 0;
 
     private int maxDueDateGlobal = Integer.MIN_VALUE;
 
@@ -203,7 +189,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * running. due date of a project is the time after the last job
          * finishes, hence +1.
          */
-        return (this.maxDueDateGlobal + 1) - this.minReleaseDate;
+        return (this.maxDueDateGlobal + 1) - this.problem.getMinReleaseDate();
     }
 
     private int getTotalProjectDelay() {
@@ -262,7 +248,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         for (final Project p : this.problem.getProjects()) {
             this.maxDueDatesPerProject.put(p, this.maxDueDateGlobal);
         }
-        this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
         this.nonRenewableResourceUsage = new HashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
         this.precedenceRelations = new PrecedenceRelationsTracker(this.problem.getProjects());

@@ -11,6 +11,7 @@ public class ProblemInstance {
     private final List<Project> projects;
     private final int maxDuration;
     private final int maxStartDate;
+    private final int minReleaseDate;
 
     private final int horizonUpperBound;
 
@@ -40,6 +41,12 @@ public class ProblemInstance {
         this.maxStartDate = maxStartDate;
         this.maxDuration = maxDuration;
         this.horizonUpperBound = horizonUpperBound;
+        // find minimum release date
+        int minReleaseDate = Integer.MAX_VALUE;
+        for (final Project p : projects) {
+            minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
+        }
+        this.minReleaseDate = minReleaseDate;
         // only do this after the upper bound is known
         final List<Project> tmp = new ArrayList<Project>();
         for (final Project p : projects) {
@@ -60,6 +67,10 @@ public class ProblemInstance {
 
     public int getMaxAllowedDueDate() {
         return this.maxStartDate + this.maxDuration;
+    }
+
+    public int getMinReleaseDate() {
+        return this.minReleaseDate;
     }
 
     public List<Project> getProjects() {
