@@ -89,24 +89,6 @@ public class Project {
         return this.resources;
     }
 
-    public Job getSink() {
-        for (final Job j : this.jobs) {
-            if (j.isSink()) {
-                return j;
-            }
-        }
-        throw new IllegalStateException("Project has no sink!");
-    }
-
-    public Job getSource() {
-        for (final Job j : this.jobs) {
-            if (j.isSource()) {
-                return j;
-            }
-        }
-        throw new IllegalStateException("Project has no source!");
-    }
-
     public int getTardinessCost() {
         return this.tardinessCost;
     }
