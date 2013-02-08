@@ -3,6 +3,7 @@ package org.drools.planner.examples.mista2013.solver.score.util;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class RenewableResourceUsageTracker {
      */
     private static Map<Resource, Integer> prepareResourceRequirements(
             final Map<Resource, Integer> originalResourceRequirements) {
-        final Map<Resource, Integer> resourceRequirements = new HashMap<Resource, Integer>();
+        final Map<Resource, Integer> resourceRequirements = new LinkedHashMap<Resource, Integer>();
         for (final Map.Entry<Resource, Integer> entry : originalResourceRequirements.entrySet()) {
             final Resource r = entry.getKey();
             if (!r.isRenewable()) {
@@ -89,7 +90,7 @@ public class RenewableResourceUsageTracker {
                  * there is no resource use yet, use the current job mode as
                  * base
                  */
-                this.resourceUseInTime[time] = new HashMap<Resource, Integer>(currentUse);
+                this.resourceUseInTime[time] = new LinkedHashMap<Resource, Integer>(currentUse);
             } else {
                 /*
                  * update the total resource use with the resource use of this
@@ -111,7 +112,7 @@ public class RenewableResourceUsageTracker {
 
     public int countResourceOveruse() {
         for (final int time : this.invalidCaches) {
-            int cache = this.countResourceOveruseInTime(time);
+            final int cache = this.countResourceOveruseInTime(time);
             this.usageCache[time] = cache;
             this.totalCachedResult += cache;
         }
