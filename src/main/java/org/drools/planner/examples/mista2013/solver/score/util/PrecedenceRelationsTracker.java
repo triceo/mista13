@@ -1,8 +1,8 @@
 package org.drools.planner.examples.mista2013.solver.score.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,8 +24,8 @@ public class PrecedenceRelationsTracker {
         private int totalCachedResult = 0;
 
         public PerProjectTracker(final int numJobs) {
-            this.allocations = new LinkedHashMap<Job, Allocation>(numJobs);
-            this.cache = new LinkedHashMap<Job, Integer>(numJobs);
+            this.allocations = new HashMap<Job, Allocation>(numJobs);
+            this.cache = new HashMap<Job, Integer>(numJobs);
             this.dirtyJobs = new HashSet<Job>(numJobs);
         }
 
@@ -119,8 +119,8 @@ public class PrecedenceRelationsTracker {
     private int totalCachedResult = 0;
 
     public PrecedenceRelationsTracker(final Collection<Project> projects) {
-        this.trackers = new LinkedHashMap<Project, PerProjectTracker>(projects.size());
-        this.cache = new LinkedHashMap<Project, Integer>(projects.size());
+        this.trackers = new HashMap<Project, PerProjectTracker>(projects.size());
+        this.cache = new HashMap<Project, Integer>(projects.size());
         this.dirtyProjects = new HashSet<Project>(projects.size());
     }
 

@@ -2,7 +2,6 @@ package org.drools.planner.examples.mista2013.solver.score;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
@@ -265,12 +264,12 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         }
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
-        this.nonRenewableResourceUsage = new LinkedHashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
+        this.nonRenewableResourceUsage = new HashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
         this.precedenceRelations = new PrecedenceRelationsTracker(this.problem.getProjects());
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
         final int size = allocationsToProcess.size();
-        this.allocationsPerJob = new LinkedHashMap<Job, Allocation>(size);
+        this.allocationsPerJob = new HashMap<Job, Allocation>(size);
         for (final Allocation a : allocationsToProcess) {
             this.insert(a);
         }
