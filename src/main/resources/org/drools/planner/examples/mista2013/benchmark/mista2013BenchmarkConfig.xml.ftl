@@ -14,6 +14,8 @@
       <inputSolutionFile>data/mista2013/input/A-9.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
+      <problemStatisticType>BEST_SOLUTION_CHANGED</problemStatisticType>
+      <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
     </problemBenchmarks>
     <solver>
       <solutionClass>org.drools.planner.examples.mista2013.domain.Mista2013</solutionClass>
@@ -29,8 +31,8 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [64, 128, 192, 256] as minimalAcceptedSelection>
-<#list [75000, 100000, 125000, 150000] as lateAcceptance>
+<#list [32, 64, 96] as minimalAcceptedSelection>
+<#list [5000, 25000, 50000, 75000, 100000] as lateAcceptance>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>

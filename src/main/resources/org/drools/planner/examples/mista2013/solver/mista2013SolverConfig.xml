@@ -39,7 +39,7 @@
       </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <lateAcceptanceSize>100000</lateAcceptanceSize>
+      <lateAcceptanceSize>75000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <minimalAcceptedSelection>64</minimalAcceptedSelection>

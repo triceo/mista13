@@ -7,9 +7,10 @@ import java.util.List;
 
 public class Project {
 
-    private static Collection<Integer> getStartDates(final int start, final int end) {
+    private static Collection<Integer> getStartDates(final int start, final double rawEnd) {
+        final int end = (int) Math.ceil(rawEnd);
         final Collection<Integer> startDates = new LinkedHashSet<Integer>();
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i < end; i++) {
             startDates.add(i);
         }
         return Collections.unmodifiableCollection(startDates);
@@ -29,10 +30,12 @@ public class Project {
 
     private final List<Job> jobs;
 
+    private static final double HORIZON_MULTIPLIER = 2;
+
     private final int criticalPathDuration;
     private ProblemInstance parentInstance;
 
-    private Collection<Integer> startDates;
+    private final Collection<Integer> startDates;
 
     public Project(final int id, final int criticalPathDuration, final int horizon, final int releaseDate,
             final int dueDate, final int tardinessCost, final List<Resource> resources, final List<Job> jobs) {
@@ -47,7 +50,7 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getHorizon());
+        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getHorizon() * Project.HORIZON_MULTIPLIER);
     }
 
     public Collection<Integer> getAvailableJobStartDates() {
@@ -111,9 +114,6 @@ public class Project {
     protected void setParentInstance(final ProblemInstance parent) {
         if (this.parentInstance == null) {
             this.parentInstance = parent;
-            // and now that we have a better information on the project horizon,
-            // let's recalculate it
-            this.startDates = Project.getStartDates(this.getReleaseDate(), parent.getHorizonUpperBound());
         } else {
             throw new IllegalStateException("Cannot override job's parent instance.");
         }

@@ -264,7 +264,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             this.maxDueDatesPerProject.put(p, this.maxDueDateGlobal);
         }
         this.minReleaseDate = Mista2013IncrementalScoreCalculator.findMinReleaseDate(this.problem);
-        this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getTheoreticalMaximumDueDate());
+        this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
         this.nonRenewableResourceUsage = new LinkedHashMap<Resource, Integer>(this.problem.getProjects().size() * 4);
         this.precedenceRelations = new PrecedenceRelationsTracker(this.problem.getProjects());
         // insert new entities
