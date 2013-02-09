@@ -2,7 +2,6 @@ package org.drools.planner.examples.mista2013.app;
 
 import org.drools.planner.config.XmlSolverFactory;
 import org.drools.planner.core.Solver;
-import org.drools.planner.core.solution.Solution;
 import org.drools.planner.examples.common.app.CommonApp;
 import org.drools.planner.examples.common.persistence.AbstractSolutionExporter;
 import org.drools.planner.examples.common.persistence.AbstractSolutionImporter;
@@ -11,19 +10,9 @@ import org.drools.planner.examples.common.swingui.SolutionPanel;
 import org.drools.planner.examples.mista2013.persistence.Mista2013DaoImpl;
 import org.drools.planner.examples.mista2013.persistence.Mista2013SolutionExporter;
 import org.drools.planner.examples.mista2013.persistence.Mista2013SolutionImporter;
+import org.drools.planner.examples.mista2013.swingui.GanttPanel;
 
 public class Mista2013App extends CommonApp {
-
-    private static class Mista2013Panel extends SolutionPanel {
-
-        private static final long serialVersionUID = 715134566331129797L;
-
-        @Override
-        public void resetPanel(@SuppressWarnings("rawtypes") final Solution solution) {
-            // do nothing
-        }
-
-    }
 
     public static final String SOLVER_CONFIG = "/org/drools/planner/examples/mista2013/solver/mista2013SolverConfig.xml";
 
@@ -49,7 +38,7 @@ public class Mista2013App extends CommonApp {
 
     @Override
     protected SolutionPanel createSolutionPanel() {
-        return new Mista2013Panel();
+        return new GanttPanel();
     }
 
     @Override
