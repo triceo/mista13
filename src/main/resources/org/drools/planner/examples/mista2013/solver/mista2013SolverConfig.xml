@@ -32,11 +32,6 @@
       <swapMoveSelector>
         <variableNameInclude>startDate</variableNameInclude>
       </swapMoveSelector>
-      <!--  This swaps job modes. Job modes can only be swapped within the same job. -->
-      <swapMoveSelector>
-        <filterClass>org.drools.planner.examples.mista2013.solver.move.InJobSwapMoveFilter</filterClass>
-        <variableNameInclude>jobMode</variableNameInclude>
-      </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
       <lateAcceptanceSize>75000</lateAcceptanceSize>

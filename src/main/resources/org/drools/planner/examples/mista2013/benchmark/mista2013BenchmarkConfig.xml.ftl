@@ -54,10 +54,6 @@
         <swapMoveSelector>
           <variableNameInclude>startDate</variableNameInclude>
         </swapMoveSelector>
-        <swapMoveSelector>
-          <filterClass>org.drools.planner.examples.mista2013.solver.move.InJobSwapMoveFilter</filterClass>
-          <variableNameInclude>jobMode</variableNameInclude>
-        </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
