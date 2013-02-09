@@ -88,14 +88,13 @@ public class PrecedenceRelationsTracker {
         }
 
         private void invalidateCache(final Job j) {
-            if (!this.allocations.containsKey(j)) {
-                return;
-            }
             final Integer cache = this.cache.remove(j);
             if (cache != null) {
                 this.totalCachedResult -= cache;
             }
-            this.dirtyJobs.add(j);
+            if (this.allocations.containsKey(j)) {
+                this.dirtyJobs.add(j);
+            }
         }
 
         public void remove(final Allocation a) {
