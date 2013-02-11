@@ -7,15 +7,15 @@ import org.drools.planner.examples.mista2013.domain.Allocation;
 public class AllocationComparator implements Comparator<Allocation> {
 
     @Override
-    public int compare(Allocation o1, Allocation o2) {
-        int s1 = o1.getJob().getRecursiveSuccessors().size();
-        int s2 = o1.getJob().getRecursiveSuccessors().size();
+    public int compare(final Allocation o1, final Allocation o2) {
+        final int s1 = o1.getJob().getRecursiveSuccessors().size();
+        final int s2 = o2.getJob().getRecursiveSuccessors().size();
         if (s1 < s2) {
             return -1;
-        } else if (s1 > s2) {
-            return 1;
-        } else {
+        } else if (s1 == s2) {
             return 0;
+        } else {
+            return 1;
         }
     }
 
