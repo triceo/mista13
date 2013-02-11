@@ -50,7 +50,7 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getHorizon() * Project.HORIZON_MULTIPLIER);
+        this.startDates = Project.getStartDates(0, this.getHorizon() * Project.HORIZON_MULTIPLIER);
     }
 
     public Collection<Integer> getAvailableJobStartDates() {
