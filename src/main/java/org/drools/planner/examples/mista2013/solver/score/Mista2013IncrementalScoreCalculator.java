@@ -111,17 +111,16 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     @Override
     public HardMediumSoftScore calculateScore() {
         /*
-         * validate MISTA requirements. Requirements (4) and (6) won't be
+         * validate MISTA requirements. Requirements (4, 5, 6) won't be
          * validated, as planner does that for us.
          */
         final int brokenReq1and3Count = this.renewableResourceUsage.countResourceOveruse();
         final int brokenReq2Count = this.getOverutilizedNonRenewableResourcesCount();
-        final int brokenReq5Count = this.getHorizonOverrunCount();
         final int brokenReq7Count = this.precedenceRelations.countBrokenPrecedenceRelations();
         // now assemble the constraints
         final int soft = this.getTotalMakespan();
         final int medium = this.getTotalProjectDelay();
-        final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq5Count + brokenReq7Count;
+        final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq7Count;
         return HardMediumSoftScore.valueOf(-hard, -medium, -soft);
     }
 
@@ -137,21 +136,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
             }
             this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) - value);
         }
-    }
-
-    /**
-     * Validates feasibility requirement (5).
-     * 
-     * @return How many projects have overrun their horizon.
-     */
-    private int getHorizonOverrunCount() {
-        int total = 0;
-        for (final Project p : this.problem.getProjects()) {
-            if (this.maxDueDatesPerProject.get(p) > this.problem.getHorizonUpperBound()) {
-                total++;
-            }
-        }
-        return total;
     }
 
     private int getMakespan(final Project p) {
