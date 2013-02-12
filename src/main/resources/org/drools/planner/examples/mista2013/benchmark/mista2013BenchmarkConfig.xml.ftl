@@ -37,7 +37,7 @@
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
+        <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
