@@ -49,9 +49,7 @@ public class GanttPanel extends SolutionPanel {
 
     private static Date date(final int day) {
         final DateTime dt = new DateTime().plusDays(day);
-        final Calendar c = Calendar.getInstance();
-        c.set(dt.getYear(), dt.getMonthOfYear(), dt.getDayOfMonth());
-        return c.getTime();
+        return dt.toDate();
     }
 
     public GanttPanel() {
