@@ -1,7 +1,10 @@
-target/
-.settings
-.classpath
-.project
-.idea
-*.iml
-local
+/target
+/local
+
+# Eclipse, Netbeans and IntelliJ files
+/.*
+!.gitignore
+/nbproject
+/*.ipr
+/*.iws
+/*.iml
