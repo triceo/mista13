@@ -11,8 +11,8 @@ import org.drools.planner.examples.mista2013.domain.Job;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
-import org.drools.planner.examples.mista2013.domain.Resource;
 import org.drools.planner.examples.mista2013.solver.score.util.MaxDueDateTracker;
+import org.drools.planner.examples.mista2013.solver.score.util.NonRenewableResourceUsageTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.PrecedenceRelationsTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.RenewableResourceUsageTracker;
 
@@ -24,7 +24,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private Map<Job, Allocation> allocationsPerJob;
 
     private RenewableResourceUsageTracker renewableResourceUsage;
-    private Map<Resource, Integer> nonRenewableResourceUsage;
+    private NonRenewableResourceUsageTracker nonRenewableResourceUsage;
 
     private PrecedenceRelationsTracker precedenceRelations;
 
@@ -75,27 +75,13 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * validated, as planner does that for us.
          */
         final int brokenReq1and3Count = this.renewableResourceUsage.getSumOfOverusedResources();
-        final int brokenReq2Count = this.getOverutilizedNonRenewableResourcesCount();
+        final int brokenReq2Count = this.nonRenewableResourceUsage.getSumOfOverusedResources();
         final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsCount();
         // now assemble the constraints
         final int soft = this.getTotalMakespan();
         final int medium = this.getTotalProjectDelay();
         final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq7Count;
         return HardMediumSoftScore.valueOf(-hard, -medium, -soft);
-    }
-
-    private void decreaseNonRenewableResourceUsage(final Allocation a) {
-        for (final Map.Entry<Resource, Integer> entry : a.getJobMode().getResourceRequirements().entrySet()) {
-            final Resource r = entry.getKey();
-            if (r.isRenewable()) {
-                continue;
-            }
-            final int value = entry.getValue();
-            if (value == 0) {
-                continue;
-            }
-            this.nonRenewableResourceUsage.put(r, this.nonRenewableResourceUsage.get(r) - value);
-        }
     }
 
     private int getMakespan(final Project p) {
@@ -105,22 +91,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * finishes, hence +1.
          */
         return (this.dueDates.getMaxDueDate(p) + 1) - p.getReleaseDate();
-    }
-
-    /**
-     * Validates feasibility requirement (2).
-     * 
-     * @return How many more non-renewable resources would we need than we have
-     *         capacity for.
-     */
-    private int getOverutilizedNonRenewableResourcesCount() {
-        int total = 0;
-        for (final Map.Entry<Resource, Integer> entry : this.nonRenewableResourceUsage.entrySet()) {
-            final Resource r = entry.getKey();
-            final int allocation = entry.getValue();
-            total += Math.max(0, allocation - r.getCapacity());
-        }
-        return total;
     }
 
     private int getProjectDelay(final Project p) {
@@ -144,34 +114,15 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return total;
     }
 
-    private void increaseNonRenewableResourceUsage(final Allocation a) {
-        for (final Map.Entry<Resource, Integer> entry : a.getJobMode().getResourceRequirements().entrySet()) {
-            final Resource r = entry.getKey();
-            if (r.isRenewable()) {
-                continue;
-            }
-            int value = entry.getValue();
-            if (value == 0) {
-                continue;
-            }
-            // slightly faster than containsKey(r)
-            final Integer previousValue = this.nonRenewableResourceUsage.get(r);
-            if (previousValue != null) {
-                value += previousValue;
-            }
-            this.nonRenewableResourceUsage.put(r, value);
-        }
-    }
-
     private void insert(final Allocation entity) {
         if (!entity.isInitialized()) {
             return;
         }
         this.allocationsPerJob.put(entity.getJob(), entity);
         this.renewableResourceUsage.add(entity);
+        this.nonRenewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
         this.dueDates.add(entity);
-        this.increaseNonRenewableResourceUsage(entity);
     }
 
     @Override
@@ -181,7 +132,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final Collection<Project> projects = this.problem.getProjects();
         this.dueDates = new MaxDueDateTracker(projects.size());
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
-        this.nonRenewableResourceUsage = new HashMap<Resource, Integer>(projects.size() * 4);
+        this.nonRenewableResourceUsage = new NonRenewableResourceUsageTracker();
         this.precedenceRelations = new PrecedenceRelationsTracker(projects);
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
@@ -198,8 +149,8 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         }
         this.allocationsPerJob.remove(entity.getJob());
         this.renewableResourceUsage.remove(entity);
+        this.nonRenewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
         this.dueDates.remove(entity);
-        this.decreaseNonRenewableResourceUsage(entity);
     }
 }
