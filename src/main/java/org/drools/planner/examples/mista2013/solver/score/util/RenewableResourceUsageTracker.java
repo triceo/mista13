@@ -2,10 +2,8 @@ package org.drools.planner.examples.mista2013.solver.score.util;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.math.IntRange;
 import org.drools.planner.examples.mista2013.domain.Allocation;
@@ -60,13 +58,7 @@ public class RenewableResourceUsageTracker {
     private final int[] usageCache;
 
     /**
-     * Times for which the {@link #countResourceOveruseInTime(int)} will need to
-     * be called.
-     */
-    private final Set<Integer> invalidCaches = new HashSet<Integer>();
-
-    /**
-     * Result of {@link #countResourceOveruse()} excluding those times that are
+     * Result of {@link #getSumOfOverusedResources()} excluding those times that are
      * in {@link #invalidCaches} which will need to be recalculated.
      */
     private int totalCachedResult = 0;
@@ -106,17 +98,11 @@ public class RenewableResourceUsageTracker {
                 }
             }
             // re-initialize cache
-            this.invalidateCache(time);
+            this.recache(time);
         }
     }
 
-    public int countResourceOveruse() {
-        for (final int time : this.invalidCaches) {
-            final int cache = this.countResourceOveruseInTime(time);
-            this.usageCache[time] = cache;
-            this.totalCachedResult += cache;
-        }
-        this.invalidCaches.clear();
+    public int getSumOfOverusedResources() {
         return this.totalCachedResult;
     }
 
@@ -135,13 +121,14 @@ public class RenewableResourceUsageTracker {
         return total;
     }
 
-    protected void invalidateCache(final int time) {
-        this.invalidCaches.add(time);
+    private void recache(final int time) {
         final int cache = this.usageCache[time];
         if (cache > 0) {
             this.totalCachedResult -= cache;
         }
-        this.usageCache[time] = -1;
+        final int broken = this.countResourceOveruseInTime(time);
+        this.usageCache[time] = broken;
+        this.totalCachedResult += broken;
     }
 
     public void remove(final Allocation a) {
@@ -158,7 +145,7 @@ public class RenewableResourceUsageTracker {
                 final Integer use = entry.getValue();
                 totalUse.put(r, totalUse.get(r) - use);
             }
-            this.invalidateCache(time);
+            this.recache(time);
         }
     }
 

@@ -114,7 +114,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * validate MISTA requirements. Requirements (4, 5, 6) won't be
          * validated, as planner does that for us.
          */
-        final int brokenReq1and3Count = this.renewableResourceUsage.countResourceOveruse();
+        final int brokenReq1and3Count = this.renewableResourceUsage.getSumOfOverusedResources();
         final int brokenReq2Count = this.getOverutilizedNonRenewableResourcesCount();
         final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsCount();
         // now assemble the constraints
