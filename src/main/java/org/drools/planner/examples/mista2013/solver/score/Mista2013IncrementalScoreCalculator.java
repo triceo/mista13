@@ -12,56 +12,16 @@ import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
 import org.drools.planner.examples.mista2013.domain.Resource;
+import org.drools.planner.examples.mista2013.solver.score.util.MaxDueDateTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.PrecedenceRelationsTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.RenewableResourceUsageTracker;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
-    /**
-     * Find maximum due date for any of the activities in a problem instance.
-     * This date (since we ignore project sink) is effectively equivalent to the
-     * end of last of the projects.
-     * 
-     * @return
-     */
-    private static int findMaxDueDate(final ProblemInstance problem, final Map<Project, Integer> maxDueDatesPerProject) {
-        int maxDueDate = Integer.MIN_VALUE;
-        for (final Project p : problem.getProjects()) {
-            maxDueDate = Math.max(maxDueDate, maxDueDatesPerProject.get(p));
-        }
-        return maxDueDate;
-    }
-
-    /**
-     * Find maximum due date for any of the activities in a given project. This
-     * date (since we ignore project sink) is effectively equivalent to the end
-     * of the project. This is very heavily used throughout the calculator,
-     * hence it includes result cache.
-     * 
-     * @return
-     */
-    private static int findMaxDueDate(final Project p, final Map<Job, Allocation> allocations) {
-        int maxDueDate = Integer.MIN_VALUE;
-        for (final Job j : p.getJobs()) {
-            if (j.isSource() || j.isSink()) {
-                continue;
-            }
-            final Allocation a = allocations.get(j);
-            if (a == null) {
-                continue;
-            }
-            maxDueDate = Math.max(maxDueDate, a.getDueDate());
-        }
-        return maxDueDate;
-    }
-
+    private MaxDueDateTracker dueDates;
     private ProblemInstance problem = null;
 
     private Map<Job, Allocation> allocationsPerJob;
-
-    private int maxDueDateGlobal = Integer.MIN_VALUE;
-
-    private final Map<Project, Integer> maxDueDatesPerProject = new HashMap<Project, Integer>();
 
     private RenewableResourceUsageTracker renewableResourceUsage;
     private Map<Resource, Integer> nonRenewableResourceUsage;
@@ -144,7 +104,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * running. due date of a project is the time after the last job
          * finishes, hence +1.
          */
-        return (this.maxDueDatesPerProject.get(p) + 1) - p.getReleaseDate();
+        return (this.dueDates.getMaxDueDate(p) + 1) - p.getReleaseDate();
     }
 
     /**
@@ -173,7 +133,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * running. due date of a project is the time after the last job
          * finishes, hence +1.
          */
-        return (this.maxDueDateGlobal + 1) - this.problem.getMinReleaseDate();
+        return (this.dueDates.getMaxDueDate() + 1) - this.problem.getMinReleaseDate();
     }
 
     private int getTotalProjectDelay() {
@@ -210,17 +170,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.allocationsPerJob.put(entity.getJob(), entity);
         this.renewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
-        // find new max due dates
-        final int newDueDate = entity.getDueDate();
-        final Project currentProject = entity.getJob().getParentProject();
-        final int currentProjectMaxDueDate = this.maxDueDatesPerProject.get(currentProject);
-        if (newDueDate > currentProjectMaxDueDate) {
-            this.maxDueDatesPerProject.put(currentProject, newDueDate);
-            if (newDueDate > this.maxDueDateGlobal) {
-                this.maxDueDateGlobal = newDueDate;
-            }
-        }
-        // cache non-renewable resource use
+        this.dueDates.add(entity);
         this.increaseNonRenewableResourceUsage(entity);
     }
 
@@ -229,10 +179,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         // change to the new problem
         this.problem = workingSolution.getProblem();
         final Collection<Project> projects = this.problem.getProjects();
-        this.maxDueDateGlobal = Integer.MIN_VALUE;
-        for (final Project p : projects) {
-            this.maxDueDatesPerProject.put(p, this.maxDueDateGlobal);
-        }
+        this.dueDates = new MaxDueDateTracker(projects.size());
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
         this.nonRenewableResourceUsage = new HashMap<Resource, Integer>(projects.size() * 4);
         this.precedenceRelations = new PrecedenceRelationsTracker(projects);
@@ -252,18 +199,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.allocationsPerJob.remove(entity.getJob());
         this.renewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
-        // find new due dates
-        final int currentDueDate = entity.getDueDate();
-        final Project currentProject = entity.getJob().getParentProject();
-        if (currentDueDate == this.maxDueDatesPerProject.get(currentProject)) {
-            this.maxDueDatesPerProject.put(currentProject,
-                    Mista2013IncrementalScoreCalculator.findMaxDueDate(currentProject, this.allocationsPerJob));
-            if (currentDueDate == this.maxDueDateGlobal) {
-                this.maxDueDateGlobal = Mista2013IncrementalScoreCalculator.findMaxDueDate(this.problem,
-                        this.maxDueDatesPerProject);
-            }
-        }
-        // update cache of non-renewable resource use
+        this.dueDates.remove(entity);
         this.decreaseNonRenewableResourceUsage(entity);
     }
 }
