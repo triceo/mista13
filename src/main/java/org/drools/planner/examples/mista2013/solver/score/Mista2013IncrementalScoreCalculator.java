@@ -1,16 +1,12 @@
 package org.drools.planner.examples.mista2013.solver.score;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.drools.planner.examples.mista2013.domain.Allocation;
-import org.drools.planner.examples.mista2013.domain.Job;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
-import org.drools.planner.examples.mista2013.domain.Project;
 import org.drools.planner.examples.mista2013.solver.score.util.NonRenewableResourceUsageTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.PrecedenceRelationsTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.ProjectPropertiesTracker;
@@ -19,9 +15,6 @@ import org.drools.planner.examples.mista2013.solver.score.util.RenewableResource
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
     private ProjectPropertiesTracker properties;
-    private ProblemInstance problem = null;
-
-    private Map<Job, Allocation> allocationsPerJob;
 
     private RenewableResourceUsageTracker renewableResourceUsage;
     private NonRenewableResourceUsageTracker nonRenewableResourceUsage;
@@ -88,7 +81,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!entity.isInitialized()) {
             return;
         }
-        this.allocationsPerJob.put(entity.getJob(), entity);
         this.renewableResourceUsage.add(entity);
         this.nonRenewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
@@ -98,16 +90,13 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
         // change to the new problem
-        this.problem = workingSolution.getProblem();
-        this.properties = new ProjectPropertiesTracker(this.problem);
-        final Collection<Project> projects = this.problem.getProjects();
-        this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
+        final ProblemInstance problem = workingSolution.getProblem();
+        this.properties = new ProjectPropertiesTracker(problem);
+        this.precedenceRelations = new PrecedenceRelationsTracker(problem.getProjects());
+        this.renewableResourceUsage = new RenewableResourceUsageTracker(problem.getMaxAllowedDueDate());
         this.nonRenewableResourceUsage = new NonRenewableResourceUsageTracker();
-        this.precedenceRelations = new PrecedenceRelationsTracker(projects);
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
-        final int size = allocationsToProcess.size();
-        this.allocationsPerJob = new HashMap<Job, Allocation>(size);
         for (final Allocation a : allocationsToProcess) {
             this.insert(a);
         }
@@ -117,7 +106,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!entity.isInitialized()) {
             return;
         }
-        this.allocationsPerJob.remove(entity.getJob());
         this.renewableResourceUsage.remove(entity);
         this.nonRenewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
