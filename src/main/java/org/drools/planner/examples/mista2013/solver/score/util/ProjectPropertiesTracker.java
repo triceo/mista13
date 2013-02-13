@@ -6,17 +6,22 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import org.drools.planner.examples.mista2013.domain.Allocation;
+import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
 
-public class MaxDueDateTracker {
+public class ProjectPropertiesTracker {
+
+    private final ProblemInstance problem;
 
     private final PriorityQueue<Integer> dueDates;
 
     private final Map<Project, PriorityQueue<Integer>> dueDatesPerProject;
 
-    public MaxDueDateTracker(final int projects) {
-        this.dueDates = new PriorityQueue<Integer>(projects, Collections.reverseOrder());
-        this.dueDatesPerProject = new HashMap<Project, PriorityQueue<Integer>>(projects);
+    public ProjectPropertiesTracker(final ProblemInstance problem) {
+        final int size = problem.getProjects().size();
+        this.problem = problem;
+        this.dueDates = new PriorityQueue<Integer>(size, Collections.reverseOrder());
+        this.dueDatesPerProject = new HashMap<Project, PriorityQueue<Integer>>(size);
     }
 
     public void add(final Allocation a) {
@@ -31,7 +36,16 @@ public class MaxDueDateTracker {
         this.dueDates.add(dueDate);
     }
 
-    public int getMaxDueDate() {
+    private int getMakespan(final Project p) {
+        /*
+         * due date for a task is the latest time when the task is still
+         * running. due date of a project is the time after the last job
+         * finishes, hence +1.
+         */
+        return (this.getMaxDueDate(p) + 1) - p.getReleaseDate();
+    }
+
+    private int getMaxDueDate() {
         if (this.dueDates.isEmpty()) {
             return Integer.MIN_VALUE;
         } else {
@@ -39,13 +53,34 @@ public class MaxDueDateTracker {
         }
     }
 
-    public int getMaxDueDate(final Project p) {
+    private int getMaxDueDate(final Project p) {
         final PriorityQueue<Integer> perProject = this.dueDatesPerProject.get(p);
         if (perProject == null || perProject.isEmpty()) {
             return Integer.MIN_VALUE;
         } else {
             return perProject.peek();
         }
+    }
+
+    private int getProjectDelay(final Project p) {
+        return this.getMakespan(p) - p.getCriticalPathDuration();
+    }
+
+    public int getTotalMakespan() {
+        /*
+         * due date for a task is the latest time when the task is still
+         * running. due date of a project is the time after the last job
+         * finishes, hence +1.
+         */
+        return (this.getMaxDueDate() + 1) - this.problem.getMinReleaseDate();
+    }
+
+    public int getTotalProjectDelay() {
+        int total = 0;
+        for (final Project p : this.problem.getProjects()) {
+            total += this.getProjectDelay(p);
+        }
+        return total;
     }
 
     public void remove(final Allocation a) {

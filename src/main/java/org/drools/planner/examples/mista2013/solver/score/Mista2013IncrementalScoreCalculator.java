@@ -11,14 +11,14 @@ import org.drools.planner.examples.mista2013.domain.Job;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
 import org.drools.planner.examples.mista2013.domain.Project;
-import org.drools.planner.examples.mista2013.solver.score.util.MaxDueDateTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.NonRenewableResourceUsageTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.PrecedenceRelationsTracker;
+import org.drools.planner.examples.mista2013.solver.score.util.ProjectPropertiesTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.RenewableResourceUsageTracker;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
-    private MaxDueDateTracker dueDates;
+    private ProjectPropertiesTracker properties;
     private ProblemInstance problem = null;
 
     private Map<Job, Allocation> allocationsPerJob;
@@ -78,40 +78,10 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenReq2Count = this.nonRenewableResourceUsage.getSumOfOverusedResources();
         final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsCount();
         // now assemble the constraints
-        final int soft = this.getTotalMakespan();
-        final int medium = this.getTotalProjectDelay();
+        final int soft = this.properties.getTotalMakespan();
+        final int medium = this.properties.getTotalProjectDelay();
         final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq7Count;
         return HardMediumSoftScore.valueOf(-hard, -medium, -soft);
-    }
-
-    private int getMakespan(final Project p) {
-        /*
-         * due date for a task is the latest time when the task is still
-         * running. due date of a project is the time after the last job
-         * finishes, hence +1.
-         */
-        return (this.dueDates.getMaxDueDate(p) + 1) - p.getReleaseDate();
-    }
-
-    private int getProjectDelay(final Project p) {
-        return this.getMakespan(p) - p.getCriticalPathDuration();
-    }
-
-    private int getTotalMakespan() {
-        /*
-         * due date for a task is the latest time when the task is still
-         * running. due date of a project is the time after the last job
-         * finishes, hence +1.
-         */
-        return (this.dueDates.getMaxDueDate() + 1) - this.problem.getMinReleaseDate();
-    }
-
-    private int getTotalProjectDelay() {
-        int total = 0;
-        for (final Project p : this.problem.getProjects()) {
-            total += this.getProjectDelay(p);
-        }
-        return total;
     }
 
     private void insert(final Allocation entity) {
@@ -122,15 +92,15 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.renewableResourceUsage.add(entity);
         this.nonRenewableResourceUsage.add(entity);
         this.precedenceRelations.add(entity);
-        this.dueDates.add(entity);
+        this.properties.add(entity);
     }
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
         // change to the new problem
         this.problem = workingSolution.getProblem();
+        this.properties = new ProjectPropertiesTracker(this.problem);
         final Collection<Project> projects = this.problem.getProjects();
-        this.dueDates = new MaxDueDateTracker(projects.size());
         this.renewableResourceUsage = new RenewableResourceUsageTracker(this.problem.getMaxAllowedDueDate());
         this.nonRenewableResourceUsage = new NonRenewableResourceUsageTracker();
         this.precedenceRelations = new PrecedenceRelationsTracker(projects);
@@ -151,6 +121,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.renewableResourceUsage.remove(entity);
         this.nonRenewableResourceUsage.remove(entity);
         this.precedenceRelations.remove(entity);
-        this.dueDates.remove(entity);
+        this.properties.remove(entity);
     }
 }
