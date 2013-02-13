@@ -2,7 +2,6 @@ package org.drools.planner.examples.mista2013.solver.score.util;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -112,51 +111,33 @@ public class PrecedenceRelationsTracker {
 
     private final Map<Project, PerProjectTracker> trackers;
 
-    private final Map<Project, Integer> cache;
-
-    private final Set<Project> dirtyProjects;
-
     private int totalCachedResult = 0;
 
     public PrecedenceRelationsTracker(final Collection<Project> projects) {
         this.trackers = new HashMap<Project, PerProjectTracker>(projects.size());
-        this.cache = new HashMap<Project, Integer>(projects.size());
-        this.dirtyProjects = new HashSet<Project>(projects.size());
     }
 
     public void add(final Allocation a) {
         final Project p = a.getJob().getParentProject();
-        PerProjectTracker prtpp = this.trackers.get(p);
-        if (prtpp == null) {
-            prtpp = new PerProjectTracker(p.getJobs().size());
-            this.trackers.put(p, prtpp);
+        PerProjectTracker inProject = this.trackers.get(p);
+        if (inProject == null) {
+            inProject = new PerProjectTracker(p.getJobs().size());
+            this.trackers.put(p, inProject);
         }
-        prtpp.add(a);
-        this.invalidateCache(p);
+        this.totalCachedResult -= inProject.countBrokenPrecedenceRelations();
+        inProject.add(a);
+        this.totalCachedResult += inProject.countBrokenPrecedenceRelations();
     }
 
-    public int countBrokenPrecedenceRelations() {
-        for (final Project p : this.dirtyProjects) {
-            final int cache = this.trackers.get(p).countBrokenPrecedenceRelations();
-            this.cache.put(p, cache);
-            this.totalCachedResult += cache;
-        }
-        this.dirtyProjects.clear();
+    public int getBrokenPrecedenceRelations() {
         return this.totalCachedResult;
-    }
-
-    private void invalidateCache(final Project p) {
-        final Integer cache = this.cache.remove(p);
-        if (cache != null) {
-            this.totalCachedResult -= cache;
-        }
-        this.dirtyProjects.add(p);
     }
 
     public void remove(final Allocation a) {
         final Project p = a.getJob().getParentProject();
-        final PerProjectTracker prtpp = this.trackers.get(p);
-        prtpp.remove(a);
-        this.invalidateCache(p);
+        final PerProjectTracker inProject = this.trackers.get(p);
+        this.totalCachedResult -= inProject.countBrokenPrecedenceRelations();
+        inProject.remove(a);
+        this.totalCachedResult += inProject.countBrokenPrecedenceRelations();
     }
 }

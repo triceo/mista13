@@ -116,7 +116,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          */
         final int brokenReq1and3Count = this.renewableResourceUsage.countResourceOveruse();
         final int brokenReq2Count = this.getOverutilizedNonRenewableResourcesCount();
-        final int brokenReq7Count = this.precedenceRelations.countBrokenPrecedenceRelations();
+        final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelations();
         // now assemble the constraints
         final int soft = this.getTotalMakespan();
         final int medium = this.getTotalProjectDelay();
