@@ -2,7 +2,8 @@ package org.drools.planner.examples.mista2013.solver.score;
 
 import java.util.Collection;
 
-import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
+import org.drools.planner.core.score.buildin.bendable.BendableScore;
+import org.drools.planner.core.score.buildin.bendable.BendableScoreDefinition;
 import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.drools.planner.examples.mista2013.domain.Allocation;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
@@ -60,9 +61,11 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     public void beforeVariableChanged(final Object entity, final String variableName) {
         this.retract((Allocation) entity);
     }
+    
+    private final BendableScoreDefinition scoreDefinition = new BendableScoreDefinition(1, 3);
 
     @Override
-    public HardMediumSoftScore calculateScore() {
+    public BendableScore calculateScore() {
         /*
          * validate MISTA requirements. Requirements (4, 5, 6) won't be
          * validated, as planner does that for us.
@@ -74,7 +77,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int soft = this.properties.getTotalMakespan();
         final int medium = this.properties.getTotalProjectDelay();
         final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq7Count;
-        return HardMediumSoftScore.valueOf(-hard, -medium, -soft);
+        return scoreDefinition.scoreValueOf(new int[] {-hard}, new int[] {-medium, -soft, 0});
     }
 
     private void insert(final Allocation entity) {

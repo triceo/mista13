@@ -7,12 +7,12 @@ import java.util.List;
 
 import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
 import org.drools.planner.api.domain.solution.PlanningSolution;
-import org.drools.planner.core.score.buildin.hardmediumsoft.HardMediumSoftScore;
+import org.drools.planner.core.score.buildin.bendable.BendableScore;
 import org.drools.planner.core.solution.Solution;
 import org.drools.planner.examples.mista2013.solver.solution.Mista2013SolutionCloner;
 
 @PlanningSolution(solutionCloner = Mista2013SolutionCloner.class)
-public class Mista2013 implements Solution<HardMediumSoftScore> {
+public class Mista2013 implements Solution<BendableScore> {
 
     private final ProblemInstance problem;
     private final Collection<Allocation> allocations;
@@ -20,7 +20,7 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
      * Much better for performance than HashMap.
      */
     private final Allocation[][] allocationsIndexed;
-    private HardMediumSoftScore score;
+    private BendableScore score;
 
     public Mista2013(final ProblemInstance input) {
         this.problem = input;
@@ -66,12 +66,12 @@ public class Mista2013 implements Solution<HardMediumSoftScore> {
     }
 
     @Override
-    public HardMediumSoftScore getScore() {
+    public BendableScore getScore() {
         return this.score;
     }
 
     @Override
-    public void setScore(final HardMediumSoftScore score) {
+    public void setScore(final BendableScore score) {
         this.score = score;
     }
 

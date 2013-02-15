@@ -5,7 +5,9 @@
   <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
 
   <scoreDirectorFactory>
-    <scoreDefinitionType>HARD_MEDIUM_SOFT</scoreDefinitionType>
+    <scoreDefinitionType>BENDABLE</scoreDefinitionType>
+    <bendableHardLevelCount>1</bendableHardLevelCount>
+    <bendableSoftLevelCount>3</bendableSoftLevelCount>
     <incrementalScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
   </scoreDirectorFactory>
   <termination>
