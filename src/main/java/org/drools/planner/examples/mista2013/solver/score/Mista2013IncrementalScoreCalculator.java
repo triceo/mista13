@@ -69,7 +69,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          */
         final int brokenReq1and3Count = this.renewableResourceUsage.getSumOfOverusedResources();
         final int brokenReq2Count = this.nonRenewableResourceUsage.getSumOfOverusedResources();
-        final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsCount();
+        final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsMeasure();
         // now assemble the constraints
         final int soft = this.properties.getTotalMakespan();
         final int medium = this.properties.getTotalProjectDelay();
@@ -92,7 +92,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         // change to the new problem
         final ProblemInstance problem = workingSolution.getProblem();
         this.properties = new ProjectPropertiesTracker(problem);
-        this.precedenceRelations = new PrecedenceRelationsTracker(problem.getProjects());
+        this.precedenceRelations = new PrecedenceRelationsTracker();
         this.renewableResourceUsage = new RenewableResourceUsageTracker(problem.getMaxAllowedDueDate());
         this.nonRenewableResourceUsage = new NonRenewableResourceUsageTracker();
         // insert new entities
