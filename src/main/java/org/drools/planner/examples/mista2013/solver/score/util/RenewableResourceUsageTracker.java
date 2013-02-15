@@ -14,44 +14,11 @@ import org.drools.planner.examples.mista2013.domain.Resource;
  */
 public class RenewableResourceUsageTracker {
 
-    /**
-     * Of all the resource requirements provided by the job, we don't care about
-     * non-renewables and also we don't care about resources with 0 consumption.
-     * They wouldn't have changed anything anyway. We exclude these resources,
-     * so that there's less iteration later when we're counting the resource
-     * use.
-     * 
-     * @param originalResourceRequirements
-     *            {@link JobMode#getResourceRequirements()}.
-     * @return Resource requirements without those useless for the purposes of
-     *         this class.
-     */
-    private static Map<Resource, Integer> prepareResourceRequirements(
-            final Map<Resource, Integer> originalResourceRequirements) {
-        final Map<Resource, Integer> resourceRequirements = new LinkedHashMap<Resource, Integer>();
-        for (final Map.Entry<Resource, Integer> entry : originalResourceRequirements.entrySet()) {
-            final Resource r = entry.getKey();
-            if (!r.isRenewable()) {
-                // this class only tracks renewables
-                continue;
-            }
-            final Integer resourceRequirement = entry.getValue();
-            if (resourceRequirement == 0) {
-                // doesn't change anything, don't track it
-                continue;
-            }
-            resourceRequirements.put(r, resourceRequirement);
-        }
-        return resourceRequirements;
-    }
+    private final Map<JobMode, Map<Resource, Integer>> resourceRequirementCache = new HashMap<JobMode, Map<Resource, Integer>>();
 
     @SuppressWarnings("rawtypes")
     private final Map[] resourceUseInTime;
 
-    /**
-     * Result of {@link #getSumOfOverusedResources()} excluding those times that
-     * are in {@link #invalidCaches} which will need to be recalculated.
-     */
     private int totalCachedResult = 0;
 
     public RenewableResourceUsageTracker(final int horizon) {
@@ -59,8 +26,7 @@ public class RenewableResourceUsageTracker {
     }
 
     public void add(final Allocation a) {
-        final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
-                .getJobMode().getResourceRequirements());
+        final Map<Resource, Integer> currentUse = this.prepareResourceRequirements(a.getJobMode());
         final int dueDate = a.getDueDate();
         final int startDate = a.getStartDate();
         for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
@@ -96,9 +62,42 @@ public class RenewableResourceUsageTracker {
         return this.totalCachedResult;
     }
 
+    /**
+     * Of all the resource requirements provided by the job, we don't care about
+     * non-renewables and also we don't care about resources with 0 consumption.
+     * They wouldn't have changed anything anyway. We exclude these resources,
+     * so that there's less iteration later when we're counting the resource
+     * use.
+     * 
+     * @param jobMode
+     *            The job mode of which the requirements are preprocessed.
+     * @return Resource requirements without those useless for the purposes of
+     *         this class.
+     */
+    private Map<Resource, Integer> prepareResourceRequirements(final JobMode jobMode) {
+        Map<Resource, Integer> requirements = this.resourceRequirementCache.get(jobMode);
+        if (requirements == null) {
+            requirements = new LinkedHashMap<Resource, Integer>();
+            for (final Map.Entry<Resource, Integer> entry : jobMode.getResourceRequirements().entrySet()) {
+                final Resource r = entry.getKey();
+                if (!r.isRenewable()) {
+                    // this class only tracks renewables
+                    continue;
+                }
+                final Integer resourceRequirement = entry.getValue();
+                if (resourceRequirement == 0) {
+                    // doesn't change anything, don't track it
+                    continue;
+                }
+                requirements.put(r, resourceRequirement);
+            }
+            this.resourceRequirementCache.put(jobMode, requirements);
+        }
+        return requirements;
+    }
+
     public void remove(final Allocation a) {
-        final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
-                .getJobMode().getResourceRequirements());
+        final Map<Resource, Integer> currentUse = this.prepareResourceRequirements(a.getJobMode());
         final int dueDate = a.getDueDate();
         final int startDate = a.getStartDate();
         // subtract the current resource use from the totals
