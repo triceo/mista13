@@ -43,9 +43,6 @@ public class PrecedenceRelationsTracker {
 
     private final Map<Job, Set<Job>> relations = new HashMap<Job, Set<Job>>();
 
-    public PrecedenceRelationsTracker() {
-    }
-
     public void add(final Allocation a) {
         final Job current = a.getJob();
         this.allocations.put(current, a);
@@ -65,13 +62,7 @@ public class PrecedenceRelationsTracker {
             return;
         }
         final Allocation fromAlloc = this.allocations.get(from);
-        if (fromAlloc == null) {
-            return;
-        }
         final Allocation toAlloc = this.allocations.get(to);
-        if (toAlloc == null) {
-            return;
-        }
         PrecedenceRelationsTracker.unrelate(from, to, this.relations);
         if (!PrecedenceRelationsTracker.isPrecedenceCorrect(fromAlloc, toAlloc)) {
             this.totalCachedResult -= PrecedenceRelationsTracker.getBrokenRelationValidation(to);
@@ -79,6 +70,9 @@ public class PrecedenceRelationsTracker {
     }
 
     private void formRelation(final Job from, final Job to) {
+        if (from.isSource() || to.isSink()) {
+            return;
+        }
         if (this.hasRelation(from, to)) {
             return;
         }
