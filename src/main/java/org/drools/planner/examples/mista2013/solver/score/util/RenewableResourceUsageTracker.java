@@ -1,13 +1,10 @@
 package org.drools.planner.examples.mista2013.solver.score.util;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.math.IntRange;
 import org.drools.planner.examples.mista2013.domain.Allocation;
-import org.drools.planner.examples.mista2013.domain.Job;
 import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Resource;
 
@@ -50,55 +47,53 @@ public class RenewableResourceUsageTracker {
 
     @SuppressWarnings("rawtypes")
     private final Map[] resourceUseInTime;
-    /**
-     * A cache of where jobs occur on the timeline.
-     */
-    private final Map<Job, IntRange> jobOccurrences = new HashMap<Job, IntRange>();
-
-    private final int[] usageCache;
 
     /**
-     * Result of {@link #getSumOfOverusedResources()} excluding those times that are
-     * in {@link #invalidCaches} which will need to be recalculated.
+     * Result of {@link #getSumOfOverusedResources()} excluding those times that
+     * are in {@link #invalidCaches} which will need to be recalculated.
      */
     private int totalCachedResult = 0;
 
     public RenewableResourceUsageTracker(final int horizon) {
         this.resourceUseInTime = new HashMap[horizon];
-        this.usageCache = new int[horizon];
-        Arrays.fill(this.usageCache, -1);
     }
 
     public void add(final Allocation a) {
-        final IntRange times = new IntRange(a.getStartDate().intValue(), a.getDueDate());
-        this.jobOccurrences.put(a.getJob(), times);
         final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
                 .getJobMode().getResourceRequirements());
-        for (int time = times.getMinimumInteger(); time <= times.getMaximumInteger(); time++) {
+        final int dueDate = a.getDueDate();
+        for (int time = a.getStartDate(); time <= dueDate; time++) {
             @SuppressWarnings("unchecked")
-            final Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
+            Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
             if (totalUse == null) {
                 /*
                  * there is no resource use yet, use the current job mode as
                  * base
                  */
-                this.resourceUseInTime[time] = new LinkedHashMap<Resource, Integer>(currentUse);
-            } else {
-                /*
-                 * update the total resource use with the resource use of this
-                 * job mode
-                 */
-                for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
-                    final Resource r = entry.getKey();
-                    final Integer use = entry.getValue();
-                    // avoid containsKey(r)
-                    Integer newTotalUse = totalUse.get(r);
-                    newTotalUse = use + ((newTotalUse == null) ? 0 : newTotalUse);
-                    totalUse.put(r, newTotalUse);
+                totalUse = new LinkedHashMap<Resource, Integer>();
+                this.resourceUseInTime[time] = totalUse;
+            }
+            /*
+             * update the total resource use with the resource use of this job
+             * mode
+             */
+            for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
+                final Resource r = entry.getKey();
+                final int use = entry.getValue();
+                // avoid containsKey(r)
+                Integer currentTotalUseTmp = totalUse.get(r);
+                currentTotalUseTmp = (currentTotalUseTmp == null) ? Integer.valueOf(0) : currentTotalUseTmp;
+                final int currentTotalUse = currentTotalUseTmp.intValue();
+                final int newTotalUse = use + currentTotalUse;
+                totalUse.put(r, newTotalUse);
+                if (currentTotalUse > r.getCapacity()) {
+                    // add the increase over the already overreached capacity
+                    this.totalCachedResult += newTotalUse - currentTotalUse;
+                } else {
+                    // the capacity is newly overreached
+                    this.totalCachedResult += Math.max(0, newTotalUse - r.getCapacity());
                 }
             }
-            // re-initialize cache
-            this.recache(time);
         }
     }
 
@@ -106,46 +101,28 @@ public class RenewableResourceUsageTracker {
         return this.totalCachedResult;
     }
 
-    private int countResourceOveruseInTime(final int time) {
-        @SuppressWarnings("unchecked")
-        final Map<Resource, Integer> resourceUsage = this.resourceUseInTime[time];
-        if (resourceUsage == null) {
-            return 0;
-        }
-        int total = 0;
-        for (final Map.Entry<Resource, Integer> entry : resourceUsage.entrySet()) {
-            final Resource r = entry.getKey();
-            final int allocation = entry.getValue();
-            total += Math.max(0, allocation - r.getCapacity());
-        }
-        return total;
-    }
-
-    private void recache(final int time) {
-        final int cache = this.usageCache[time];
-        if (cache > 0) {
-            this.totalCachedResult -= cache;
-        }
-        final int broken = this.countResourceOveruseInTime(time);
-        this.usageCache[time] = broken;
-        this.totalCachedResult += broken;
-    }
-
     public void remove(final Allocation a) {
-        final Job j = a.getJob();
-        final IntRange range = this.jobOccurrences.remove(j);
         final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
                 .getJobMode().getResourceRequirements());
-        for (int time = range.getMinimumInteger(); time <= range.getMaximumInteger(); time++) {
+        final int dueDate = a.getDueDate();
+        for (int time = a.getStartDate(); time <= dueDate; time++) {
             @SuppressWarnings("unchecked")
             final Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
             // subtract the current resource use from the totals
             for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
                 final Resource r = entry.getKey();
-                final Integer use = entry.getValue();
-                totalUse.put(r, totalUse.get(r) - use);
+                final int use = entry.getValue();
+                final int total = totalUse.get(r);
+                final int result = total - use;
+                totalUse.put(r, result);
+                if (result > r.getCapacity()) {
+                    // remove the decrease over the already overreached capacity
+                    this.totalCachedResult -= total - result;
+                } else {
+                    // the capacity is newly satisfied
+                    this.totalCachedResult -= Math.max(0, total - r.getCapacity());
+                }
             }
-            this.recache(time);
         }
     }
 
