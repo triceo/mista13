@@ -62,29 +62,24 @@ public class RenewableResourceUsageTracker {
         final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
                 .getJobMode().getResourceRequirements());
         final int dueDate = a.getDueDate();
-        for (int time = a.getStartDate(); time <= dueDate; time++) {
-            @SuppressWarnings("unchecked")
-            Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
-            if (totalUse == null) {
-                /*
-                 * there is no resource use yet, use the current job mode as
-                 * base
-                 */
-                totalUse = new LinkedHashMap<Resource, Integer>();
-                this.resourceUseInTime[time] = totalUse;
-            }
-            /*
-             * update the total resource use with the resource use of this job
-             * mode
-             */
-            for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
-                final Resource r = entry.getKey();
-                final int use = entry.getValue();
+        final int startDate = a.getStartDate();
+        for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
+            final Resource r = entry.getKey();
+            final int use = entry.getValue();
+            for (int time = startDate; time <= dueDate; time++) {
+                // fetch the total use of resources
+                @SuppressWarnings("unchecked")
+                Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
+                if (totalUse == null) {
+                    totalUse = new LinkedHashMap<Resource, Integer>();
+                    this.resourceUseInTime[time] = totalUse;
+                }
                 // avoid containsKey(r)
                 Integer currentTotalUseTmp = totalUse.get(r);
                 currentTotalUseTmp = (currentTotalUseTmp == null) ? Integer.valueOf(0) : currentTotalUseTmp;
                 final int currentTotalUse = currentTotalUseTmp.intValue();
                 final int newTotalUse = use + currentTotalUse;
+                // and update the tracker
                 totalUse.put(r, newTotalUse);
                 if (currentTotalUse > r.getCapacity()) {
                     // add the increase over the already overreached capacity
@@ -105,15 +100,18 @@ public class RenewableResourceUsageTracker {
         final Map<Resource, Integer> currentUse = RenewableResourceUsageTracker.prepareResourceRequirements(a
                 .getJobMode().getResourceRequirements());
         final int dueDate = a.getDueDate();
-        for (int time = a.getStartDate(); time <= dueDate; time++) {
-            @SuppressWarnings("unchecked")
-            final Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
-            // subtract the current resource use from the totals
-            for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
-                final Resource r = entry.getKey();
-                final int use = entry.getValue();
+        final int startDate = a.getStartDate();
+        // subtract the current resource use from the totals
+        for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
+            final Resource r = entry.getKey();
+            final int use = entry.getValue();
+            for (int time = startDate; time <= dueDate; time++) {
+                // fetch the total use of resources
+                @SuppressWarnings("unchecked")
+                final Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
                 final int total = totalUse.get(r);
                 final int result = total - use;
+                // update the tracker
                 totalUse.put(r, result);
                 if (result > r.getCapacity()) {
                     // remove the decrease over the already overreached capacity
