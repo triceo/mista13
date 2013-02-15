@@ -31,12 +31,9 @@ public class ProjectPropertiesTracker {
         if (perProject == null) {
             perProject = new PriorityQueue<Integer>(currentProject.getJobs().size(), Collections.reverseOrder());
             this.dueDatesPerProject.put(currentProject, perProject);
-        } else {
-            this.totalProjectDelay -= this.getProjectDelay(currentProject);
         }
         perProject.add(dueDate);
         this.dueDates.add(dueDate);
-        this.totalProjectDelay += this.getProjectDelay(currentProject);
     }
 
     private int getMakespan(final Project p) {
@@ -50,7 +47,7 @@ public class ProjectPropertiesTracker {
 
     private int getMaxDueDate() {
         if (this.dueDates.isEmpty()) {
-            return 0;
+            return Integer.MIN_VALUE;
         } else {
             return this.dueDates.peek();
         }
@@ -59,7 +56,7 @@ public class ProjectPropertiesTracker {
     private int getMaxDueDate(final Project p) {
         final PriorityQueue<Integer> perProject = this.dueDatesPerProject.get(p);
         if (perProject == null || perProject.isEmpty()) {
-            return 0;
+            return Integer.MIN_VALUE;
         } else {
             return perProject.peek();
         }
@@ -77,20 +74,20 @@ public class ProjectPropertiesTracker {
          */
         return (this.getMaxDueDate() + 1) - this.problem.getMinReleaseDate();
     }
-    
-    public int totalProjectDelay = 0;
 
     public int getTotalProjectDelay() {
-        return this.totalProjectDelay;
+        int total = 0;
+        for (final Project p : this.problem.getProjects()) {
+            total += this.getProjectDelay(p);
+        }
+        return total;
     }
 
     public void remove(final Allocation a) {
         final Project currentProject = a.getJob().getParentProject();
         final Integer dueDate = a.getDueDate();
-        this.totalProjectDelay -= this.getProjectDelay(currentProject);
         this.dueDatesPerProject.get(currentProject).remove(dueDate);
         this.dueDates.remove(dueDate);
-        this.totalProjectDelay += this.getProjectDelay(currentProject);
     }
 
 }
