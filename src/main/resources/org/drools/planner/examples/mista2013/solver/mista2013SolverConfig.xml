@@ -9,7 +9,7 @@
     <incrementalScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
   </scoreDirectorFactory>
   <termination>
-    <maximumMinutesSpend>5</maximumMinutesSpend>
+    <maximumSecondsSpend>290</maximumSecondsSpend>
   </termination>
   
   <constructionHeuristic>
