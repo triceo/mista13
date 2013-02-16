@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plannerBenchmark>
-  <parallelBenchmarkCount>3</parallelBenchmarkCount>
+  <parallelBenchmarkCount>2</parallelBenchmarkCount>
   <benchmarkDirectory>data/benchmark/</benchmarkDirectory>
   <warmUpSecondsSpend>30</warmUpSecondsSpend>
   <solverBenchmarkRankingType>TOTAL_RANKING</solverBenchmarkRankingType>
@@ -8,9 +8,13 @@
     <problemBenchmarks>
       <problemIOClass>org.drools.planner.examples.mista2013.persistence.Mista2013ProblemIO</problemIOClass>
       <inputSolutionFile>data/mista2013/input/A-1.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-2.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-3.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-4.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-5.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-6.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-7.txt</inputSolutionFile>
+      <inputSolutionFile>data/mista2013/input/A-8.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-9.txt</inputSolutionFile>
       <inputSolutionFile>data/mista2013/input/A-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
@@ -26,18 +30,18 @@
         <incrementalScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
-        <maximumMinutesSpend>5</maximumMinutesSpend>
+        <maximumMinutesSpend>6</maximumMinutesSpend>
       </termination>
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [96, 128, 160, 192] as minimalAcceptedSelection>
-<#list [75000, 100000, 125000, 150000] as lateAcceptance>
+<#list [192, 256, 320, 384, 448] as minimalAcceptedSelection>
+<#list [250000, 300000, 350000, 400000, 450000] as lateAcceptance>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>

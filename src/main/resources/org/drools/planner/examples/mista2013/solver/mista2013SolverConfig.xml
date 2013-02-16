@@ -36,10 +36,10 @@
       </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <lateAcceptanceSize>125000</lateAcceptanceSize>
+      <lateAcceptanceSize>350000</lateAcceptanceSize>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>160</minimalAcceptedSelection>
+      <minimalAcceptedSelection>256</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>
