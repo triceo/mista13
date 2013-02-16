@@ -74,10 +74,11 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int brokenReq2Count = this.nonRenewableResourceUsage.getSumOfOverusedResources();
         final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsMeasure();
         // now assemble the constraints
+        final int softest = this.renewableResourceUsage.getSumOfIdleResources();
         final int soft = this.properties.getTotalMakespan();
         final int medium = this.properties.getTotalProjectDelay();
         final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq7Count;
-        return scoreDefinition.scoreValueOf(new int[] {-hard}, new int[] {-medium, -soft, 0});
+        return scoreDefinition.scoreValueOf(new int[] {-hard}, new int[] {-medium, -soft, -softest});
     }
 
     private void insert(final Allocation entity) {

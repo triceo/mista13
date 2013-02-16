@@ -19,7 +19,8 @@ public class RenewableResourceUsageTracker {
     @SuppressWarnings("rawtypes")
     private final Map[] resourceUseInTime;
 
-    private int totalCachedResult = 0;
+    private int overused = 0;
+    private int idle = 0;
 
     public RenewableResourceUsageTracker(final int horizon) {
         this.resourceUseInTime = new HashMap[horizon];
@@ -31,7 +32,7 @@ public class RenewableResourceUsageTracker {
         final int startDate = a.getStartDate();
         for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
             final Resource r = entry.getKey();
-            final int use = entry.getValue();
+            final int requirement = entry.getValue();
             for (int time = startDate; time <= dueDate; time++) {
                 // fetch the total use of resources
                 @SuppressWarnings("unchecked")
@@ -44,24 +45,32 @@ public class RenewableResourceUsageTracker {
                 Integer currentTotalUseTmp = totalUse.get(r);
                 currentTotalUseTmp = (currentTotalUseTmp == null) ? Integer.valueOf(0) : currentTotalUseTmp;
                 final int currentTotalUse = currentTotalUseTmp.intValue();
-                final int newTotalUse = use + currentTotalUse;
+                final int newTotalUse = requirement + currentTotalUse;
                 // and update the tracker
                 totalUse.put(r, newTotalUse);
                 if (currentTotalUse > r.getCapacity()) {
                     // add the increase over the already overreached capacity
-                    this.totalCachedResult += newTotalUse - currentTotalUse;
-                } else {
+                    this.overused += newTotalUse - currentTotalUse;
+                } else if (newTotalUse > r.getCapacity()) {
                     // the capacity is newly overreached
-                    this.totalCachedResult += Math.max(0, newTotalUse - r.getCapacity());
+                    this.overused += newTotalUse - r.getCapacity();
+                    this.idle -= r.getCapacity() - currentTotalUse;
+                } else {
+                    // the capacity remains idle
+                    this.idle -= requirement;
                 }
             }
         }
     }
 
     public int getSumOfOverusedResources() {
-        return this.totalCachedResult;
+        return this.overused;
     }
 
+    public int getSumOfIdleResources() {
+        return -this.idle;
+    }
+    
     /**
      * Of all the resource requirements provided by the job, we don't care about
      * non-renewables and also we don't care about resources with 0 consumption.
@@ -103,21 +112,25 @@ public class RenewableResourceUsageTracker {
         // subtract the current resource use from the totals
         for (final Map.Entry<Resource, Integer> entry : currentUse.entrySet()) {
             final Resource r = entry.getKey();
-            final int use = entry.getValue();
+            final int requirement = entry.getValue();
             for (int time = startDate; time <= dueDate; time++) {
                 // fetch the total use of resources
                 @SuppressWarnings("unchecked")
                 final Map<Resource, Integer> totalUse = this.resourceUseInTime[time];
-                final int total = totalUse.get(r);
-                final int result = total - use;
+                final int currentTotalUse = totalUse.get(r);
+                final int newTotalUse = currentTotalUse - requirement;
                 // update the tracker
-                totalUse.put(r, result);
-                if (result > r.getCapacity()) {
+                totalUse.put(r, newTotalUse);
+                if (newTotalUse > r.getCapacity()) {
                     // remove the decrease over the already overreached capacity
-                    this.totalCachedResult -= total - result;
+                    this.overused -= currentTotalUse - newTotalUse;
+                } else if (currentTotalUse > r.getCapacity()){
+                    // the capacity is newly idle
+                    this.overused -= currentTotalUse - r.getCapacity();
+                    this.idle += r.getCapacity() - newTotalUse;
                 } else {
-                    // the capacity is newly satisfied
-                    this.totalCachedResult -= Math.max(0, total - r.getCapacity());
+                    // the capacity remains idle
+                    this.idle += requirement; 
                 }
             }
         }
