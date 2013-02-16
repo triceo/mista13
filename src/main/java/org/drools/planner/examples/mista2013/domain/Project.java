@@ -30,7 +30,7 @@ public class Project {
 
     private final List<Job> jobs;
 
-    private static final double HORIZON_MULTIPLIER = 3;
+    private static final double HORIZON_MULTIPLIER = 2.5;
 
     private final int criticalPathDuration;
     private ProblemInstance parentInstance;
