@@ -8,19 +8,19 @@ import org.drools.planner.core.score.director.incremental.AbstractIncrementalSco
 import org.drools.planner.examples.mista2013.domain.Allocation;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
 import org.drools.planner.examples.mista2013.domain.ProblemInstance;
-import org.drools.planner.examples.mista2013.solver.score.util.NonRenewableResourceUsageTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.PrecedenceRelationsTracker;
 import org.drools.planner.examples.mista2013.solver.score.util.ProjectPropertiesTracker;
-import org.drools.planner.examples.mista2013.solver.score.util.RenewableResourceUsageTracker;
+import org.drools.planner.examples.mista2013.solver.score.util.ResourceUsageTracker;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
     private ProjectPropertiesTracker properties;
 
-    private RenewableResourceUsageTracker renewableResourceUsage;
-    private NonRenewableResourceUsageTracker nonRenewableResourceUsage;
+    private ResourceUsageTracker resourceUse;
 
     private PrecedenceRelationsTracker precedenceRelations;
+
+    private final BendableScoreDefinition scoreDefinition = new BendableScoreDefinition(1, 3);
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
@@ -61,8 +61,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     public void beforeVariableChanged(final Object entity, final String variableName) {
         this.retract((Allocation) entity);
     }
-    
-    private final BendableScoreDefinition scoreDefinition = new BendableScoreDefinition(1, 3);
 
     @Override
     public BendableScore calculateScore() {
@@ -70,23 +68,21 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * validate MISTA requirements. Requirements (4, 5, 6) won't be
          * validated, as planner does that for us.
          */
-        final int brokenReq1and3Count = this.renewableResourceUsage.getSumOfOverusedResources();
-        final int brokenReq2Count = this.nonRenewableResourceUsage.getSumOfOverusedResources();
+        final int brokenReq1and2and3Count = this.resourceUse.getSumOfOverusedResources();
         final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsMeasure();
         // now assemble the constraints
-        final int softest = this.renewableResourceUsage.getSumOfIdleResources();
+        final int softest = this.resourceUse.getSumOfIdleResources();
         final int soft = this.properties.getTotalMakespan();
         final int medium = this.properties.getTotalProjectDelay();
-        final int hard = brokenReq1and3Count + brokenReq2Count + brokenReq7Count;
-        return scoreDefinition.scoreValueOf(new int[] {-hard}, new int[] {-medium, -soft, -softest});
+        final int hard = brokenReq1and2and3Count + brokenReq7Count;
+        return this.scoreDefinition.scoreValueOf(new int[] { -hard }, new int[] { -medium, -soft, -softest });
     }
 
     private void insert(final Allocation entity) {
         if (!entity.isInitialized()) {
             return;
         }
-        this.renewableResourceUsage.add(entity);
-        this.nonRenewableResourceUsage.add(entity);
+        this.resourceUse.add(entity);
         this.precedenceRelations.add(entity);
         this.properties.add(entity);
     }
@@ -97,8 +93,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final ProblemInstance problem = workingSolution.getProblem();
         this.properties = new ProjectPropertiesTracker(problem);
         this.precedenceRelations = new PrecedenceRelationsTracker();
-        this.renewableResourceUsage = new RenewableResourceUsageTracker(problem.getMaxAllowedDueDate());
-        this.nonRenewableResourceUsage = new NonRenewableResourceUsageTracker();
+        this.resourceUse = new ResourceUsageTracker(problem.getMaxAllowedDueDate());
         // insert new entities
         final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
         for (final Allocation a : allocationsToProcess) {
@@ -110,8 +105,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!entity.isInitialized()) {
             return;
         }
-        this.renewableResourceUsage.remove(entity);
-        this.nonRenewableResourceUsage.remove(entity);
+        this.resourceUse.remove(entity);
         this.precedenceRelations.remove(entity);
         this.properties.remove(entity);
     }
