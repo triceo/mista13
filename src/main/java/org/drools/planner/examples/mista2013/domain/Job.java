@@ -31,7 +31,7 @@ public class Job {
 
     private final boolean isSink;
 
-    private Set<Job> predecessors = new HashSet<Job>();
+    private List<Job> predecessors = new ArrayList<Job>();
 
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
         this(id, modes, successors, JobType.STANDARD);
@@ -80,7 +80,7 @@ public class Job {
         return this.parentProject;
     }
 
-    public Collection<Job> getPredecessors() {
+    public List<Job> getPredecessors() {
         return this.predecessors;
     }
 
@@ -95,7 +95,7 @@ public class Job {
     private void isPreceededBy(final Job j) {
         final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
         predecessors.add(j);
-        this.predecessors = Collections.unmodifiableSet(predecessors);
+        this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));
     }
 
     public boolean isSink() {
