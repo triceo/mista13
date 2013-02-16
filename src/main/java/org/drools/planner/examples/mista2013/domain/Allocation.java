@@ -32,9 +32,6 @@ public class Allocation {
      * @return
      */
     public int getDueDate() {
-        if (!this.isInitialized()) {
-            throw new IllegalStateException("Planning entity not yet initialized.");
-        }
         return this.dueDate;
     }
 
