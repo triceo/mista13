@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plannerBenchmark>
-  <parallelBenchmarkCount>2</parallelBenchmarkCount>
+  <parallelBenchmarkCount>3</parallelBenchmarkCount>
   <benchmarkDirectory>data/benchmark/</benchmarkDirectory>
   <warmUpSecondsSpend>30</warmUpSecondsSpend>
   <solverBenchmarkRankingType>TOTAL_RANKING</solverBenchmarkRankingType>
@@ -26,7 +26,9 @@
       <planningEntityClass>org.drools.planner.examples.mista2013.domain.Allocation</planningEntityClass>
     
       <scoreDirectorFactory>
-        <scoreDefinitionType>HARD_MEDIUM_SOFT</scoreDefinitionType>
+        <scoreDefinitionType>BENDABLE</scoreDefinitionType>
+        <bendableHardLevelCount>1</bendableHardLevelCount>
+        <bendableSoftLevelCount>3</bendableSoftLevelCount>
         <incrementalScoreCalculatorClass>org.drools.planner.examples.mista2013.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
@@ -35,8 +37,8 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [192, 256, 320, 384, 448] as minimalAcceptedSelection>
-<#list [250000, 300000, 350000, 400000, 450000] as lateAcceptance>
+<#list [160, 192, 224] as minimalAcceptedSelection>
+<#list [350000, 450000, 550000, 650000] as lateAcceptance>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>
@@ -60,6 +62,8 @@
         </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
+        <moveTabuSize>7</moveTabuSize>
+        <planningEntityTabuSize>7</planningEntityTabuSize>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
       </acceptor>
       <forager>
