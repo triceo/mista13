@@ -17,11 +17,16 @@ public class ProjectPropertiesTracker {
 
     private final Map<Project, PriorityQueue<Integer>> dueDatesPerProject;
 
+    private final Map<Project, Integer> projectDelays;
+
+    private int totalProjectDelay = 0;
+
     public ProjectPropertiesTracker(final ProblemInstance problem) {
         final int size = problem.getProjects().size();
         this.problem = problem;
         this.dueDates = new PriorityQueue<Integer>(size, Collections.reverseOrder());
         this.dueDatesPerProject = new HashMap<Project, PriorityQueue<Integer>>(size);
+        this.projectDelays = new HashMap<Project, Integer>(size);
     }
 
     public void add(final Allocation a) {
@@ -34,9 +39,16 @@ public class ProjectPropertiesTracker {
         }
         perProject.add(dueDate);
         this.dueDates.add(dueDate);
+        final int newDelay = this.calculateProjectDelay(currentProject);
+        final Integer previousDelay = this.projectDelays.put(currentProject, newDelay);
+        if (previousDelay == null) {
+            this.totalProjectDelay += newDelay;
+        } else {
+            this.totalProjectDelay += newDelay - previousDelay;
+        }
     }
 
-    private int getMakespan(final Project p) {
+    private int calculateMakespan(final Project p) {
         /*
          * due date for a task is the latest time when the task is still
          * running. due date of a project is the time after the last job
@@ -45,9 +57,13 @@ public class ProjectPropertiesTracker {
         return (this.getMaxDueDate(p) + 1) - p.getReleaseDate();
     }
 
+    private int calculateProjectDelay(final Project p) {
+        return Math.max(0, this.calculateMakespan(p) - p.getCriticalPathDuration());
+    }
+
     private int getMaxDueDate() {
         if (this.dueDates.isEmpty()) {
-            return Integer.MIN_VALUE;
+            return 0;
         } else {
             return this.dueDates.peek();
         }
@@ -56,14 +72,10 @@ public class ProjectPropertiesTracker {
     private int getMaxDueDate(final Project p) {
         final PriorityQueue<Integer> perProject = this.dueDatesPerProject.get(p);
         if (perProject == null || perProject.isEmpty()) {
-            return Integer.MIN_VALUE;
+            return 0;
         } else {
             return perProject.peek();
         }
-    }
-
-    private int getProjectDelay(final Project p) {
-        return this.getMakespan(p) - p.getCriticalPathDuration();
     }
 
     public int getTotalMakespan() {
@@ -76,18 +88,19 @@ public class ProjectPropertiesTracker {
     }
 
     public int getTotalProjectDelay() {
-        int total = 0;
-        for (final Project p : this.problem.getProjects()) {
-            total += this.getProjectDelay(p);
-        }
-        return total;
+        return this.totalProjectDelay;
     }
 
     public void remove(final Allocation a) {
         final Project currentProject = a.getJob().getParentProject();
+        // update due dates
         final Integer dueDate = a.getDueDate();
         this.dueDatesPerProject.get(currentProject).remove(dueDate);
         this.dueDates.remove(dueDate);
+        // recalculate project delay
+        final int newDelay = this.calculateProjectDelay(currentProject);
+        final int previousDelay = this.projectDelays.put(currentProject, newDelay);
+        this.totalProjectDelay += newDelay - previousDelay;
     }
 
 }
