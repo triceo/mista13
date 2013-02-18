@@ -1,6 +1,5 @@
 package org.drools.planner.examples.mista2013.swingui;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.BoxLayout;
