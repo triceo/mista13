@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plannerBenchmark>
-  <parallelBenchmarkCount>3</parallelBenchmarkCount>
+  <parallelBenchmarkCount>2</parallelBenchmarkCount>
   <benchmarkDirectory>data/benchmark/</benchmarkDirectory>
   <warmUpSecondsSpend>30</warmUpSecondsSpend>
   <solverBenchmarkRankingType>TOTAL_RANKING</solverBenchmarkRankingType>
@@ -37,13 +37,13 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [160, 192, 224] as minimalAcceptedSelection>
-<#list [350000, 450000, 550000, 650000] as lateAcceptance>
+<#list [160, 192, 224, 256, 288] as minimalAcceptedSelection>
+<#list [350000, 450000, 550000, 650000, 750000] as lateAcceptance>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
