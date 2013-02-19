@@ -75,7 +75,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int soft = this.properties.getTotalMakespan();
         final int medium = this.properties.getTotalProjectDelay();
         final int hard = brokenReq1and2and3Count + brokenReq7Count;
-        return this.scoreDefinition.scoreValueOf(new int[] { -hard }, new int[] { -medium, -soft, -softest });
+        return BendableScore.valueOf(new int[] { -hard }, new int[] { -medium, -soft, -softest });
     }
 
     private void insert(final Allocation entity) {
