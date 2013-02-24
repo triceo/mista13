@@ -51,7 +51,7 @@ public class ResourceUsageTracker {
                 @SuppressWarnings("unchecked")
                 Map<Resource, Integer> totalUse = this.renewableResourceUseInTime[time];
                 if (totalUse == null) {
-                    totalUse = new LinkedHashMap<Resource, Integer>();
+                    totalUse = new LinkedHashMap<Resource, Integer>(renewables.size());
                     this.renewableResourceUseInTime[time] = totalUse;
                 }
                 this.updateCachesForAddition(r, requirement, totalUse);
@@ -87,8 +87,8 @@ public class ResourceUsageTracker {
                 : this.nonRenewableResourceRequirementCache.get(jobMode);
         if (requirements == null) {
             // prepare the data
-            requirements = new LinkedHashMap<Resource, Integer>();
             final Map<Resource, Integer> original = jobMode.getResourceRequirements();
+            requirements = new LinkedHashMap<Resource, Integer>(original.size());
             for (final Resource r : original.keySet()) {
                 if (r.isRenewable() != renewable) {
                     continue;

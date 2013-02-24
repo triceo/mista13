@@ -11,6 +11,10 @@ import org.drools.planner.examples.mista2013.domain.Project;
 
 public class ProjectPropertiesTracker {
 
+    private static final PriorityQueue<Integer> getPriorityQueue(final int size) {
+        return new PriorityQueue<Integer>(size, Collections.reverseOrder());
+    }
+
     private final ProblemInstance problem;
 
     private final PriorityQueue<Integer> dueDates;
@@ -21,12 +25,15 @@ public class ProjectPropertiesTracker {
 
     private int totalProjectDelay = 0;
 
+    private static final int ESTIMATED_NUMBER_OF_JOBS_PER_PROJECT = 10;
+
     public ProjectPropertiesTracker(final ProblemInstance problem) {
-        final int size = problem.getProjects().size();
+        final int projectCount = problem.getProjects().size();
         this.problem = problem;
-        this.dueDates = new PriorityQueue<Integer>(size, Collections.reverseOrder());
-        this.dueDatesPerProject = new HashMap<Project, PriorityQueue<Integer>>(size);
-        this.projectDelays = new HashMap<Project, Integer>(size);
+        this.dueDates = ProjectPropertiesTracker.getPriorityQueue(projectCount
+                * ProjectPropertiesTracker.ESTIMATED_NUMBER_OF_JOBS_PER_PROJECT);
+        this.dueDatesPerProject = new HashMap<Project, PriorityQueue<Integer>>(projectCount);
+        this.projectDelays = new HashMap<Project, Integer>(projectCount);
     }
 
     public void add(final Allocation a) {
@@ -34,7 +41,7 @@ public class ProjectPropertiesTracker {
         final Integer dueDate = a.getDueDate();
         PriorityQueue<Integer> perProject = this.dueDatesPerProject.get(currentProject);
         if (perProject == null) {
-            perProject = new PriorityQueue<Integer>(currentProject.getJobs().size(), Collections.reverseOrder());
+            perProject = ProjectPropertiesTracker.getPriorityQueue(currentProject.getJobs().size());
             this.dueDatesPerProject.put(currentProject, perProject);
         }
         perProject.add(dueDate);
