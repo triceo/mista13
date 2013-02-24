@@ -1,9 +1,6 @@
 package org.drools.planner.examples.mista2013.solver.score;
 
-import java.util.Collection;
-
 import org.drools.planner.core.score.buildin.bendable.BendableScore;
-import org.drools.planner.core.score.buildin.bendable.BendableScoreDefinition;
 import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.drools.planner.examples.mista2013.domain.Allocation;
 import org.drools.planner.examples.mista2013.domain.Mista2013;
@@ -19,8 +16,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private ResourceUsageTracker resourceUse;
 
     private PrecedenceRelationsTracker precedenceRelations;
-
-    private final BendableScoreDefinition scoreDefinition = new BendableScoreDefinition(1, 3);
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
@@ -61,7 +56,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     public void beforeVariableChanged(final Object entity, final String variableName) {
         this.retract((Allocation) entity);
     }
-
+    
     @Override
     public BendableScore calculateScore() {
         /*
@@ -95,8 +90,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.precedenceRelations = new PrecedenceRelationsTracker();
         this.resourceUse = new ResourceUsageTracker(problem.getMaxAllowedDueDate());
         // insert new entities
-        final Collection<Allocation> allocationsToProcess = workingSolution.getAllocations();
-        for (final Allocation a : allocationsToProcess) {
+        for (final Allocation a : workingSolution.getAllocations()) {
             this.insert(a);
         }
     }
