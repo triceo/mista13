@@ -8,6 +8,15 @@ import java.util.List;
 
 public class ProblemInstance {
 
+    private static class IntegerComparator implements Comparator<Integer> {
+
+        @Override
+        public int compare(final Integer arg0, final Integer arg1) {
+            return arg0.compareTo(arg1);
+        }
+
+    }
+
     private final List<Project> projects;
     private final int maxDuration;
     private final int maxStartDate;
@@ -24,14 +33,7 @@ public class ProblemInstance {
                 }
             }
             maxStartDate = Math.max(maxStartDate,
-                    Collections.max(p.getAvailableJobStartDates(), new Comparator<Integer>() {
-
-                        @Override
-                        public int compare(final Integer arg0, final Integer arg1) {
-                            return arg0.compareTo(arg1);
-                        }
-
-                    }));
+                    Collections.max(p.getAvailableJobStartDates(), new IntegerComparator()));
         }
         this.maxStartDate = maxStartDate;
         this.maxDuration = maxDuration;
