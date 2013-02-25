@@ -24,7 +24,7 @@
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
       <version>${antlr.version}</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -88,4 +88,63 @@
       </plugins>
     </pluginManagement>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.5.2</version>
+        <configuration>
+          <onlyAnalyze>org.drools.planner.examples.mista2013.domain.*,org.drools.planner.examples.mista2013.solver.*</onlyAnalyze>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <author>false</author>
+          <source>${java.version}</source>
+          <reports>
+            <report>javadoc</report>
+          </reports>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <excludes>
+            <!-- exclude generated parser files -->
+            <exclude>org/drools/planner/examples/mista2013/persistence/parsers/**/*</exclude>
+          </excludes>
+          <targetJdk>${java.version}</targetJdk>
+          <ruleset>/rulesets/basic.xml</ruleset>
+          <ruleset>/rulesets/braces.xml</ruleset>
+          <ruleset>/rulesets/clone.xml</ruleset>
+          <ruleset>/rulesets/codesize.xml</ruleset>
+          <ruleset>/rulesets/coupling.xml</ruleset>
+          <ruleset>/rulesets/design.xml</ruleset>
+          <ruleset>/rulesets/emptycode.xml</ruleset>
+          <ruleset>/rulesets/finalizes.xml</ruleset>
+          <ruleset>/rulesets/imports.xml</ruleset>
+          <ruleset>/rulesets/junit.xml</ruleset>
+          <ruleset>/rulesets/naming.xml</ruleset>
+          <ruleset>/rulesets/optimizations.xml</ruleset>
+          <ruleset>/rulesets/strictexceptions.xml</ruleset>
+          <ruleset>/rulesets/strings.xml</ruleset>
+          <ruleset>/rulesets/typeresolution.xml</ruleset>
+          <ruleset>/rulesets/unusedcode.xml</ruleset>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
