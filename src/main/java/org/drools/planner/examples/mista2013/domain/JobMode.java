@@ -1,7 +1,7 @@
 package org.drools.planner.examples.mista2013.domain;
 
-import java.util.Collections;
-import java.util.Map;
+import gnu.trove.TCollections;
+import gnu.trove.map.TObjectIntMap;
 
 public class JobMode {
 
@@ -10,15 +10,15 @@ public class JobMode {
     private final int duration;
 
     private Job parentJob;
-    private final Map<Resource, Integer> resourceRequirements;
+    private final TObjectIntMap<Resource> resourceRequirements;
 
-    public JobMode(final int id, final int duration, final Map<Resource, Integer> resourceRequirements) {
+    public JobMode(final int id, final int duration, final TObjectIntMap<Resource> resourceRequirements) {
         if (id < 0) {
             throw new IllegalArgumentException("Job mode id must be >= 0.");
         }
         this.id = id;
         this.duration = duration;
-        this.resourceRequirements = Collections.unmodifiableMap(resourceRequirements);
+        this.resourceRequirements = TCollections.unmodifiableMap(resourceRequirements);
     }
 
     public int getDuration() {
@@ -32,8 +32,8 @@ public class JobMode {
     public Job getParentJob() {
         return this.parentJob;
     }
-    
-    public Map<Resource, Integer> getResourceRequirements() {
+
+    public TObjectIntMap<Resource> getResourceRequirements() {
         return this.resourceRequirements;
     }
 

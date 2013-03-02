@@ -1,24 +1,43 @@
 package org.drools.planner.examples.mista2013.domain.solver;
 
+import gnu.trove.procedure.TObjectIntProcedure;
+
 import java.util.Comparator;
-import java.util.Map;
 
 import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Resource;
 
 public class JobModeComparator implements Comparator<JobMode> {
 
-    private static int sumResources(final JobMode jm) {
-        int total = 0;
-        for (final Map.Entry<Resource, Integer> entry : jm.getResourceRequirements().entrySet()) {
-            final Resource resource = entry.getKey();
-            if (resource.isRenewable()) {
-                total += entry.getValue() * jm.getDuration();
-            } else {
-                total += entry.getValue();
-            }
+    private static final class ResourceSummation implements TObjectIntProcedure<Resource> {
+
+        private final JobMode jm;
+        private int total = 0;
+
+        public ResourceSummation(final JobMode jm) {
+            this.jm = jm;
         }
-        return total;
+
+        @Override
+        public boolean execute(final Resource resource, final int requirement) {
+            if (resource.isRenewable()) {
+                this.total += requirement * this.jm.getDuration();
+            } else {
+                this.total += requirement;
+            }
+            return true;
+        }
+
+        public int getTotal() {
+            return this.total;
+        }
+
+    }
+
+    private static int sumResources(final JobMode jm) {
+        final ResourceSummation rs = new ResourceSummation(jm);
+        jm.getResourceRequirements().forEachEntry(rs);
+        return rs.getTotal();
     }
 
     @Override
