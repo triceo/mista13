@@ -1,6 +1,8 @@
 package org.drools.planner.examples.mista2013.solver.score.util;
 
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.util.HashMap;
@@ -19,8 +21,7 @@ public class ResourceUsageTracker {
     private final Map<JobMode, TObjectIntMap<Resource>> renewableResourceRequirementCache = new HashMap<JobMode, TObjectIntMap<Resource>>();
     private final Map<JobMode, TObjectIntMap<Resource>> nonRenewableResourceRequirementCache = new HashMap<JobMode, TObjectIntMap<Resource>>();
 
-    @SuppressWarnings("rawtypes")
-    private final TObjectIntMap[] renewableResourceUseInTime;
+    private final TIntObjectMap<TObjectIntMap<Resource>> renewableResourceUseInTime;
 
     private int overused = 0;
     private int idle = 0;
@@ -28,7 +29,7 @@ public class ResourceUsageTracker {
     private final TObjectIntMap<Resource> nonRenewableResourceUsage = new TObjectIntHashMap<Resource>();
 
     public ResourceUsageTracker(final int horizon) {
-        this.renewableResourceUseInTime = new TObjectIntHashMap[horizon];
+        this.renewableResourceUseInTime = new TIntObjectHashMap<TObjectIntMap<Resource>>();
     }
 
     public void add(final Allocation a) {
@@ -50,11 +51,10 @@ public class ResourceUsageTracker {
         for (final Resource resource : renewables.keySet()) {
             final int requirement = renewables.get(resource);
             for (int time = startDate; time <= dueDate; time++) {
-                @SuppressWarnings("unchecked")
-                TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime[time];
+                TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime.get(time);
                 if (totalUse == null) {
                     totalUse = new TObjectIntHashMap<Resource>(renewables.size());
-                    this.renewableResourceUseInTime[time] = totalUse;
+                    this.renewableResourceUseInTime.put(time, totalUse);
                 }
                 this.updateCachesForAddition(resource, requirement, totalUse);
             }
@@ -126,8 +126,7 @@ public class ResourceUsageTracker {
         for (final Resource resource : renewables.keySet()) {
             final int requirement = renewables.get(resource);
             for (int time = startDate; time <= dueDate; time++) {
-                @SuppressWarnings("unchecked")
-                final TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime[time];
+                final TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime.get(time);
                 this.updateCachesForRemoval(resource, requirement, totalUse);
             }
         }
