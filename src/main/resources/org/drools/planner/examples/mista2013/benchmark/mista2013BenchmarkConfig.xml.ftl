@@ -37,8 +37,8 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [160, 192, 224, 256, 288] as minimalAcceptedSelection>
-<#list [350000, 450000, 550000, 650000, 750000] as lateAcceptance>
+<#list [160, 192, 224, 256] as minimalAcceptedSelection>
+<#list [250000, 500000, 750000, 1000000] as lateAcceptance>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}</name>
     <solver>

@@ -38,7 +38,7 @@
     <acceptor>
       <moveTabuSize>7</moveTabuSize>
       <planningEntityTabuSize>7</planningEntityTabuSize>
-      <lateAcceptanceSize>750000</lateAcceptanceSize>
+      <lateAcceptanceSize>1000000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <minimalAcceptedSelection>160</minimalAcceptedSelection>
