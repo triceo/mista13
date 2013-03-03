@@ -18,39 +18,31 @@ public class Project {
 
     private final int id;
 
-    private final int horizon;
-
     private final int releaseDate;
-
-    private final int dueDate;
-
-    private final int tardinessCost;
 
     private final List<Resource> resources;
 
     private final List<Job> jobs;
 
-    private static final double HORIZON_MULTIPLIER = 2.5;
+    private static final double CPD_MULTIPLIER = 15;
 
     private final int criticalPathDuration;
     private ProblemInstance parentInstance;
 
     private final Collection<Integer> startDates;
 
-    public Project(final int id, final int criticalPathDuration, final int horizon, final int releaseDate,
-            final int dueDate, final int tardinessCost, final List<Resource> resources, final List<Job> jobs) {
+    public Project(final int id, final int criticalPathDuration, final int releaseDate, final List<Resource> resources,
+            final List<Job> jobs) {
         this.id = id;
         this.criticalPathDuration = criticalPathDuration;
-        this.horizon = horizon;
         this.releaseDate = releaseDate;
-        this.dueDate = dueDate;
-        this.tardinessCost = tardinessCost;
         this.resources = Collections.unmodifiableList(resources);
         this.jobs = Collections.unmodifiableList(jobs);
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getHorizon() * Project.HORIZON_MULTIPLIER);
+        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getCriticalPathDuration()
+                * Project.CPD_MULTIPLIER);
     }
 
     public Collection<Integer> getAvailableJobStartDates() {
@@ -59,14 +51,6 @@ public class Project {
 
     public int getCriticalPathDuration() {
         return this.criticalPathDuration;
-    }
-
-    public int getDueDate() {
-        return this.dueDate;
-    }
-
-    public int getHorizon() {
-        return this.horizon;
     }
 
     public int getId() {
@@ -87,10 +71,6 @@ public class Project {
 
     public List<Resource> getResources() {
         return this.resources;
-    }
-
-    public int getTardinessCost() {
-        return this.tardinessCost;
     }
 
     protected void setParentInstance(final ProblemInstance parent) {

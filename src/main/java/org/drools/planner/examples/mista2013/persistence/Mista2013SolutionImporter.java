@@ -21,10 +21,8 @@ import org.drools.planner.examples.mista2013.domain.Resource.ResourceType;
 import org.drools.planner.examples.mista2013.persistence.parsers.instance.RawInstance;
 import org.drools.planner.examples.mista2013.persistence.parsers.instance.RawProject;
 import org.drools.planner.examples.mista2013.persistence.parsers.project.Precedence;
-import org.drools.planner.examples.mista2013.persistence.parsers.project.ProjectMetadata;
 import org.drools.planner.examples.mista2013.persistence.parsers.project.RawProjectData;
 import org.drools.planner.examples.mista2013.persistence.parsers.project.Request;
-import org.drools.planner.examples.mista2013.persistence.parsers.project.SituationMetadata;
 
 public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
 
@@ -72,8 +70,6 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
 
         private Project buildProject(final RawProject raw, final List<Resource> globalResources) {
             final RawProjectData data = raw.getProjectData();
-            final SituationMetadata situation = data.getSituation();
-            final ProjectMetadata project = data.getProject();
             // set resource capacities
             final List<Resource> resultingResources = new ArrayList<Resource>();
             for (int i = 0; i < globalResources.size(); i++) {
@@ -94,8 +90,8 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             }
             // build jobs and project
             final List<Job> jobs = this.buildJobs(data, resultingResources);
-            final Project p = new Project(raw.getId(), raw.getCriticalPathDuration(), situation.getHorizon(),
-                    raw.getReleaseDate(), project.getDueDate(), project.getTardinessCost(), resultingResources, jobs);
+            final Project p = new Project(raw.getId(), raw.getCriticalPathDuration(), raw.getReleaseDate(),
+                    resultingResources, jobs);
             return p;
         }
 
