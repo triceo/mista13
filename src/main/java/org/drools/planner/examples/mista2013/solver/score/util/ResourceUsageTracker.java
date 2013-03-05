@@ -18,45 +18,35 @@ import org.drools.planner.examples.mista2013.domain.Resource;
  */
 public class ResourceUsageTracker {
 
-    private final Map<JobMode, TObjectIntMap<Resource>> renewableResourceRequirementCache = new HashMap<JobMode, TObjectIntMap<Resource>>();
-    private final Map<JobMode, TObjectIntMap<Resource>> nonRenewableResourceRequirementCache = new HashMap<JobMode, TObjectIntMap<Resource>>();
+    private final Map<JobMode, TObjectIntMap<Resource>> resourceRequirementCache = new HashMap<JobMode, TObjectIntMap<Resource>>();
 
     private final TIntObjectMap<TObjectIntMap<Resource>> renewableResourceUseInTime;
+    private final TObjectIntMap<Resource> nonRenewableResourceUsage = new TObjectIntHashMap<Resource>();
 
     private int overused = 0;
     private int idle = 0;
-
-    private final TObjectIntMap<Resource> nonRenewableResourceUsage = new TObjectIntHashMap<Resource>();
 
     public ResourceUsageTracker(final int horizon) {
         this.renewableResourceUseInTime = new TIntObjectHashMap<TObjectIntMap<Resource>>();
     }
 
     public void add(final Allocation a) {
-        this.addRenewable(a);
-        this.addNonRenewable(a);
-    }
-
-    private void addNonRenewable(final Allocation a) {
-        final TObjectIntMap<Resource> nonRenewables = this.prepareResourceRequirements(a.getJobMode(), false);
-        for (final Resource resource : nonRenewables.keySet()) {
-            this.updateCachesForAddition(resource, nonRenewables.get(resource), this.nonRenewableResourceUsage);
-        }
-    }
-
-    private void addRenewable(final Allocation a) {
-        final TObjectIntMap<Resource> renewables = this.prepareResourceRequirements(a.getJobMode(), true);
+        final TObjectIntMap<Resource> requirements = this.prepareResourceRequirements(a.getJobMode());
         final int dueDate = a.getDueDate();
         final int startDate = a.getStartDate();
-        for (final Resource resource : renewables.keySet()) {
-            final int requirement = renewables.get(resource);
-            for (int time = startDate; time <= dueDate; time++) {
-                TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime.get(time);
-                if (totalUse == null) {
-                    totalUse = new TObjectIntHashMap<Resource>(renewables.size());
-                    this.renewableResourceUseInTime.put(time, totalUse);
+        for (final Resource resource : requirements.keySet()) {
+            final int requirement = requirements.get(resource);
+            if (resource.isRenewable()) {
+                for (int time = startDate; time <= dueDate; time++) {
+                    TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime.get(time);
+                    if (totalUse == null) {
+                        totalUse = new TObjectIntHashMap<Resource>(requirements.size());
+                        this.renewableResourceUseInTime.put(time, totalUse);
+                    }
+                    this.updateCachesForAddition(resource, requirement, totalUse);
                 }
-                this.updateCachesForAddition(resource, requirement, totalUse);
+            } else {
+                this.updateCachesForAddition(resource, requirement, this.nonRenewableResourceUsage);
             }
         }
     }
@@ -70,64 +60,47 @@ public class ResourceUsageTracker {
     }
 
     /**
-     * Of all the resource requirements provided by the job, we sometimes don't
-     * care about particular types and also we don't care about resources with 0
-     * consumption. They wouldn't have changed anything anyway. We exclude these
-     * resources, so that there's less iteration later when we're counting the
-     * resource use.
+     * Of all the resource requirements provided by the job, we don't care about
+     * resources with 0 consumption. They wouldn't have changed anything anyway.
+     * We exclude these resources, so that there's less iteration later when
+     * we're counting the resource use.
      * 
      * @param jobMode
      *            The job mode of which the requirements are to be preprocessed.
-     * @param needsRenewable
-     *            Whether to return only renewables. When false, only
-     *            non-renewables will be returned.
      * @return Resource requirements without those useless for the purposes of
      *         this class.
      */
-    private TObjectIntMap<Resource> prepareResourceRequirements(final JobMode jobMode, final boolean needsRenewable) {
-        TObjectIntMap<Resource> requirements = needsRenewable ? this.renewableResourceRequirementCache.get(jobMode)
-                : this.nonRenewableResourceRequirementCache.get(jobMode);
+    private TObjectIntMap<Resource> prepareResourceRequirements(final JobMode jobMode) {
+        TObjectIntMap<Resource> requirements = this.resourceRequirementCache.get(jobMode);
         if (requirements == null) {
             // prepare the data
             final TObjectIntMap<Resource> original = jobMode.getResourceRequirements();
             requirements = new TObjectIntHashMap<Resource>(original.size());
             for (final Resource resource : original.keySet()) {
                 final int requirement = original.get(resource);
-                if (resource.isRenewable() == needsRenewable && requirement > 0) {
-                    requirements.put(resource, requirement);
+                if (requirement == 0) {
+                    continue;
                 }
+                requirements.put(resource, requirement);
             }
             // store them in the cache
-            if (needsRenewable) {
-                this.renewableResourceRequirementCache.put(jobMode, requirements);
-            } else {
-                this.nonRenewableResourceRequirementCache.put(jobMode, requirements);
-            }
+            this.resourceRequirementCache.put(jobMode, requirements);
         }
         return requirements;
     }
 
     public void remove(final Allocation a) {
-        this.removeRenewable(a);
-        this.removeNonRenewable(a);
-    }
-
-    private void removeNonRenewable(final Allocation a) {
-        final TObjectIntMap<Resource> nonRenewables = this.prepareResourceRequirements(a.getJobMode(), false);
-        for (final Resource resource : nonRenewables.keySet()) {
-            this.updateCachesForRemoval(resource, nonRenewables.get(resource), this.nonRenewableResourceUsage);
-        }
-    }
-
-    private void removeRenewable(final Allocation a) {
-        final TObjectIntMap<Resource> renewables = this.prepareResourceRequirements(a.getJobMode(), true);
+        final TObjectIntMap<Resource> requirements = this.prepareResourceRequirements(a.getJobMode());
         final int dueDate = a.getDueDate();
         final int startDate = a.getStartDate();
-        for (final Resource resource : renewables.keySet()) {
-            final int requirement = renewables.get(resource);
-            for (int time = startDate; time <= dueDate; time++) {
-                final TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime.get(time);
-                this.updateCachesForRemoval(resource, requirement, totalUse);
+        for (final Resource resource : requirements.keySet()) {
+            final int requirement = requirements.get(resource);
+            if (resource.isRenewable()) {
+                for (int time = startDate; time <= dueDate; time++) {
+                    this.updateCachesForRemoval(resource, requirement, this.renewableResourceUseInTime.get(time));
+                }
+            } else {
+                this.updateCachesForRemoval(resource, requirement, this.nonRenewableResourceUsage);
             }
         }
     }
