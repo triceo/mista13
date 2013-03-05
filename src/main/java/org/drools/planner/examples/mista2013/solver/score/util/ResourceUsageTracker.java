@@ -5,11 +5,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.drools.planner.examples.mista2013.domain.Allocation;
-import org.drools.planner.examples.mista2013.domain.JobMode;
 import org.drools.planner.examples.mista2013.domain.Resource;
 
 /**
@@ -17,8 +13,6 @@ import org.drools.planner.examples.mista2013.domain.Resource;
  * resources would we need than we have capacity for.
  */
 public class ResourceUsageTracker {
-
-    private final Map<JobMode, TObjectIntMap<Resource>> resourceRequirementCache = new HashMap<JobMode, TObjectIntMap<Resource>>();
 
     private final TIntObjectMap<TObjectIntMap<Resource>> renewableResourceUseInTime;
     private final TObjectIntMap<Resource> nonRenewableResourceUsage = new TObjectIntHashMap<Resource>();
@@ -31,11 +25,15 @@ public class ResourceUsageTracker {
     }
 
     public void add(final Allocation a) {
-        final TObjectIntMap<Resource> requirements = this.prepareResourceRequirements(a.getJobMode());
         final int dueDate = a.getDueDate();
         final int startDate = a.getStartDate();
+        final TObjectIntMap<Resource> requirements = a.getJobMode().getResourceRequirements();
         for (final Resource resource : requirements.keySet()) {
             final int requirement = requirements.get(resource);
+            if (requirement == 0) {
+                // doesn't change anything
+                continue;
+            }
             if (resource.isRenewable()) {
                 for (int time = startDate; time <= dueDate; time++) {
                     TObjectIntMap<Resource> totalUse = this.renewableResourceUseInTime.get(time);
@@ -59,42 +57,16 @@ public class ResourceUsageTracker {
         return this.overused;
     }
 
-    /**
-     * Of all the resource requirements provided by the job, we don't care about
-     * resources with 0 consumption. They wouldn't have changed anything anyway.
-     * We exclude these resources, so that there's less iteration later when
-     * we're counting the resource use.
-     * 
-     * @param jobMode
-     *            The job mode of which the requirements are to be preprocessed.
-     * @return Resource requirements without those useless for the purposes of
-     *         this class.
-     */
-    private TObjectIntMap<Resource> prepareResourceRequirements(final JobMode jobMode) {
-        TObjectIntMap<Resource> requirements = this.resourceRequirementCache.get(jobMode);
-        if (requirements == null) {
-            // prepare the data
-            final TObjectIntMap<Resource> original = jobMode.getResourceRequirements();
-            requirements = new TObjectIntHashMap<Resource>(original.size());
-            for (final Resource resource : original.keySet()) {
-                final int requirement = original.get(resource);
-                if (requirement == 0) {
-                    continue;
-                }
-                requirements.put(resource, requirement);
-            }
-            // store them in the cache
-            this.resourceRequirementCache.put(jobMode, requirements);
-        }
-        return requirements;
-    }
-
     public void remove(final Allocation a) {
-        final TObjectIntMap<Resource> requirements = this.prepareResourceRequirements(a.getJobMode());
         final int dueDate = a.getDueDate();
         final int startDate = a.getStartDate();
+        final TObjectIntMap<Resource> requirements = a.getJobMode().getResourceRequirements();
         for (final Resource resource : requirements.keySet()) {
             final int requirement = requirements.get(resource);
+            if (requirement == 0) {
+                // doesn't change anything
+                continue;
+            }
             if (resource.isRenewable()) {
                 for (int time = startDate; time <= dueDate; time++) {
                     this.updateCachesForRemoval(resource, requirement, this.renewableResourceUseInTime.get(time));
