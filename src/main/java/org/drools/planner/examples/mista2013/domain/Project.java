@@ -27,8 +27,8 @@ public class Project {
     private static final double CPD_MULTIPLIER = 15;
 
     private final int criticalPathDuration;
-    private ProblemInstance parentInstance;
 
+    private ProblemInstance parentInstance;
     private final Collection<Integer> startDates;
 
     public Project(final int id, final int criticalPathDuration, final int releaseDate, final List<Resource> resources,
@@ -79,6 +79,13 @@ public class Project {
         } else {
             throw new IllegalStateException("Cannot override job's parent instance.");
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Project [id=").append(this.id).append(", releaseDate=").append(this.releaseDate).append("]");
+        return builder.toString();
     }
 
 }

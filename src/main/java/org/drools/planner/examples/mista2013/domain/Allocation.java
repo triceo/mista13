@@ -84,9 +84,18 @@ public class Allocation {
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Allocation [job=").append(this.job).append(", jobMode=").append(this.jobMode)
-                .append(", startDate=").append(this.startDate).append("]");
+        StringBuilder builder = new StringBuilder();
+        builder.append("Allocation [");
+        if (job != null) {
+            builder.append("job=").append(job).append(", ");
+        }
+        if (jobMode != null) {
+            builder.append("jobMode=").append(jobMode.getId()).append(", ");
+        }
+        if (startDate != null) {
+            builder.append("startDate=").append(startDate);
+        }
+        builder.append("]");
         return builder.toString();
     }
 
