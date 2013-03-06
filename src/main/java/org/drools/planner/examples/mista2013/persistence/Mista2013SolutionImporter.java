@@ -49,7 +49,11 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     int resourceId = 0;
                     final TObjectIntMap<Resource> resourceConsumption = new TObjectIntHashMap<Resource>();
                     for (final Resource resource : resources) {
-                        resourceConsumption.put(resource, r.getResources().get(resourceId));
+                        int consumption = r.getResources().get(resourceId);
+                        if (consumption > 0) {
+                            // only use the resources that are actually being consumed
+                            resourceConsumption.put(resource, consumption);
+                        }
                         resourceId++;
                     }
                     modes.add(new JobMode(r.getMode(), r.getDuration(), resourceConsumption));

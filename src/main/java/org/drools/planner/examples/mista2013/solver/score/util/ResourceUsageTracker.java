@@ -90,10 +90,6 @@ public class ResourceUsageTracker {
 
         @Override
         public boolean execute(final Resource resource, final int requirement) {
-            if (requirement == 0) {
-                // doesn't change anything
-                return true;
-            }
             if (resource.isRenewable()) {
                 for (int time = this.startDate; time <= this.dueDate; time++) {
                     this.updateCaches(resource, requirement, this.getRequirementsInTime(time));
