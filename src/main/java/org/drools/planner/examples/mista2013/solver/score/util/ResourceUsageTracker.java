@@ -1,9 +1,9 @@
 package org.drools.planner.examples.mista2013.solver.score.util;
 
+import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
 import org.drools.planner.examples.mista2013.domain.Allocation;
@@ -68,12 +68,9 @@ public class ResourceUsageTracker {
     private static abstract class ResourceManager implements TObjectIntProcedure<Resource> {
 
         protected int overusedDifference;
-
         protected int idleDifference;
 
-        private final int totalRequirements;
         private final int startDate;
-
         private final int dueDate;
         private final ResourceUsageTracker instance;
 
@@ -81,7 +78,6 @@ public class ResourceUsageTracker {
             this.startDate = a.getStartDate();
             this.dueDate = a.getDueDate();
             this.instance = instance;
-            this.totalRequirements = a.getJobMode().getResourceRequirements().size();
         }
 
         @Override
@@ -104,19 +100,23 @@ public class ResourceUsageTracker {
             return this.overusedDifference;
         }
 
-        private TObjectIntMap<Resource> getRequirementsInTime(final int time) {
-            TObjectIntMap<Resource> totalUse = this.instance.renewableResourceUseInTime.get(time);
+        private TIntIntMap getRequirementsInTime(final int time) {
+            TIntIntMap totalUse = this.instance.renewableResourceUseInTime.get(time);
             if (totalUse == null) {
-                totalUse = new TObjectIntHashMap<Resource>(this.totalRequirements);
+                totalUse = new TIntIntHashMap();
                 this.instance.renewableResourceUseInTime.put(time, totalUse);
             }
             return totalUse;
         }
 
+        /*
+         * FIXME better algo or data type??? the map is a huge perf bottleneck.
+         */
         private void processRequirementChange(final Resource r, final int newRequirement,
-                final TObjectIntMap<Resource> overallRequirements) {
-            overallRequirements.put(r,
-                    this.recalculateRequirements(overallRequirements.get(r), newRequirement, r.getCapacity()));
+                final TIntIntMap overallRequirements) {
+            final int resourceId = r.getUniqueId();
+            overallRequirements.put(resourceId,
+                    this.recalculateRequirements(overallRequirements.get(resourceId), newRequirement, r.getCapacity()));
         }
 
         protected abstract int recalculateRequirements(int currentTotalUse, int resourceRequirement,
@@ -124,16 +124,25 @@ public class ResourceUsageTracker {
 
     }
 
-    private final TIntObjectMap<TObjectIntMap<Resource>> renewableResourceUseInTime;
+    /**
+     * Key is the time at which the resource use is registered. Value has the
+     * same meaning as {@link #nonRenewableResourceUsage}, only for renewable
+     * resources.
+     */
+    private final TIntObjectMap<TIntIntMap> renewableResourceUseInTime;
 
-    private final TObjectIntMap<Resource> nonRenewableResourceUsage = new TObjectIntHashMap<Resource>();
+    /**
+     * Key is the {@link Resource#getUniqueId()} of a resource and value is the
+     * resource usage currently registered.
+     */
+    private final TIntIntMap nonRenewableResourceUsage = new TIntIntHashMap();
 
     private int overused = 0;
 
     private int idle = 0;
 
     public ResourceUsageTracker(final int horizon) {
-        this.renewableResourceUseInTime = new TIntObjectHashMap<TObjectIntMap<Resource>>(horizon);
+        this.renewableResourceUseInTime = new TIntObjectHashMap<TIntIntMap>(horizon);
     }
 
     public void add(final Allocation a) {

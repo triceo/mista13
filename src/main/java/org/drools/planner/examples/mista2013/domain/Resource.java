@@ -1,5 +1,7 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Resource {
 
     public static enum ResourceType {
@@ -9,6 +11,9 @@ public class Resource {
     }
 
     private final int id;
+    private final int uniqueId;
+
+    private static final AtomicInteger idGenerator = new AtomicInteger(0);
 
     private int capacity = -1;
     private final boolean isGlobal;
@@ -17,6 +22,7 @@ public class Resource {
     public Resource(final int id) {
         this.isGlobal = true;
         this.id = id;
+        this.uniqueId = Resource.idGenerator.getAndIncrement();
         this.isRenewable = true;
     }
 
@@ -26,6 +32,7 @@ public class Resource {
         }
         this.isGlobal = false;
         this.id = id;
+        this.uniqueId = Resource.idGenerator.getAndIncrement();
         this.isRenewable = (type == ResourceType.RENEWABLE);
     }
 
@@ -35,6 +42,17 @@ public class Resource {
 
     public int getId() {
         return this.id;
+    }
+
+    /**
+     * To be used as a key in maps or arrays for super-fast indexing by
+     * resource.
+     * 
+     * @return Unique number, generated when the object instance is constructed.
+     *         No two resources in the same JVM ever get the same.
+     */
+    public int getUniqueId() {
+        return this.uniqueId;
     }
 
     public boolean isGlobal() {
