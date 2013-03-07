@@ -22,14 +22,11 @@ public class ResourceUsageTracker {
         }
 
         @Override
-        public void updateCaches(final Resource r, final int requirement, final TObjectIntMap<Resource> totalUse) {
-            final int currentTotalUse = totalUse.get(r);
+        public int recalculateRequirements(final int currentTotalUse, final int requirement, final int capacity) {
             final int newTotalUse = currentTotalUse - requirement;
-            totalUse.put(r, newTotalUse);
-            final int capacity = r.getCapacity();
             if (newTotalUse > capacity) {
                 // remove the decrease over the already overreached capacity
-                this.overusedDifference -= currentTotalUse - newTotalUse;
+                this.overusedDifference -= requirement;
             } else if (currentTotalUse > capacity) {
                 // the capacity is newly idle
                 this.overusedDifference -= currentTotalUse - capacity;
@@ -38,6 +35,7 @@ public class ResourceUsageTracker {
                 // the capacity remains idle
                 this.idleDifference += requirement;
             }
+            return newTotalUse;
         }
 
     }
@@ -49,14 +47,11 @@ public class ResourceUsageTracker {
         }
 
         @Override
-        public void updateCaches(final Resource r, final int requirement, final TObjectIntMap<Resource> totalUse) {
-            final int currentTotalUse = totalUse.get(r);
+        public int recalculateRequirements(final int currentTotalUse, final int requirement, final int capacity) {
             final int newTotalUse = requirement + currentTotalUse;
-            totalUse.put(r, newTotalUse);
-            final int capacity = r.getCapacity();
             if (currentTotalUse > capacity) {
                 // add the increase over the already overreached capacity
-                this.overusedDifference += newTotalUse - currentTotalUse;
+                this.overusedDifference += requirement;
             } else if (newTotalUse > capacity) {
                 // the capacity is newly overreached
                 this.overusedDifference += newTotalUse - capacity;
@@ -65,6 +60,7 @@ public class ResourceUsageTracker {
                 // the capacity remains idle
                 this.idleDifference -= requirement;
             }
+            return newTotalUse;
         }
 
     }
@@ -92,10 +88,10 @@ public class ResourceUsageTracker {
         public boolean execute(final Resource resource, final int requirement) {
             if (resource.isRenewable()) {
                 for (int time = this.startDate; time <= this.dueDate; time++) {
-                    this.updateCaches(resource, requirement, this.getRequirementsInTime(time));
+                    this.processRequirementChange(resource, requirement, this.getRequirementsInTime(time));
                 }
             } else {
-                this.updateCaches(resource, requirement, this.instance.nonRenewableResourceUsage);
+                this.processRequirementChange(resource, requirement, this.instance.nonRenewableResourceUsage);
             }
             return true;
         }
@@ -117,7 +113,14 @@ public class ResourceUsageTracker {
             return totalUse;
         }
 
-        public abstract void updateCaches(Resource r, int requirement, TObjectIntMap<Resource> requirements);
+        private void processRequirementChange(final Resource r, final int newRequirement,
+                final TObjectIntMap<Resource> overallRequirements) {
+            overallRequirements.put(r,
+                    this.recalculateRequirements(overallRequirements.get(r), newRequirement, r.getCapacity()));
+        }
+
+        protected abstract int recalculateRequirements(int currentTotalUse, int resourceRequirement,
+                int resourceCapacity);
 
     }
 
