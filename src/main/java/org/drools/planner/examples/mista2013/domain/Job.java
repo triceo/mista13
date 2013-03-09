@@ -33,10 +33,6 @@ public class Job {
 
     private List<Job> predecessors = new ArrayList<Job>();
 
-    public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors) {
-        this(id, modes, successors, JobType.STANDARD);
-    }
-
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors, final JobType type) {
         this.id = id;
         // update successor info
@@ -51,7 +47,7 @@ public class Job {
             j.isPreceededBy(this);
         }
         // prepare job modes
-        final List<JobMode> jobModes = new ArrayList<JobMode>();
+        final List<JobMode> jobModes = new ArrayList<JobMode>(modes.size());
         for (final JobMode m : modes) {
             m.setParentJob(this);
             jobModes.add(m.getId() - 1, m);
