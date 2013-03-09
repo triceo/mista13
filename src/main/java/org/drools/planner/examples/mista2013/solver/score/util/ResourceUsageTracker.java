@@ -83,7 +83,7 @@ public class ResourceUsageTracker {
         @Override
         public boolean execute(final Resource resource, final int requirement) {
             if (resource.isRenewable()) {
-                for (int time = this.startDate; time <= this.dueDate; time++) {
+                for (int time = this.startDate; time++ <= this.dueDate; ) {
                     this.processRequirementChange(resource, requirement, this.getRequirementsInTime(time));
                 }
             } else {
