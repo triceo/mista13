@@ -24,7 +24,7 @@ public class Project {
 
     private final List<Job> jobs;
 
-    private static final double CPD_MULTIPLIER = 15;
+    private static final double CPD_MULTIPLIER = 13;
 
     private final int criticalPathDuration;
 
@@ -41,7 +41,7 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getCriticalPathDuration()
+        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getReleaseDate() + this.getCriticalPathDuration()
                 * Project.CPD_MULTIPLIER);
     }
 
