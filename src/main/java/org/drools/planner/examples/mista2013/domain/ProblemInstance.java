@@ -21,12 +21,19 @@ public class ProblemInstance {
     private final int maxDuration;
     private final int maxStartDate;
     private final int minReleaseDate;
+    private final int totalJobCount;
 
     public ProblemInstance(final Collection<Project> projects) {
         // and now find the max due date for any of the projects
         int maxDuration = Integer.MIN_VALUE;
         int maxStartDate = Integer.MIN_VALUE;
+        int minReleaseDate = Integer.MAX_VALUE;
+        int tmpJobCount = 0;
+        final List<Project> tmp = new ArrayList<Project>(projects.size());
         for (final Project p : projects) {
+            p.setParentInstance(this);
+            tmp.add(p);
+            minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
             for (final Job j : p.getJobs()) {
                 for (final JobMode jm : j.getJobModes()) {
                     maxDuration = Math.max(maxDuration, jm.getDuration());
@@ -34,21 +41,12 @@ public class ProblemInstance {
             }
             maxStartDate = Math.max(maxStartDate,
                     Collections.max(p.getAvailableJobStartDates(), new IntegerComparator()));
+            tmpJobCount += p.getJobs().size();
         }
+        this.totalJobCount = tmpJobCount;
         this.maxStartDate = maxStartDate;
         this.maxDuration = maxDuration;
-        // find minimum release date
-        int minReleaseDate = Integer.MAX_VALUE;
-        for (final Project p : projects) {
-            minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
-        }
         this.minReleaseDate = minReleaseDate;
-        // only do this after the upper bound is known
-        final List<Project> tmp = new ArrayList<Project>();
-        for (final Project p : projects) {
-            p.setParentInstance(this);
-            tmp.add(p);
-        }
         this.projects = Collections.unmodifiableList(tmp);
     }
 
@@ -62,6 +60,10 @@ public class ProblemInstance {
 
     public List<Project> getProjects() {
         return this.projects;
+    }
+
+    public int getTotalNumberOfJobs() {
+        return this.totalJobCount;
     }
 
 }

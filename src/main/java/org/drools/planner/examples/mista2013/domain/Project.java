@@ -1,15 +1,15 @@
 package org.drools.planner.examples.mista2013.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 public class Project {
 
     private static Collection<Integer> getStartDates(final int start, final double rawEnd) {
         final int end = (int) Math.ceil(rawEnd);
-        final Collection<Integer> startDates = new LinkedHashSet<Integer>();
+        final Collection<Integer> startDates = new ArrayList<Integer>(end - start);
         for (int i = start; i < end; i++) {
             startDates.add(i);
         }

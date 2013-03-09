@@ -18,12 +18,13 @@ public class Mista2013 implements Solution<BendableScore> {
 
     private final ProblemInstance problem;
     private final Collection<Allocation> allocations;
-    private final Map<Job, Allocation> allocationsPerJob = new HashMap<Job, Allocation>();
+    private final Map<Job, Allocation> allocationsPerJob;
     private BendableScore score;
 
     public Mista2013(final ProblemInstance input) {
         this.problem = input;
-        final List<Allocation> allocations = new ArrayList<Allocation>();
+        this.allocationsPerJob = new HashMap<Job, Allocation>(input.getTotalNumberOfJobs());
+        final List<Allocation> allocations = new ArrayList<Allocation>(input.getTotalNumberOfJobs());
         for (final Project p : input.getProjects()) {
             for (final Job j : p.getJobs()) {
                 if (j.isSink() || j.isSource()) {

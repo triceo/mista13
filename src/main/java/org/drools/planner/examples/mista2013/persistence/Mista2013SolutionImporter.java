@@ -32,26 +32,29 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
             final List<Request> requests = data.getRequestsAndDurations();
             final List<Precedence> precedence = data.getPrecedences();
             // traverse the jobs backwards; successors need to be created first
-            final Map<Integer, Job> jobCache = new HashMap<Integer, Job>();
+            final Map<Integer, Job> jobCache = new HashMap<Integer, Job>(precedence.size());
             for (int jobId = precedence.size(); jobId > 0; jobId--) {
                 // gather successors
-                final List<Job> successors = new ArrayList<Job>();
-                for (final Integer successorId : precedence.get(jobId - 1).getSuccessors()) {
+                final List<Integer> successorIds = precedence.get(jobId - 1).getSuccessors();
+                final List<Job> successors = new ArrayList<Job>(successorIds.size());
+                for (final Integer successorId : successorIds) {
                     successors.add(jobCache.get(successorId));
                 }
                 // prepare job modes
-                final List<JobMode> modes = new ArrayList<JobMode>();
+                final List<JobMode> modes = new ArrayList<JobMode>(requests.size());
                 for (final Request r : requests) {
                     if (r.getJobNumber() != jobId) {
                         continue;
                     }
                     // prepare resource consumption data
                     int resourceId = 0;
-                    final TObjectIntMap<Resource> resourceConsumption = new TObjectIntHashMap<Resource>();
+                    final TObjectIntMap<Resource> resourceConsumption = new TObjectIntHashMap<Resource>(
+                            resources.size());
                     for (final Resource resource : resources) {
-                        int consumption = r.getResources().get(resourceId);
+                        final int consumption = r.getResources().get(resourceId);
                         if (consumption > 0) {
-                            // only use the resources that are actually being consumed
+                            // only use the resources that are actually being
+                            // consumed
                             resourceConsumption.put(resource, consumption);
                         }
                         resourceId++;
@@ -75,7 +78,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
         private Project buildProject(final RawProject raw, final List<Resource> globalResources) {
             final RawProjectData data = raw.getProjectData();
             // set resource capacities
-            final List<Resource> resultingResources = new ArrayList<Resource>();
+            final List<Resource> resultingResources = new ArrayList<Resource>(globalResources.size());
             for (int i = 0; i < globalResources.size(); i++) {
                 Resource r = globalResources.get(i);
                 if (r == null) {
