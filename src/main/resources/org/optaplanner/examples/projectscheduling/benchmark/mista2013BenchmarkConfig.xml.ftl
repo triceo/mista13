@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plannerBenchmark>
   <parallelBenchmarkCount>2</parallelBenchmarkCount>
-  <benchmarkDirectory>data/benchmark/</benchmarkDirectory>
+  <benchmarkDirectory>local/data/projectscheduling</benchmarkDirectory>
   <warmUpSecondsSpend>30</warmUpSecondsSpend>
   <solverBenchmarkRankingType>TOTAL_RANKING</solverBenchmarkRankingType>
   <inheritedSolverBenchmark>
