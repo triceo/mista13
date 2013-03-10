@@ -14,7 +14,7 @@ import org.optaplanner.examples.mista2013.swingui.GanttPanel;
 
 public class Mista2013App extends CommonApp {
 
-    public static final String SOLVER_CONFIG = "/org/drools/planner/examples/mista2013/solver/mista2013SolverConfig.xml";
+    public static final String SOLVER_CONFIG = "/org/optaplanner/examples/mista2013/solver/mista2013SolverConfig.xml";
 
     public static void main(final String[] args) {
         CommonApp.fixateLookAndFeel();

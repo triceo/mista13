@@ -1,4 +1,4 @@
-// $ANTLR 3.5 /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g 2013-01-19 21:10:32
+// $ANTLR 3.5 /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g 2013-01-19 21:10:32
 
 package org.optaplanner.examples.mista2013.persistence.parsers.project;
 
@@ -66,7 +66,7 @@ public class MRCPSPParser extends Parser {
 	}
 
 	@Override public String[] getTokenNames() { return MRCPSPParser.tokenNames; }
-	@Override public String getGrammarFileName() { return "/home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g"; }
+	@Override public String getGrammarFileName() { return "/home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g"; }
 
 
 
@@ -79,7 +79,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "parse"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:28:1: parse returns [RawProjectData value] : BEGIN_PAUSE sourceInfo PAUSE summary PAUSE projects PAUSE precedence PAUSE requestsAndDurations PAUSE resourceAvailabilities PAUSE ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:28:1: parse returns [RawProjectData value] : BEGIN_PAUSE sourceInfo PAUSE summary PAUSE projects PAUSE precedence PAUSE requestsAndDurations PAUSE resourceAvailabilities PAUSE ;
 	public final RawProjectData parse() throws RecognitionException {
 		RawProjectData value = null;
 
@@ -91,8 +91,8 @@ public class MRCPSPParser extends Parser {
 		List<Integer> resourceAvailabilities5 =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:28:38: ( BEGIN_PAUSE sourceInfo PAUSE summary PAUSE projects PAUSE precedence PAUSE requestsAndDurations PAUSE resourceAvailabilities PAUSE )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:29:3: BEGIN_PAUSE sourceInfo PAUSE summary PAUSE projects PAUSE precedence PAUSE requestsAndDurations PAUSE resourceAvailabilities PAUSE
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:28:38: ( BEGIN_PAUSE sourceInfo PAUSE summary PAUSE projects PAUSE precedence PAUSE requestsAndDurations PAUSE resourceAvailabilities PAUSE )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:29:3: BEGIN_PAUSE sourceInfo PAUSE summary PAUSE projects PAUSE precedence PAUSE requestsAndDurations PAUSE resourceAvailabilities PAUSE
 			{
 			match(input,BEGIN_PAUSE,FOLLOW_BEGIN_PAUSE_in_parse43); 
 			pushFollow(FOLLOW_sourceInfo_in_parse45);
@@ -143,11 +143,11 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "sourceInfo"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:38:1: sourceInfo : 'file with basedata' WHITESPACE ':' WHITESPACE STRING NEWLINE 'initial value random generator' ':' WHITESPACE number ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:38:1: sourceInfo : 'file with basedata' WHITESPACE ':' WHITESPACE STRING NEWLINE 'initial value random generator' ':' WHITESPACE number ;
 	public final void sourceInfo() throws RecognitionException {
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:38:11: ( 'file with basedata' WHITESPACE ':' WHITESPACE STRING NEWLINE 'initial value random generator' ':' WHITESPACE number )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:39:3: 'file with basedata' WHITESPACE ':' WHITESPACE STRING NEWLINE 'initial value random generator' ':' WHITESPACE number
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:38:11: ( 'file with basedata' WHITESPACE ':' WHITESPACE STRING NEWLINE 'initial value random generator' ':' WHITESPACE number )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:39:3: 'file with basedata' WHITESPACE ':' WHITESPACE STRING NEWLINE 'initial value random generator' ':' WHITESPACE number
 			{
 			match(input,25,FOLLOW_25_in_sourceInfo99); 
 			match(input,WHITESPACE,FOLLOW_WHITESPACE_in_sourceInfo101); 
@@ -178,7 +178,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "summary"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:42:1: summary returns [SituationMetadata value] : 'projects' WHITESPACE ':' WHITESPACE pn= number NEWLINE 'jobs (incl. supersource/sink )' ':' WHITESPACE jn= number NEWLINE 'horizon' WHITESPACE ':' WHITESPACE hz= number NEWLINE 'RESOURCES' NEWLINE WHITESPACE '- renewable' WHITESPACE ':' WHITESPACE rr= number WHITESPACE 'R' NEWLINE WHITESPACE '- nonrenewable' WHITESPACE ':' WHITESPACE nr= number WHITESPACE 'N' NEWLINE WHITESPACE '- doubly constrained' WHITESPACE ':' WHITESPACE dr= number WHITESPACE 'D' ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:42:1: summary returns [SituationMetadata value] : 'projects' WHITESPACE ':' WHITESPACE pn= number NEWLINE 'jobs (incl. supersource/sink )' ':' WHITESPACE jn= number NEWLINE 'horizon' WHITESPACE ':' WHITESPACE hz= number NEWLINE 'RESOURCES' NEWLINE WHITESPACE '- renewable' WHITESPACE ':' WHITESPACE rr= number WHITESPACE 'R' NEWLINE WHITESPACE '- nonrenewable' WHITESPACE ':' WHITESPACE nr= number WHITESPACE 'N' NEWLINE WHITESPACE '- doubly constrained' WHITESPACE ':' WHITESPACE dr= number WHITESPACE 'D' ;
 	public final SituationMetadata summary() throws RecognitionException {
 		SituationMetadata value = null;
 
@@ -191,8 +191,8 @@ public class MRCPSPParser extends Parser {
 		Integer dr =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:42:42: ( 'projects' WHITESPACE ':' WHITESPACE pn= number NEWLINE 'jobs (incl. supersource/sink )' ':' WHITESPACE jn= number NEWLINE 'horizon' WHITESPACE ':' WHITESPACE hz= number NEWLINE 'RESOURCES' NEWLINE WHITESPACE '- renewable' WHITESPACE ':' WHITESPACE rr= number WHITESPACE 'R' NEWLINE WHITESPACE '- nonrenewable' WHITESPACE ':' WHITESPACE nr= number WHITESPACE 'N' NEWLINE WHITESPACE '- doubly constrained' WHITESPACE ':' WHITESPACE dr= number WHITESPACE 'D' )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:43:3: 'projects' WHITESPACE ':' WHITESPACE pn= number NEWLINE 'jobs (incl. supersource/sink )' ':' WHITESPACE jn= number NEWLINE 'horizon' WHITESPACE ':' WHITESPACE hz= number NEWLINE 'RESOURCES' NEWLINE WHITESPACE '- renewable' WHITESPACE ':' WHITESPACE rr= number WHITESPACE 'R' NEWLINE WHITESPACE '- nonrenewable' WHITESPACE ':' WHITESPACE nr= number WHITESPACE 'N' NEWLINE WHITESPACE '- doubly constrained' WHITESPACE ':' WHITESPACE dr= number WHITESPACE 'D'
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:42:42: ( 'projects' WHITESPACE ':' WHITESPACE pn= number NEWLINE 'jobs (incl. supersource/sink )' ':' WHITESPACE jn= number NEWLINE 'horizon' WHITESPACE ':' WHITESPACE hz= number NEWLINE 'RESOURCES' NEWLINE WHITESPACE '- renewable' WHITESPACE ':' WHITESPACE rr= number WHITESPACE 'R' NEWLINE WHITESPACE '- nonrenewable' WHITESPACE ':' WHITESPACE nr= number WHITESPACE 'N' NEWLINE WHITESPACE '- doubly constrained' WHITESPACE ':' WHITESPACE dr= number WHITESPACE 'D' )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:43:3: 'projects' WHITESPACE ':' WHITESPACE pn= number NEWLINE 'jobs (incl. supersource/sink )' ':' WHITESPACE jn= number NEWLINE 'horizon' WHITESPACE ':' WHITESPACE hz= number NEWLINE 'RESOURCES' NEWLINE WHITESPACE '- renewable' WHITESPACE ':' WHITESPACE rr= number WHITESPACE 'R' NEWLINE WHITESPACE '- nonrenewable' WHITESPACE ':' WHITESPACE nr= number WHITESPACE 'N' NEWLINE WHITESPACE '- doubly constrained' WHITESPACE ':' WHITESPACE dr= number WHITESPACE 'D'
 			{
 			match(input,31,FOLLOW_31_in_summary133); 
 			match(input,WHITESPACE,FOLLOW_WHITESPACE_in_summary135); 
@@ -278,7 +278,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "projects"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:55:1: projects returns [ProjectMetadata value] : 'PROJECT INFORMATION:' NEWLINE 'pronr. #jobs rel.date duedate tardcost MPM-Time' NEWLINE WHITESPACE nr= number WHITESPACE jb= number WHITESPACE rd= number WHITESPACE dd= number WHITESPACE tc= number WHITESPACE mt= number ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:55:1: projects returns [ProjectMetadata value] : 'PROJECT INFORMATION:' NEWLINE 'pronr. #jobs rel.date duedate tardcost MPM-Time' NEWLINE WHITESPACE nr= number WHITESPACE jb= number WHITESPACE rd= number WHITESPACE dd= number WHITESPACE tc= number WHITESPACE mt= number ;
 	public final ProjectMetadata projects() throws RecognitionException {
 		ProjectMetadata value = null;
 
@@ -291,8 +291,8 @@ public class MRCPSPParser extends Parser {
 		Integer mt =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:55:41: ( 'PROJECT INFORMATION:' NEWLINE 'pronr. #jobs rel.date duedate tardcost MPM-Time' NEWLINE WHITESPACE nr= number WHITESPACE jb= number WHITESPACE rd= number WHITESPACE dd= number WHITESPACE tc= number WHITESPACE mt= number )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:56:3: 'PROJECT INFORMATION:' NEWLINE 'pronr. #jobs rel.date duedate tardcost MPM-Time' NEWLINE WHITESPACE nr= number WHITESPACE jb= number WHITESPACE rd= number WHITESPACE dd= number WHITESPACE tc= number WHITESPACE mt= number
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:55:41: ( 'PROJECT INFORMATION:' NEWLINE 'pronr. #jobs rel.date duedate tardcost MPM-Time' NEWLINE WHITESPACE nr= number WHITESPACE jb= number WHITESPACE rd= number WHITESPACE dd= number WHITESPACE tc= number WHITESPACE mt= number )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:56:3: 'PROJECT INFORMATION:' NEWLINE 'pronr. #jobs rel.date duedate tardcost MPM-Time' NEWLINE WHITESPACE nr= number WHITESPACE jb= number WHITESPACE rd= number WHITESPACE dd= number WHITESPACE tc= number WHITESPACE mt= number
 			{
 			match(input,20,FOLLOW_20_in_projects327); 
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_projects329); 
@@ -346,7 +346,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "precedence"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:66:1: precedence returns [List<Precedence> value] : 'PRECEDENCE RELATIONS:' NEWLINE 'jobnr. #modes #successors successors' ( precedenceLine )+ ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:66:1: precedence returns [List<Precedence> value] : 'PRECEDENCE RELATIONS:' NEWLINE 'jobnr. #modes #successors successors' ( precedenceLine )+ ;
 	public final List<Precedence> precedence() throws RecognitionException {
 		List<Precedence> value = null;
 
@@ -354,14 +354,14 @@ public class MRCPSPParser extends Parser {
 		Precedence precedenceLine6 =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:66:44: ( 'PRECEDENCE RELATIONS:' NEWLINE 'jobnr. #modes #successors successors' ( precedenceLine )+ )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:67:3: 'PRECEDENCE RELATIONS:' NEWLINE 'jobnr. #modes #successors successors' ( precedenceLine )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:66:44: ( 'PRECEDENCE RELATIONS:' NEWLINE 'jobnr. #modes #successors successors' ( precedenceLine )+ )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:67:3: 'PRECEDENCE RELATIONS:' NEWLINE 'jobnr. #modes #successors successors' ( precedenceLine )+
 			{
 			match(input,19,FOLLOW_19_in_precedence404); 
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_precedence406); 
 			match(input,28,FOLLOW_28_in_precedence410); 
 			value = new ArrayList<Precedence>();
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:70:3: ( precedenceLine )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:70:3: ( precedenceLine )+
 			int cnt1=0;
 			loop1:
 			while (true) {
@@ -373,7 +373,7 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt1) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:70:4: precedenceLine
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:70:4: precedenceLine
 					{
 					pushFollow(FOLLOW_precedenceLine_in_precedence419);
 					precedenceLine6=precedenceLine();
@@ -408,7 +408,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "precedenceLine"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:72:1: precedenceLine returns [Precedence value] : NEWLINE WHITESPACE jn= number WHITESPACE md= number WHITESPACE sc= number ( WHITESPACE ss= number )* ( WHITESPACE )* ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:72:1: precedenceLine returns [Precedence value] : NEWLINE WHITESPACE jn= number WHITESPACE md= number WHITESPACE sc= number ( WHITESPACE ss= number )* ( WHITESPACE )* ;
 	public final Precedence precedenceLine() throws RecognitionException {
 		Precedence value = null;
 
@@ -419,8 +419,8 @@ public class MRCPSPParser extends Parser {
 		Integer ss =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:72:42: ( NEWLINE WHITESPACE jn= number WHITESPACE md= number WHITESPACE sc= number ( WHITESPACE ss= number )* ( WHITESPACE )* )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:73:3: NEWLINE WHITESPACE jn= number WHITESPACE md= number WHITESPACE sc= number ( WHITESPACE ss= number )* ( WHITESPACE )*
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:72:42: ( NEWLINE WHITESPACE jn= number WHITESPACE md= number WHITESPACE sc= number ( WHITESPACE ss= number )* ( WHITESPACE )* )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:73:3: NEWLINE WHITESPACE jn= number WHITESPACE md= number WHITESPACE sc= number ( WHITESPACE ss= number )* ( WHITESPACE )*
 			{
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_precedenceLine439); 
 			match(input,WHITESPACE,FOLLOW_WHITESPACE_in_precedenceLine444); 
@@ -439,7 +439,7 @@ public class MRCPSPParser extends Parser {
 			state._fsp--;
 
 			 List<Integer> successors = new ArrayList<Integer>(); 
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:78:3: ( WHITESPACE ss= number )*
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:78:3: ( WHITESPACE ss= number )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -454,7 +454,7 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt2) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:78:4: WHITESPACE ss= number
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:78:4: WHITESPACE ss= number
 					{
 					match(input,WHITESPACE,FOLLOW_WHITESPACE_in_precedenceLine474); 
 					pushFollow(FOLLOW_number_in_precedenceLine478);
@@ -471,7 +471,7 @@ public class MRCPSPParser extends Parser {
 			}
 
 			 value = new Precedence(jn, md, sc, successors);
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:80:3: ( WHITESPACE )*
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:80:3: ( WHITESPACE )*
 			loop3:
 			while (true) {
 				int alt3=2;
@@ -482,7 +482,7 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt3) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:80:4: WHITESPACE
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:80:4: WHITESPACE
 					{
 					match(input,WHITESPACE,FOLLOW_WHITESPACE_in_precedenceLine491); 
 					}
@@ -510,7 +510,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "requestsAndDurations"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:82:1: requestsAndDurations returns [List<Request> value] : 'REQUESTS/DURATIONS:' NEWLINE 'jobnr. mode duration R 1 R 2 N 1 N 2' NEWLINE ( '-' )+ ( NEWLINE ( WHITESPACE rr= number )+ )+ ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:82:1: requestsAndDurations returns [List<Request> value] : 'REQUESTS/DURATIONS:' NEWLINE 'jobnr. mode duration R 1 R 2 N 1 N 2' NEWLINE ( '-' )+ ( NEWLINE ( WHITESPACE rr= number )+ )+ ;
 	public final List<Request> requestsAndDurations() throws RecognitionException {
 		List<Request> value = null;
 
@@ -518,15 +518,15 @@ public class MRCPSPParser extends Parser {
 		Integer rr =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:82:51: ( 'REQUESTS/DURATIONS:' NEWLINE 'jobnr. mode duration R 1 R 2 N 1 N 2' NEWLINE ( '-' )+ ( NEWLINE ( WHITESPACE rr= number )+ )+ )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:83:3: 'REQUESTS/DURATIONS:' NEWLINE 'jobnr. mode duration R 1 R 2 N 1 N 2' NEWLINE ( '-' )+ ( NEWLINE ( WHITESPACE rr= number )+ )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:82:51: ( 'REQUESTS/DURATIONS:' NEWLINE 'jobnr. mode duration R 1 R 2 N 1 N 2' NEWLINE ( '-' )+ ( NEWLINE ( WHITESPACE rr= number )+ )+ )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:83:3: 'REQUESTS/DURATIONS:' NEWLINE 'jobnr. mode duration R 1 R 2 N 1 N 2' NEWLINE ( '-' )+ ( NEWLINE ( WHITESPACE rr= number )+ )+
 			{
 			value = new ArrayList<Request>();
 			match(input,22,FOLLOW_22_in_requestsAndDurations510); 
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_requestsAndDurations512); 
 			match(input,29,FOLLOW_29_in_requestsAndDurations516); 
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_requestsAndDurations518); 
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:86:3: ( '-' )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:86:3: ( '-' )+
 			int cnt4=0;
 			loop4:
 			while (true) {
@@ -538,7 +538,7 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt4) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:86:4: '-'
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:86:4: '-'
 					{
 					match(input,15,FOLLOW_15_in_requestsAndDurations523); 
 					}
@@ -553,7 +553,7 @@ public class MRCPSPParser extends Parser {
 			}
 
 			int jobNumber = 1;
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:88:3: ( NEWLINE ( WHITESPACE rr= number )+ )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:88:3: ( NEWLINE ( WHITESPACE rr= number )+ )+
 			int cnt6=0;
 			loop6:
 			while (true) {
@@ -565,11 +565,11 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt6) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:89:3: NEWLINE ( WHITESPACE rr= number )+
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:89:3: NEWLINE ( WHITESPACE rr= number )+
 					{
 					match(input,NEWLINE,FOLLOW_NEWLINE_in_requestsAndDurations537); 
 					 List<Integer> resources = new ArrayList<Integer>(); 
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:91:5: ( WHITESPACE rr= number )+
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:91:5: ( WHITESPACE rr= number )+
 					int cnt5=0;
 					loop5:
 					while (true) {
@@ -581,7 +581,7 @@ public class MRCPSPParser extends Parser {
 
 						switch (alt5) {
 						case 1 :
-							// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:91:6: WHITESPACE rr= number
+							// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:91:6: WHITESPACE rr= number
 							{
 							match(input,WHITESPACE,FOLLOW_WHITESPACE_in_requestsAndDurations552); 
 							pushFollow(FOLLOW_number_in_requestsAndDurations556);
@@ -641,7 +641,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "resourceAvailabilities"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:107:1: resourceAvailabilities returns [List<Integer> value] : 'RESOURCEAVAILABILITIES:' NEWLINE ( . )+ NEWLINE ( WHITESPACE number )+ ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:107:1: resourceAvailabilities returns [List<Integer> value] : 'RESOURCEAVAILABILITIES:' NEWLINE ( . )+ NEWLINE ( WHITESPACE number )+ ;
 	public final List<Integer> resourceAvailabilities() throws RecognitionException {
 		List<Integer> value = null;
 
@@ -649,13 +649,13 @@ public class MRCPSPParser extends Parser {
 		Integer number7 =null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:107:53: ( 'RESOURCEAVAILABILITIES:' NEWLINE ( . )+ NEWLINE ( WHITESPACE number )+ )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:108:3: 'RESOURCEAVAILABILITIES:' NEWLINE ( . )+ NEWLINE ( WHITESPACE number )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:107:53: ( 'RESOURCEAVAILABILITIES:' NEWLINE ( . )+ NEWLINE ( WHITESPACE number )+ )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:108:3: 'RESOURCEAVAILABILITIES:' NEWLINE ( . )+ NEWLINE ( WHITESPACE number )+
 			{
 			value = new ArrayList<Integer>();
 			match(input,23,FOLLOW_23_in_resourceAvailabilities590); 
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_resourceAvailabilities592); 
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:3: ( . )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:3: ( . )+
 			int cnt7=0;
 			loop7:
 			while (true) {
@@ -670,7 +670,7 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt7) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:3: .
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:110:3: .
 					{
 					matchAny(input); 
 					}
@@ -685,7 +685,7 @@ public class MRCPSPParser extends Parser {
 			}
 
 			match(input,NEWLINE,FOLLOW_NEWLINE_in_resourceAvailabilities599); 
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:111:3: ( WHITESPACE number )+
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:111:3: ( WHITESPACE number )+
 			int cnt8=0;
 			loop8:
 			while (true) {
@@ -697,7 +697,7 @@ public class MRCPSPParser extends Parser {
 
 				switch (alt8) {
 				case 1 :
-					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:111:4: WHITESPACE number
+					// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:111:4: WHITESPACE number
 					{
 					match(input,WHITESPACE,FOLLOW_WHITESPACE_in_resourceAvailabilities604); 
 					pushFollow(FOLLOW_number_in_resourceAvailabilities606);
@@ -733,7 +733,7 @@ public class MRCPSPParser extends Parser {
 
 
 	// $ANTLR start "number"
-	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:113:1: number returns [Integer value] : NUMBER ;
+	// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:113:1: number returns [Integer value] : NUMBER ;
 	public final Integer number() throws RecognitionException {
 		Integer value = null;
 
@@ -741,8 +741,8 @@ public class MRCPSPParser extends Parser {
 		Token NUMBER8=null;
 
 		try {
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:113:31: ( NUMBER )
-			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/drools/planner/examples/mista2013/persistence/parsers/project/MRCPSP.g:113:33: NUMBER
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:113:31: ( NUMBER )
+			// /home/lpetrovi/Workspaces/Stuff/mista2013/src/main/antlr3/org/optaplanner/examples/mista2013/persistence/parsers/project/MRCPSP.g:113:33: NUMBER
 			{
 			NUMBER8=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_number621); 
 			value = toInteger(NUMBER8);
