@@ -24,7 +24,7 @@ public class Project {
 
     private final List<Job> jobs;
 
-    private static final double CPD_MULTIPLIER = 13;
+    private static final double CPD_MULTIPLIER = 10;
 
     private final int criticalPathDuration;
 
