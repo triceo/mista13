@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plannerBenchmark>
+  <benchmarkDirectory>local/data/projectscheduling/stepLimit</benchmarkDirectory>
+
+  <inheritedSolverBenchmark>
+    <problemBenchmarks>
+      <problemIOClass>org.optaplanner.examples.projectscheduling.persistence.Mista2013ProblemIO</problemIOClass>
+      <inputSolutionFile>data/projectscheduling/input/A-10.txt</inputSolutionFile>
+    </problemBenchmarks>
+    <solver>
+      <solutionClass>org.optaplanner.examples.projectscheduling.domain.Mista2013</solutionClass>
+      <planningEntityClass>org.optaplanner.examples.projectscheduling.domain.Allocation</planningEntityClass>
+
+      <scoreDirectorFactory>
+        <scoreDefinitionType>BENDABLE</scoreDefinitionType>
+        <bendableHardLevelCount>1</bendableHardLevelCount>
+        <bendableSoftLevelCount>3</bendableSoftLevelCount>
+        <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
+      </scoreDirectorFactory>
+    </solver>
+  </inheritedSolverBenchmark>
+
+  <solverBenchmark>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
+      </constructionHeuristic>
+    <localSearch>
+      <termination>
+        <maximumStepCount>100</maximumStepCount>
+      </termination>
+      <unionMoveSelector>
+        <changeMoveSelector>
+          <valueSelector>
+            <variableName>jobMode</variableName>
+          </valueSelector>
+        </changeMoveSelector>
+        <changeMoveSelector>
+          <valueSelector>
+            <variableName>startDate</variableName>
+          </valueSelector>
+        </changeMoveSelector>
+        <swapMoveSelector>
+          <variableNameInclude>startDate</variableNameInclude>
+        </swapMoveSelector>
+      </unionMoveSelector>
+      <acceptor>
+        <moveTabuSize>7</moveTabuSize>
+        <planningEntityTabuSize>7</planningEntityTabuSize>
+        <lateAcceptanceSize>500000</lateAcceptanceSize>
+      </acceptor>
+      <forager>
+        <minimalAcceptedSelection>192</minimalAcceptedSelection>
+      </forager>
+    </localSearch>
+    </solver>
+  </solverBenchmark>
+</plannerBenchmark>

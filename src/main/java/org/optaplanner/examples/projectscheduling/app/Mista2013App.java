@@ -47,4 +47,5 @@ public class Mista2013App extends CommonApp {
         solverFactory.configure(Mista2013App.SOLVER_CONFIG);
         return solverFactory.buildSolver();
     }
+
 }
