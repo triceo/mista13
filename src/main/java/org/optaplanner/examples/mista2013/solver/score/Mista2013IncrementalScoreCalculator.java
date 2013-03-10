@@ -1,7 +1,7 @@
 package org.optaplanner.examples.mista2013.solver.score;
 
-import org.drools.planner.core.score.buildin.bendable.BendableScore;
-import org.drools.planner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
+import org.optaplanner.core.score.buildin.bendable.BendableScore;
+import org.optaplanner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.optaplanner.examples.mista2013.domain.Allocation;
 import org.optaplanner.examples.mista2013.domain.Mista2013;
 import org.optaplanner.examples.mista2013.domain.ProblemInstance;

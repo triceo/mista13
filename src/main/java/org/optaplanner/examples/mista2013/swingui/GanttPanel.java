@@ -4,9 +4,9 @@ import java.util.Date;
 
 import javax.swing.BoxLayout;
 
-import org.drools.planner.core.solution.Solution;
-import org.drools.planner.examples.common.swingui.SolutionPanel;
-import org.drools.planner.examples.common.swingui.TangoColorFactory;
+import org.optaplanner.core.solution.Solution;
+import org.optaplanner.examples.common.swingui.SolutionPanel;
+import org.optaplanner.examples.common.swingui.TangoColorFactory;
 import org.optaplanner.examples.mista2013.domain.Allocation;
 import org.optaplanner.examples.mista2013.domain.Job;
 import org.optaplanner.examples.mista2013.domain.Mista2013;

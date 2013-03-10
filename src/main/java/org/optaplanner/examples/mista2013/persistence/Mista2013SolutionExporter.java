@@ -2,8 +2,8 @@ package org.optaplanner.examples.mista2013.persistence;
 
 import java.io.IOException;
 
-import org.drools.planner.core.solution.Solution;
-import org.drools.planner.examples.common.persistence.AbstractTxtSolutionExporter;
+import org.optaplanner.core.solution.Solution;
+import org.optaplanner.examples.common.persistence.AbstractTxtSolutionExporter;
 import org.optaplanner.examples.mista2013.domain.Allocation;
 import org.optaplanner.examples.mista2013.domain.Job;
 import org.optaplanner.examples.mista2013.domain.JobMode;

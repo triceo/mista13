@@ -1,6 +1,6 @@
 package org.optaplanner.examples.mista2013.solver.solution;
 
-import org.drools.planner.api.domain.solution.cloner.SolutionCloner;
+import org.optaplanner.api.domain.solution.cloner.SolutionCloner;
 import org.optaplanner.examples.mista2013.domain.Allocation;
 import org.optaplanner.examples.mista2013.domain.Job;
 import org.optaplanner.examples.mista2013.domain.Mista2013;

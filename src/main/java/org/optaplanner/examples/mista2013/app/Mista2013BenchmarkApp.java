@@ -1,6 +1,6 @@
 package org.optaplanner.examples.mista2013.app;
 
-import org.drools.planner.examples.common.app.CommonBenchmarkApp;
+import org.optaplanner.examples.common.app.CommonBenchmarkApp;
 
 public class Mista2013BenchmarkApp extends CommonBenchmarkApp {
 

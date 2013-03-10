@@ -2,10 +2,10 @@ package org.optaplanner.examples.mista2013.domain;
 
 import java.util.Collection;
 
-import org.drools.planner.api.domain.entity.PlanningEntity;
-import org.drools.planner.api.domain.value.ValueRange;
-import org.drools.planner.api.domain.value.ValueRangeType;
-import org.drools.planner.api.domain.variable.PlanningVariable;
+import org.optaplanner.api.domain.entity.PlanningEntity;
+import org.optaplanner.api.domain.value.ValueRange;
+import org.optaplanner.api.domain.value.ValueRangeType;
+import org.optaplanner.api.domain.variable.PlanningVariable;
 import org.optaplanner.examples.mista2013.domain.solver.AllocationComparator;
 import org.optaplanner.examples.mista2013.domain.solver.JobModeComparator;
 import org.optaplanner.examples.mista2013.domain.solver.StartDateComparator;

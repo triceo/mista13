@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
-import org.drools.planner.api.domain.solution.PlanningSolution;
-import org.drools.planner.core.score.buildin.bendable.BendableScore;
-import org.drools.planner.core.solution.Solution;
+import org.optaplanner.api.domain.solution.PlanningEntityCollectionProperty;
+import org.optaplanner.api.domain.solution.PlanningSolution;
+import org.optaplanner.core.score.buildin.bendable.BendableScore;
+import org.optaplanner.core.solution.Solution;
 import org.optaplanner.examples.mista2013.solver.solution.Mista2013SolutionCloner;
 
 @PlanningSolution(solutionCloner = Mista2013SolutionCloner.class)

@@ -1,6 +1,6 @@
 package org.optaplanner.examples.mista2013.persistence;
 
-import org.drools.planner.examples.common.persistence.XStreamSolutionDaoImpl;
+import org.optaplanner.examples.common.persistence.XStreamSolutionDaoImpl;
 import org.optaplanner.examples.mista2013.domain.Mista2013;
 
 public class Mista2013DaoImpl extends XStreamSolutionDaoImpl {

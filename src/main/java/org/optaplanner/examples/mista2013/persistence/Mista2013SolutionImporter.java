@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.planner.examples.common.persistence.AbstractTxtSolutionImporter;
+import org.optaplanner.examples.common.persistence.AbstractTxtSolutionImporter;
 import org.optaplanner.examples.mista2013.domain.Job;
 import org.optaplanner.examples.mista2013.domain.Job.JobType;
 import org.optaplanner.examples.mista2013.domain.JobMode;
