@@ -7,16 +7,16 @@
   <inheritedSolverBenchmark>
     <problemBenchmarks>
       <problemIOClass>org.optaplanner.examples.projectscheduling.persistence.Mista2013ProblemIO</problemIOClass>
-      <inputSolutionFile>data/mista2013/input/A-1.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-2.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-3.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-4.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-5.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-6.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-7.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-8.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-9.txt</inputSolutionFile>
-      <inputSolutionFile>data/mista2013/input/A-10.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-1.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-2.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-3.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-4.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-5.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-6.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-7.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-8.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-9.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/A-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
       <problemStatisticType>BEST_SOLUTION_CHANGED</problemStatisticType>
       <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
