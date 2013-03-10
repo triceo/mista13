@@ -122,7 +122,7 @@
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>2.5.2</version>
         <configuration>
-          <onlyAnalyze>org.drools.planner.examples.mista2013.domain.*,org.drools.planner.examples.mista2013.solver.*</onlyAnalyze>
+          <onlyAnalyze>org.optaplanner.examples.mista2013.domain.*,orgorg.optaplanner.examples.mista2013lver.*</onlyAnalyze>
           <effort>Max</effort>
           <threshold>Low</threshold>
         </configuration>
