@@ -27,7 +27,7 @@
       </constructionHeuristic>
     <localSearch>
       <termination>
-        <maximumStepCount>100</maximumStepCount>
+        <maximumStepCount>30000</maximumStepCount>
       </termination>
       <unionMoveSelector>
         <changeMoveSelector>
@@ -50,7 +50,7 @@
         <lateAcceptanceSize>500000</lateAcceptanceSize>
       </acceptor>
       <forager>
-        <minimalAcceptedSelection>192</minimalAcceptedSelection>
+        <minimalAcceptedSelection>160</minimalAcceptedSelection>
       </forager>
     </localSearch>
     </solver>
