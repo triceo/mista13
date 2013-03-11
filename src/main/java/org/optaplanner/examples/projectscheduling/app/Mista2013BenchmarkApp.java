@@ -16,8 +16,6 @@ public class Mista2013BenchmarkApp extends CommonBenchmarkApp {
                 return;
             }
         }
-        String benchmarkConfig;
-        benchmarkConfig = Mista2013BenchmarkApp.BENCHMARK_CONFIG_TEMPLATE;
         new Mista2013BenchmarkApp().buildFromTemplateAndBenchmark(BENCHMARK_CONFIG_TEMPLATE);
     }
 
