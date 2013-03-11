@@ -36,9 +36,8 @@
       </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <moveTabuSize>7</moveTabuSize>
-      <planningEntityTabuSize>7</planningEntityTabuSize>
-      <lateAcceptanceSize>1000000</lateAcceptanceSize>
+      <planningEntityTabuSize>17</planningEntityTabuSize>
+      <lateAcceptanceSize>100000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <minimalAcceptedSelection>160</minimalAcceptedSelection>
