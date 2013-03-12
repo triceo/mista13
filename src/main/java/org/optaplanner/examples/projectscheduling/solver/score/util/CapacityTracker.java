@@ -13,11 +13,11 @@ import org.optaplanner.examples.projectscheduling.domain.Resource;
  * Validates feasibility requirements (1), (2) and (3). Counts how many more
  * resources would we need than we have capacity for.
  */
-public class ResourceUsageTracker {
+public class CapacityTracker {
 
     private static class ResourceDecreaser extends ResourceManager {
 
-        public ResourceDecreaser(final Allocation a, final ResourceUsageTracker instance) {
+        public ResourceDecreaser(final Allocation a, final CapacityTracker instance) {
             super(a, instance);
         }
 
@@ -35,6 +35,9 @@ public class ResourceUsageTracker {
                 // the capacity remains idle
                 this.idleDifference += requirement;
             }
+            if (newTotalUse == 0) {
+                this.totalCapacityDifference -= capacity;
+            }
             return newTotalUse;
         }
 
@@ -42,7 +45,7 @@ public class ResourceUsageTracker {
 
     private static class ResourceIncreaser extends ResourceManager {
 
-        public ResourceIncreaser(final Allocation a, final ResourceUsageTracker instance) {
+        public ResourceIncreaser(final Allocation a, final CapacityTracker instance) {
             super(a, instance);
         }
 
@@ -60,6 +63,9 @@ public class ResourceUsageTracker {
                 // the capacity remains idle
                 this.idleDifference -= requirement;
             }
+            if (currentTotalUse == 0) {
+                this.totalCapacityDifference += capacity;
+            }
             return newTotalUse;
         }
 
@@ -69,12 +75,13 @@ public class ResourceUsageTracker {
 
         protected int overusedDifference;
         protected int idleDifference;
+        protected int totalCapacityDifference;
 
         private final int startDate;
         private final int dueDate;
-        private final ResourceUsageTracker instance;
+        private final CapacityTracker instance;
 
-        public ResourceManager(final Allocation a, final ResourceUsageTracker instance) {
+        public ResourceManager(final Allocation a, final CapacityTracker instance) {
             this.startDate = a.getStartDate();
             this.dueDate = a.getDueDate();
             this.instance = instance;
@@ -83,7 +90,7 @@ public class ResourceUsageTracker {
         @Override
         public boolean execute(final Resource resource, final int requirement) {
             if (resource.isRenewable()) {
-                for (int time = this.startDate; time++ <= this.dueDate; ) {
+                for (int time = this.startDate; time++ <= this.dueDate;) {
                     this.processRequirementChange(resource, requirement, this.getRequirementsInTime(time));
                 }
             } else {
@@ -107,6 +114,10 @@ public class ResourceUsageTracker {
                 this.instance.renewableResourceUseInTime.put(time, totalUse);
             }
             return totalUse;
+        }
+
+        public int getTotalCapacityDifference() {
+            return this.totalCapacityDifference;
         }
 
         /*
@@ -139,9 +150,11 @@ public class ResourceUsageTracker {
 
     private int overused = 0;
 
+    private int total = 0;
+
     private int idle = 0;
 
-    public ResourceUsageTracker(final int horizon) {
+    public CapacityTracker(final int horizon) {
         this.renewableResourceUseInTime = new TIntObjectHashMap<TIntIntMap>(horizon);
     }
 
@@ -149,18 +162,23 @@ public class ResourceUsageTracker {
         this.process(a, new ResourceIncreaser(a, this));
     }
 
-    public int getSumOfIdleResources() {
+    public int getIdleCapacity() {
         return -this.idle;
     }
 
-    public int getSumOfOverusedResources() {
+    public int getOverusedCapacity() {
         return this.overused;
+    }
+
+    public int getTotalCapacity() {
+        return this.total;
     }
 
     private void process(final Allocation a, final ResourceManager rm) {
         a.getJobMode().getResourceRequirements().forEachEntry(rm);
         this.idle += rm.getIdleDifference();
         this.overused += rm.getOverusedDifference();
+        this.total += rm.getTotalCapacityDifference();
     }
 
     public void remove(final Allocation a) {
