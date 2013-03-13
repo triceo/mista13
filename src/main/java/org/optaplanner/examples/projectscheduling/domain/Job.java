@@ -28,6 +28,7 @@ public class Job {
     private final List<JobMode> jobModes;
     private Project parentProject;
     private final boolean isSource;
+    private final int maxDuration;
 
     private final boolean isSink;
 
@@ -55,6 +56,15 @@ public class Job {
         this.jobModes = Collections.unmodifiableList(jobModes);
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
+        int max = Integer.MIN_VALUE;
+        for (JobMode jm: this.jobModes) {
+            max = Math.max(max, jm.getDuration());
+        }
+        this.maxDuration = max;
+    }
+
+    public int getMaxDuration() {
+        return maxDuration;
     }
 
     public int getId() {

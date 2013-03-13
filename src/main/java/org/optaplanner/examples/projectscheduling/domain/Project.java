@@ -7,11 +7,11 @@ import java.util.List;
 
 public class Project {
 
-    private static Collection<Integer> getStartDates(final int start, final double rawEnd) {
-        final int end = (int) Math.ceil(rawEnd);
-        final Collection<Integer> startDates = new ArrayList<Integer>(end - start);
-        for (int i = start; i < end; i++) {
-            startDates.add(i);
+    private static Collection<Integer> getStartDates(final int start, final double length) {
+        final int actualLength = (int) Math.ceil(length);
+        final Collection<Integer> startDates = new ArrayList<Integer>(actualLength);
+        for (int i = 0; i < actualLength; i++) {
+            startDates.add(i + start);
         }
         return Collections.unmodifiableCollection(startDates);
     }
@@ -24,7 +24,7 @@ public class Project {
 
     private final List<Job> jobs;
 
-    private static final double CPD_MULTIPLIER = 10;
+    private static final double TMD_MULTIPLIER = 4;
 
     private final int criticalPathDuration;
 
@@ -41,8 +41,8 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getReleaseDate() + this.getCriticalPathDuration()
-                * Project.CPD_MULTIPLIER);
+        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getTheoreticalMaxDuration()
+                * Project.TMD_MULTIPLIER);
     }
 
     public Collection<Integer> getAvailableJobStartDates() {
@@ -71,6 +71,21 @@ public class Project {
 
     public List<Resource> getResources() {
         return this.resources;
+    }
+
+    private int getTheoreticalMaxDuration() {
+        return this.getTheoreticalMaxDuration(this.jobs.get(0));
+    }
+
+    private int getTheoreticalMaxDuration(final Job startWith) {
+        if (startWith.isSink()) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        for (final Job successor : startWith.getSuccessors()) {
+            max = Math.max(max, this.getTheoreticalMaxDuration(successor));
+        }
+        return max + startWith.getMaxDuration();
     }
 
     protected void setParentInstance(final ProblemInstance parent) {
