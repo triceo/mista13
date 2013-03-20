@@ -24,7 +24,7 @@ public class Project {
 
     private final List<Job> jobs;
 
-    private static final double TMD_MULTIPLIER = 4;
+    private static final double TMD_MULTIPLIER = 5;
 
     private final int criticalPathDuration;
 

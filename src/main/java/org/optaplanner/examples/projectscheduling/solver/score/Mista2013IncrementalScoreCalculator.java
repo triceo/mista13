@@ -5,9 +5,9 @@ import org.optaplanner.core.score.director.incremental.AbstractIncrementalScoreC
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Mista2013;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
+import org.optaplanner.examples.projectscheduling.solver.score.util.CapacityTracker;
 import org.optaplanner.examples.projectscheduling.solver.score.util.PrecedenceRelationsTracker;
 import org.optaplanner.examples.projectscheduling.solver.score.util.ProjectPropertiesTracker;
-import org.optaplanner.examples.projectscheduling.solver.score.util.CapacityTracker;
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
@@ -56,7 +56,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     public void beforeVariableChanged(final Object entity, final String variableName) {
         this.retract((Allocation) entity);
     }
-    
+
     @Override
     public BendableScore calculateScore() {
         /*
@@ -65,15 +65,11 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          */
         final int brokenReq1and2and3Count = this.resourceUse.getOverusedCapacity();
         final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsMeasure();
-        // find out how many resources are used
-        final int idle = this.resourceUse.getIdleCapacity();
-        final int total = this.resourceUse.getTotalCapacity();
-        final int ratio = (int)((100000d * idle) / total);
         // now assemble the constraints
         final int soft = this.properties.getTotalMakespan();
         final int medium = this.properties.getTotalProjectDelay();
         final int hard = brokenReq1and2and3Count + brokenReq7Count;
-        return BendableScore.valueOf(new int[] { -hard }, new int[] { -medium, -soft, -ratio });
+        return BendableScore.valueOf(new int[]{-hard}, new int[]{-medium, -soft, -this.resourceUse.getIdleCapacity()});
     }
 
     private void insert(final Allocation entity) {
