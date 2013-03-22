@@ -29,6 +29,7 @@ public class Job {
     private Project parentProject;
     private final boolean isSource;
     private final int maxDuration;
+    private final int maxResourceId;
 
     private final boolean isSink;
 
@@ -57,14 +58,18 @@ public class Job {
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
         int max = Integer.MIN_VALUE;
-        for (JobMode jm: this.jobModes) {
+        for (final JobMode jm : this.jobModes) {
             max = Math.max(max, jm.getDuration());
         }
         this.maxDuration = max;
-    }
-
-    public int getMaxDuration() {
-        return maxDuration;
+        // find the total amount of different resources
+        int maxResourceId = Integer.MIN_VALUE;
+        for (final JobMode jm : this.getJobModes()) {
+            for (final Resource r : jm.getResourceRequirements().keySet()) {
+                maxResourceId = Math.max(maxResourceId, r.getUniqueId());
+            }
+        }
+        this.maxResourceId = maxResourceId;
     }
 
     public int getId() {
@@ -80,6 +85,14 @@ public class Job {
 
     public Collection<JobMode> getJobModes() {
         return this.jobModes;
+    }
+
+    public int getMaxDuration() {
+        return this.maxDuration;
+    }
+
+    public int getMaxResourceId() {
+        return this.maxResourceId;
     }
 
     public Project getParentProject() {

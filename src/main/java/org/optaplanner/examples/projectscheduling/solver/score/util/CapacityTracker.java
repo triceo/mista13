@@ -1,10 +1,9 @@
 package org.optaplanner.examples.projectscheduling.solver.score.util;
 
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
+import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
 
 /**
@@ -107,26 +106,28 @@ public class CapacityTracker {
             return this.overusedDifference;
         }
 
-        private TIntIntMap getRequirementsInTime(final int time) {
-            TIntIntMap totalUse = this.instance.renewableResourceUseInTime[time];
+        private int[] getRequirementsInTime(final int time) {
+            final int[] totalUse = this.instance.renewableResourceUseInTime[time];
             if (totalUse == null) {
-                totalUse = new TIntIntHashMap();
-                this.instance.renewableResourceUseInTime[time] = totalUse;
+                /*
+                 * this array needs to have room for all resources in the 
+                 * problem, but will only have occupied a few of them. however, 
+                 * this is drammatically faster than having a properly sized 
+                 * collection on which we put()/get() all the time.
+                 */
+                return this.instance.renewableResourceUseInTime[time] = new int[this.instance.maxResourceId + 1];
+            } else {
+                return totalUse;
             }
-            return totalUse;
         }
 
         public int getTotalCapacityDifference() {
             return this.totalCapacityDifference;
         }
 
-        /*
-         * FIXME better algo or data type??? the map is a huge perf bottleneck.
-         */
         private void processRequirementChange(final int resourceId, final int resourceCapacity, final int newRequirement,
-                final TIntIntMap overallRequirements) {
-            overallRequirements.put(resourceId,
-                    this.recalculateRequirements(overallRequirements.get(resourceId), newRequirement, resourceCapacity));
+                final int[] overallRequirements) {
+            overallRequirements[resourceId] = this.recalculateRequirements(overallRequirements[resourceId], newRequirement, resourceCapacity);
         }
 
         protected abstract int recalculateRequirements(int currentTotalUse, int resourceRequirement,
@@ -139,13 +140,15 @@ public class CapacityTracker {
      * same meaning as {@link #nonRenewableResourceUsage}, only for renewable
      * resources.
      */
-    private final TIntIntMap[] renewableResourceUseInTime;
+    private final int[][] renewableResourceUseInTime;
 
     /**
      * Key is the {@link Resource#getUniqueId()} of a resource and value is the
      * resource usage currently registered.
      */
-    private final TIntIntMap nonRenewableResourceUsage = new TIntIntHashMap();
+    private final int[] nonRenewableResourceUsage;
+
+    private final int maxResourceId;
 
     private int overused = 0;
 
@@ -153,8 +156,10 @@ public class CapacityTracker {
 
     private int idle = 0;
 
-    public CapacityTracker(final int horizon) {
-        this.renewableResourceUseInTime = new TIntIntMap[horizon + 1];
+    public CapacityTracker(final ProblemInstance problem) {
+        this.maxResourceId = problem.getMaxResourceId();
+        this.renewableResourceUseInTime = new int[problem.getMaxAllowedDueDate() + 1][];
+        this.nonRenewableResourceUsage = new int[this.maxResourceId + 1];
     }
 
     public void add(final Allocation a) {

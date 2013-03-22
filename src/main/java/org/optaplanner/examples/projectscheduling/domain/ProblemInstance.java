@@ -20,6 +20,7 @@ public class ProblemInstance {
     private final List<Project> projects;
     private final int maxDuration;
     private final int maxStartDate;
+    private final int maxResourceId;
     private final int minReleaseDate;
     private final int totalJobCount;
 
@@ -48,10 +49,21 @@ public class ProblemInstance {
         this.maxDuration = maxDuration;
         this.minReleaseDate = minReleaseDate;
         this.projects = Collections.unmodifiableList(tmp);
+        int maxResourceId = Integer.MIN_VALUE;
+        for (final Project p : this.getProjects()) {
+            for (final Job j : p.getJobs()) {
+                maxResourceId = Math.max(maxResourceId, j.getMaxResourceId());
+            }
+        }
+        this.maxResourceId = maxResourceId;
     }
 
     public int getMaxAllowedDueDate() {
         return this.maxStartDate + this.maxDuration;
+    }
+
+    public int getMaxResourceId() {
+        return this.maxResourceId;
     }
 
     public int getMinReleaseDate() {

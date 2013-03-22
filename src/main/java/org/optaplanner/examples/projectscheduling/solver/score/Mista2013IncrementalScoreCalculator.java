@@ -87,7 +87,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final ProblemInstance problem = workingSolution.getProblem();
         this.properties = new ProjectPropertiesTracker(problem);
         this.precedenceRelations = new PrecedenceRelationsTracker(workingSolution);
-        this.resourceUse = new CapacityTracker(problem.getMaxAllowedDueDate());
+        this.resourceUse = new CapacityTracker(problem);
         // insert new entities
         for (final Allocation a : workingSolution.getAllocations()) {
             this.insert(a);
