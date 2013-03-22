@@ -89,12 +89,14 @@ public class CapacityTracker {
 
         @Override
         public boolean execute(final Resource resource, final int requirement) {
+            final int resourceId = resource.getUniqueId();
+            final int resourceCapacity = resource.getCapacity();
             if (resource.isRenewable()) {
                 for (int time = this.startDate; time++ <= this.dueDate;) {
-                    this.processRequirementChange(resource, requirement, this.getRequirementsInTime(time));
+                    this.processRequirementChange(resourceId, resourceCapacity, requirement, this.getRequirementsInTime(time));
                 }
             } else {
-                this.processRequirementChange(resource, requirement, this.instance.nonRenewableResourceUsage);
+                this.processRequirementChange(resourceId, resourceCapacity, requirement, this.instance.nonRenewableResourceUsage);
             }
             return true;
         }
@@ -123,11 +125,10 @@ public class CapacityTracker {
         /*
          * FIXME better algo or data type??? the map is a huge perf bottleneck.
          */
-        private void processRequirementChange(final Resource r, final int newRequirement,
+        private void processRequirementChange(final int resourceId, final int resourceCapacity, final int newRequirement,
                 final TIntIntMap overallRequirements) {
-            final int resourceId = r.getUniqueId();
             overallRequirements.put(resourceId,
-                    this.recalculateRequirements(overallRequirements.get(resourceId), newRequirement, r.getCapacity()));
+                    this.recalculateRequirements(overallRequirements.get(resourceId), newRequirement, resourceCapacity));
         }
 
         protected abstract int recalculateRequirements(int currentTotalUse, int resourceRequirement,
