@@ -1,9 +1,7 @@
 package org.optaplanner.examples.projectscheduling.solver.score.util;
 
 import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
@@ -110,10 +108,10 @@ public class CapacityTracker {
         }
 
         private TIntIntMap getRequirementsInTime(final int time) {
-            TIntIntMap totalUse = this.instance.renewableResourceUseInTime.get(time);
+            TIntIntMap totalUse = this.instance.renewableResourceUseInTime[time];
             if (totalUse == null) {
                 totalUse = new TIntIntHashMap();
-                this.instance.renewableResourceUseInTime.put(time, totalUse);
+                this.instance.renewableResourceUseInTime[time] = totalUse;
             }
             return totalUse;
         }
@@ -141,7 +139,7 @@ public class CapacityTracker {
      * same meaning as {@link #nonRenewableResourceUsage}, only for renewable
      * resources.
      */
-    private final TIntObjectMap<TIntIntMap> renewableResourceUseInTime;
+    private final TIntIntMap[] renewableResourceUseInTime;
 
     /**
      * Key is the {@link Resource#getUniqueId()} of a resource and value is the
@@ -156,7 +154,7 @@ public class CapacityTracker {
     private int idle = 0;
 
     public CapacityTracker(final int horizon) {
-        this.renewableResourceUseInTime = new TIntObjectHashMap<TIntIntMap>(horizon);
+        this.renewableResourceUseInTime = new TIntIntMap[horizon + 1];
     }
 
     public void add(final Allocation a) {
