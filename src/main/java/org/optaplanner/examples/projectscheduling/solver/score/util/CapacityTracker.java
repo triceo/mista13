@@ -31,9 +31,6 @@ public class CapacityTracker {
                 // the capacity remains idle
                 this.idleDifference += requirement;
             }
-            if (newTotalUse == 0) {
-                this.totalCapacityDifference -= capacity;
-            }
             return newTotalUse;
         }
 
@@ -59,9 +56,6 @@ public class CapacityTracker {
                 // the capacity remains idle
                 this.idleDifference -= requirement;
             }
-            if (currentTotalUse == 0) {
-                this.totalCapacityDifference += capacity;
-            }
             return newTotalUse;
         }
 
@@ -71,7 +65,6 @@ public class CapacityTracker {
 
         protected int overusedDifference;
         protected int idleDifference;
-        protected int totalCapacityDifference;
 
         private final int startDate;
         private final int dueDate;
@@ -119,10 +112,6 @@ public class CapacityTracker {
             }
         }
 
-        public int getTotalCapacityDifference() {
-            return this.totalCapacityDifference;
-        }
-
         private void processRequirementChange(final int resourceId, final int resourceCapacity, final int newRequirement,
                 final int[] overallRequirements) {
             overallRequirements[resourceId] = this.recalculateRequirements(overallRequirements[resourceId], newRequirement, resourceCapacity);
@@ -150,8 +139,6 @@ public class CapacityTracker {
 
     private int overused = 0;
 
-    private int total = 0;
-
     private int idle = 0;
 
     public CapacityTracker(final ProblemInstance problem) {
@@ -172,17 +159,12 @@ public class CapacityTracker {
         return this.overused;
     }
 
-    public int getTotalCapacity() {
-        return this.total;
-    }
-
     private void process(final Allocation a, final ResourceManager rm) {
         for (final ResourceRequirement rr : a.getJobMode().getResourceRequirements()) {
             rm.execute(rr.getResource(), rr.getRequirement());
         }
         this.idle += rm.getIdleDifference();
         this.overused += rm.getOverusedDifference();
-        this.total += rm.getTotalCapacityDifference();
     }
 
     public void remove(final Allocation a) {
