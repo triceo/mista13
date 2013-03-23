@@ -7,7 +7,7 @@ import org.optaplanner.core.api.domain.value.ValueRange;
 import org.optaplanner.core.api.domain.value.ValueRangeType;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.examples.projectscheduling.domain.solver.AllocationDifficultyComparator;
-import org.optaplanner.examples.projectscheduling.domain.solver.JobModeComparator;
+import org.optaplanner.examples.projectscheduling.domain.solver.JobModeStrengthWeightFactory;
 import org.optaplanner.examples.projectscheduling.domain.solver.StartDateStrengthComparator;
 
 @PlanningEntity(difficultyComparatorClass = AllocationDifficultyComparator.class)
@@ -39,7 +39,7 @@ public class Allocation {
         return this.job;
     }
 
-    @PlanningVariable(strengthComparatorClass = JobModeComparator.class)
+    @PlanningVariable(strengthWeightFactoryClass = JobModeStrengthWeightFactory.class)
     @ValueRange(planningEntityProperty = "jobModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public JobMode getJobMode() {
         return this.jobMode;
