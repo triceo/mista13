@@ -6,11 +6,11 @@ import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.value.ValueRange;
 import org.optaplanner.core.api.domain.value.ValueRangeType;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
-import org.optaplanner.examples.projectscheduling.domain.solver.AllocationComparator;
+import org.optaplanner.examples.projectscheduling.domain.solver.AllocationDifficultyComparator;
 import org.optaplanner.examples.projectscheduling.domain.solver.JobModeComparator;
-import org.optaplanner.examples.projectscheduling.domain.solver.StartDateComparator;
+import org.optaplanner.examples.projectscheduling.domain.solver.StartDateStrengthComparator;
 
-@PlanningEntity(difficultyComparatorClass = AllocationComparator.class)
+@PlanningEntity(difficultyComparatorClass = AllocationDifficultyComparator.class)
 public class Allocation {
 
     private final Job job;
@@ -49,7 +49,7 @@ public class Allocation {
         return this.job.getJobModes();
     }
 
-    @PlanningVariable(strengthComparatorClass = StartDateComparator.class)
+    @PlanningVariable(strengthComparatorClass = StartDateStrengthComparator.class)
     @ValueRange(planningEntityProperty = "startDates", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public Integer getStartDate() {
         return this.startDate;
