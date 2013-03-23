@@ -4,7 +4,7 @@ import java.util.Date;
 
 import javax.swing.BoxLayout;
 
-import org.optaplanner.core.solution.Solution;
+import org.optaplanner.core.impl.solution.Solution;
 import org.optaplanner.examples.common.swingui.SolutionPanel;
 import org.optaplanner.examples.common.swingui.TangoColorFactory;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;

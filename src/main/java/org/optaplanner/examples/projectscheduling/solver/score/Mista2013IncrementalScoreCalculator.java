@@ -1,7 +1,7 @@
 package org.optaplanner.examples.projectscheduling.solver.score;
 
-import org.optaplanner.core.score.buildin.bendable.BendableScore;
-import org.optaplanner.core.score.director.incremental.AbstractIncrementalScoreCalculator;
+import org.optaplanner.core.api.score.buildin.bendable.BendableScore;
+import org.optaplanner.core.impl.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Mista2013;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;

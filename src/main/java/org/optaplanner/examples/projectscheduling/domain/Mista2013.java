@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.optaplanner.api.domain.solution.PlanningEntityCollectionProperty;
-import org.optaplanner.api.domain.solution.PlanningSolution;
-import org.optaplanner.core.score.buildin.bendable.BendableScore;
-import org.optaplanner.core.solution.Solution;
+import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
+import org.optaplanner.core.api.domain.solution.PlanningSolution;
+import org.optaplanner.core.api.score.buildin.bendable.BendableScore;
+import org.optaplanner.core.impl.solution.Solution;
 import org.optaplanner.examples.projectscheduling.solver.solution.Mista2013SolutionCloner;
 
 @PlanningSolution(solutionCloner = Mista2013SolutionCloner.class)

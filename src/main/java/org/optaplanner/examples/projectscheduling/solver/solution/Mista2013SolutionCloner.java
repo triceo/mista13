@@ -1,6 +1,6 @@
 package org.optaplanner.examples.projectscheduling.solver.solution;
 
-import org.optaplanner.api.domain.solution.cloner.SolutionCloner;
+import org.optaplanner.core.api.domain.solution.cloner.SolutionCloner;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Mista2013;

@@ -1,7 +1,8 @@
 package org.optaplanner.examples.projectscheduling.app;
 
-import org.optaplanner.config.XmlSolverFactory;
-import org.optaplanner.core.Solver;
+import org.optaplanner.core.api.solver.SolverFactory;
+import org.optaplanner.core.config.solver.XmlSolverFactory;
+import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.examples.common.app.CommonApp;
 import org.optaplanner.examples.common.persistence.AbstractSolutionExporter;
 import org.optaplanner.examples.common.persistence.AbstractSolutionImporter;
@@ -43,8 +44,7 @@ public class Mista2013App extends CommonApp {
 
     @Override
     protected Solver createSolver() {
-        final XmlSolverFactory solverFactory = new XmlSolverFactory();
-        solverFactory.configure(Mista2013App.SOLVER_CONFIG);
+        final SolverFactory solverFactory = new XmlSolverFactory(Mista2013App.SOLVER_CONFIG);
         return solverFactory.buildSolver();
     }
 

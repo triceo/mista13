@@ -2,7 +2,7 @@ package org.optaplanner.examples.projectscheduling.persistence;
 
 import java.io.IOException;
 
-import org.optaplanner.core.solution.Solution;
+import org.optaplanner.core.impl.solution.Solution;
 import org.optaplanner.examples.common.persistence.AbstractTxtSolutionExporter;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
