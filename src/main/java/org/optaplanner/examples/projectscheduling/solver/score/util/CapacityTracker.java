@@ -11,129 +11,18 @@ import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
  */
 public class CapacityTracker {
 
-    private static class ResourceDecreaser extends ResourceManager {
-
-        public ResourceDecreaser(final Allocation a, final CapacityTracker instance) {
-            super(a, instance);
-        }
-
-        @Override
-        public int recalculateRequirements(final int currentTotalUse, final int requirement, final int capacity) {
-            final int newTotalUse = currentTotalUse - requirement;
-            if (newTotalUse > capacity) {
-                // remove the decrease over the already overreached capacity
-                this.overusedDifference -= requirement;
-            } else if (currentTotalUse > capacity) {
-                // the capacity is newly idle
-                this.overusedDifference -= currentTotalUse - capacity;
-                this.idleDifference += capacity - newTotalUse;
-            } else {
-                // the capacity remains idle
-                this.idleDifference += requirement;
-            }
-            return newTotalUse;
-        }
-
-    }
-
-    private static class ResourceIncreaser extends ResourceManager {
-
-        public ResourceIncreaser(final Allocation a, final CapacityTracker instance) {
-            super(a, instance);
-        }
-
-        @Override
-        public int recalculateRequirements(final int currentTotalUse, final int requirement, final int capacity) {
-            final int newTotalUse = requirement + currentTotalUse;
-            if (currentTotalUse > capacity) {
-                // add the increase over the already overreached capacity
-                this.overusedDifference += requirement;
-            } else if (newTotalUse > capacity) {
-                // the capacity is newly overreached
-                this.overusedDifference += newTotalUse - capacity;
-                this.idleDifference -= capacity - currentTotalUse;
-            } else {
-                // the capacity remains idle
-                this.idleDifference -= requirement;
-            }
-            return newTotalUse;
-        }
-
-    }
-
-    private static abstract class ResourceManager {
-
-        protected int overusedDifference;
-        protected int idleDifference;
-
-        private final int startDate;
-        private final int dueDate;
-        private final CapacityTracker instance;
-
-        public ResourceManager(final Allocation a, final CapacityTracker instance) {
-            this.startDate = a.getStartDate();
-            this.dueDate = a.getDueDate();
-            this.instance = instance;
-        }
-
-        public boolean execute(final Resource resource, final int requirement) {
-            final int resourceId = resource.getUniqueId();
-            final int resourceCapacity = resource.getCapacity();
-            if (resource.isRenewable()) {
-                for (int time = this.startDate; time++ <= this.dueDate;) {
-                    this.processRequirementChange(resourceId, resourceCapacity, requirement, this.getRequirementsInTime(time));
-                }
-            } else {
-                this.processRequirementChange(resourceId, resourceCapacity, requirement, this.instance.nonRenewableResourceUsage);
-            }
-            return true;
-        }
-
-        public int getIdleDifference() {
-            return this.idleDifference;
-        }
-
-        public int getOverusedDifference() {
-            return this.overusedDifference;
-        }
-
-        private int[] getRequirementsInTime(final int time) {
-            final int[] totalUse = this.instance.renewableResourceUseInTime[time];
-            if (totalUse == null) {
-                /*
-                 * this array needs to have room for all resources in the 
-                 * problem, but will only have occupied a few of them. however, 
-                 * this is drammatically faster than having a properly sized 
-                 * collection on which we put()/get() all the time.
-                 */
-                return this.instance.renewableResourceUseInTime[time] = new int[this.instance.maxResourceId + 1];
-            } else {
-                return totalUse;
-            }
-        }
-
-        private void processRequirementChange(final int resourceId, final int resourceCapacity, final int newRequirement,
-                final int[] overallRequirements) {
-            overallRequirements[resourceId] = this.recalculateRequirements(overallRequirements[resourceId], newRequirement, resourceCapacity);
-        }
-
-        protected abstract int recalculateRequirements(int currentTotalUse, int resourceRequirement,
-                int resourceCapacity);
-
-    }
-
     /**
      * Key is the time at which the resource use is registered. Value has the
-     * same meaning as {@link #nonRenewableResourceUsage}, only for renewable
+     * same meaning as {@link #nonRenewableResourceConsumption}, only for renewable
      * resources.
      */
-    private final int[][] renewableResourceUseInTime;
+    private final int[][] renewableResourceConsumptionInTime;
 
     /**
      * Key is the {@link Resource#getUniqueId()} of a resource and value is the
      * resource usage currently registered.
      */
-    private final int[] nonRenewableResourceUsage;
+    private final int[] nonRenewableResourceConsumption;
 
     private final int maxResourceId;
 
@@ -143,12 +32,34 @@ public class CapacityTracker {
 
     public CapacityTracker(final ProblemInstance problem) {
         this.maxResourceId = problem.getMaxResourceId();
-        this.renewableResourceUseInTime = new int[problem.getMaxAllowedDueDate() + 1][];
-        this.nonRenewableResourceUsage = new int[this.maxResourceId + 1];
+        this.renewableResourceConsumptionInTime = new int[problem.getMaxAllowedDueDate() + 1][];
+        this.nonRenewableResourceConsumption = new int[this.maxResourceId + 1];
     }
 
     public void add(final Allocation a) {
-        this.process(a, new ResourceIncreaser(a, this));
+        this.process(a, true);
+    }
+
+    /**
+     * Retrieve resource consumption existing at a given time.
+     * 
+     * @param time
+     *            Time in question, 0 is the beginning of the world.
+     * @return Key is the {@link Resource#getUniqueId()}, value is the consumption.
+     */
+    private int[] getConsumptionInTime(final int time) {
+        final int[] totalUse = this.renewableResourceConsumptionInTime[time];
+        if (totalUse == null) {
+            /*
+             * this array needs to have room for all resources in the
+             * problem, but will only have occupied a few of them. however,
+             * this is dramatically faster than having a properly sized
+             * collection on which we put()/get() all the time.
+             */
+            return this.renewableResourceConsumptionInTime[time] = new int[this.maxResourceId + 1];
+        } else {
+            return totalUse;
+        }
     }
 
     public int getIdleCapacity() {
@@ -159,16 +70,75 @@ public class CapacityTracker {
         return this.overused;
     }
 
-    private void process(final Allocation a, final ResourceManager rm) {
-        for (final ResourceRequirement rr : a.getJobMode().getResourceRequirements()) {
-            rm.execute(rr.getResource(), rr.getRequirement());
+    private void changeConsumption(final boolean isAdding, final int resourceId, final int resourceCapacity, final int newRequirement,
+            final int[] overallConsumption) {
+        if (isAdding) {
+            overallConsumption[resourceId] = this.recalculateConsumptionOnAddition(overallConsumption[resourceId], newRequirement, resourceCapacity);
+        } else {
+            overallConsumption[resourceId] = this.recalculateConsumptionOnRemoval(overallConsumption[resourceId], newRequirement, resourceCapacity);
         }
-        this.idle += rm.getIdleDifference();
-        this.overused += rm.getOverusedDifference();
+    }
+
+    /**
+     * Update capacity information based on the addition/removal of the
+     * supplied allocation.
+     * 
+     * @param a
+     *            The allocation in question.
+     *            @param isAdding Whether or not the allocation is being added or removed.
+     */
+    private void process(final Allocation a, final boolean isAdding) {
+        final int startDate = a.getStartDate();
+        final int dueDate = a.getDueDate();
+        for (final ResourceRequirement rr : a.getJobMode().getResourceRequirements()) {
+            final Resource resource = rr.getResource();
+            final int requirement = rr.getRequirement();
+            final int resourceId = resource.getUniqueId();
+            final int resourceCapacity = resource.getCapacity();
+            if (resource.isRenewable()) {
+                for (int time = startDate; time++ <= dueDate;) {
+                    this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.getConsumptionInTime(time));
+                }
+            } else {
+                this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.nonRenewableResourceConsumption);
+            }
+        }
+    }
+
+    private int recalculateConsumptionOnAddition(final int currentTotalUse, final int requirement, final int capacity) {
+        final int newTotalUse = requirement + currentTotalUse;
+        if (currentTotalUse > capacity) {
+            // add the increase over the already overreached capacity
+            this.overused += requirement;
+        } else if (newTotalUse > capacity) {
+            // the capacity is newly overreached
+            this.overused += newTotalUse - capacity;
+            this.idle -= capacity - currentTotalUse;
+        } else {
+            // the capacity remains idle
+            this.idle -= requirement;
+        }
+        return newTotalUse;
+    }
+
+    private int recalculateConsumptionOnRemoval(final int currentTotalUse, final int requirement, final int capacity) {
+        final int newTotalUse = currentTotalUse - requirement;
+        if (newTotalUse > capacity) {
+            // remove the decrease over the already overreached capacity
+            this.overused -= requirement;
+        } else if (currentTotalUse > capacity) {
+            // the capacity is newly idle
+            this.overused -= currentTotalUse - capacity;
+            this.idle += capacity - newTotalUse;
+        } else {
+            // the capacity remains idle
+            this.idle += requirement;
+        }
+        return newTotalUse;
     }
 
     public void remove(final Allocation a) {
-        this.process(a, new ResourceDecreaser(a, this));
+        this.process(a, false);
     }
 
 }
