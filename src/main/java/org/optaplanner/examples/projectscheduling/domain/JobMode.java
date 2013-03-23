@@ -1,7 +1,7 @@
 package org.optaplanner.examples.projectscheduling.domain;
 
-import gnu.trove.TCollections;
-import gnu.trove.map.TObjectIntMap;
+import java.util.Collection;
+import java.util.Collections;
 
 public class JobMode {
 
@@ -10,15 +10,15 @@ public class JobMode {
     private final int duration;
 
     private Job parentJob;
-    private final TObjectIntMap<Resource> resourceRequirements;
+    private final Collection<ResourceRequirement> resourceRequirements;
 
-    public JobMode(final int id, final int duration, final TObjectIntMap<Resource> resourceRequirements) {
+    public JobMode(final int id, final int duration, final Collection<ResourceRequirement> resourceRequirements) {
         if (id < 0) {
             throw new IllegalArgumentException("Job mode id must be >= 0.");
         }
         this.id = id;
         this.duration = duration;
-        this.resourceRequirements = TCollections.unmodifiableMap(resourceRequirements);
+        this.resourceRequirements = Collections.unmodifiableCollection(resourceRequirements);
     }
 
     public int getDuration() {
@@ -33,7 +33,7 @@ public class JobMode {
         return this.parentJob;
     }
 
-    public TObjectIntMap<Resource> getResourceRequirements() {
+    public Collection<ResourceRequirement> getResourceRequirements() {
         return this.resourceRequirements;
     }
 

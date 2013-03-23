@@ -1,10 +1,9 @@
 package org.optaplanner.examples.projectscheduling.solver.score.util;
 
-import gnu.trove.procedure.TObjectIntProcedure;
-
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
+import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
 
 /**
  * Validates feasibility requirements (1), (2) and (3). Counts how many more
@@ -68,7 +67,7 @@ public class CapacityTracker {
 
     }
 
-    private static abstract class ResourceManager implements TObjectIntProcedure<Resource> {
+    private static abstract class ResourceManager {
 
         protected int overusedDifference;
         protected int idleDifference;
@@ -84,7 +83,6 @@ public class CapacityTracker {
             this.instance = instance;
         }
 
-        @Override
         public boolean execute(final Resource resource, final int requirement) {
             final int resourceId = resource.getUniqueId();
             final int resourceCapacity = resource.getCapacity();
@@ -179,7 +177,9 @@ public class CapacityTracker {
     }
 
     private void process(final Allocation a, final ResourceManager rm) {
-        a.getJobMode().getResourceRequirements().forEachEntry(rm);
+        for (final ResourceRequirement rr : a.getJobMode().getResourceRequirements()) {
+            rm.execute(rr.getResource(), rr.getRequirement());
+        }
         this.idle += rm.getIdleDifference();
         this.overused += rm.getOverusedDifference();
         this.total += rm.getTotalCapacityDifference();

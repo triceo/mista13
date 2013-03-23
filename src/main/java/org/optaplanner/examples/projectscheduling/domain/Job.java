@@ -65,8 +65,8 @@ public class Job {
         // find the total amount of different resources
         int maxResourceId = Integer.MIN_VALUE;
         for (final JobMode jm : this.getJobModes()) {
-            for (final Resource r : jm.getResourceRequirements().keySet()) {
-                maxResourceId = Math.max(maxResourceId, r.getUniqueId());
+            for (final ResourceRequirement r : jm.getResourceRequirements()) {
+                maxResourceId = Math.max(maxResourceId, r.getResource().getUniqueId());
             }
         }
         this.maxResourceId = maxResourceId;

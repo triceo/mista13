@@ -1,10 +1,8 @@
 package org.optaplanner.examples.projectscheduling.persistence;
 
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +16,7 @@ import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
 import org.optaplanner.examples.projectscheduling.domain.Resource.ResourceType;
+import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
 import org.optaplanner.examples.projectscheduling.persistence.parsers.instance.RawInstance;
 import org.optaplanner.examples.projectscheduling.persistence.parsers.instance.RawProject;
 import org.optaplanner.examples.projectscheduling.persistence.parsers.project.Precedence;
@@ -48,14 +47,13 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     }
                     // prepare resource consumption data
                     int resourceId = 0;
-                    final TObjectIntMap<Resource> resourceConsumption = new TObjectIntHashMap<Resource>(
-                            resources.size());
+                    final Collection<ResourceRequirement> resourceConsumption = new ArrayList<ResourceRequirement>(resources.size());
                     for (final Resource resource : resources) {
                         final int consumption = r.getResources().get(resourceId);
                         if (consumption > 0) {
                             // only use the resources that are actually being
                             // consumed
-                            resourceConsumption.put(resource, consumption);
+                            resourceConsumption.add(new ResourceRequirement(resource, consumption));
                         }
                         resourceId++;
                     }
