@@ -59,6 +59,7 @@
         </changeMoveSelector>
         <swapMoveSelector>
           <variableNameInclude>startDate</variableNameInclude>
+          <filterClass>org.optaplanner.examples.projectscheduling.solver.move.filter.SwapMoveFilter</filterClass>
         </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
