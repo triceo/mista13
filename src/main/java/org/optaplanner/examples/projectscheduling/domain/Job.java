@@ -23,16 +23,16 @@ public class Job {
     }
 
     private final int id;
+    private Project parentProject;
+
+    private final boolean isSource;
+    private final boolean isSink;
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
     private final List<JobMode> jobModes;
-    private Project parentProject;
-    private final boolean isSource;
+
     private final int maxDuration;
     private final int maxResourceId;
-
-    private final boolean isSink;
-
     private List<Job> predecessors = new ArrayList<Job>();
 
     public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors, final JobType type) {
@@ -76,45 +76,16 @@ public class Job {
         return this.id;
     }
 
-    public JobMode getJobMode(final int id) {
-        if (id < 1 || id > this.jobModes.size()) {
-            throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
-        }
-        return this.jobModes.get(id - 1);
-    }
-
-    public Collection<JobMode> getJobModes() {
-        return this.jobModes;
-    }
-
-    public int getMaxDuration() {
-        return this.maxDuration;
-    }
-
-    public int getMaxResourceId() {
-        return this.maxResourceId;
-    }
-
     public Project getParentProject() {
         return this.parentProject;
     }
 
-    public List<Job> getPredecessors() {
-        return this.predecessors;
-    }
-
-    public List<Job> getRecursiveSuccessors() {
-        return this.recursiveSuccessors;
-    }
-
-    public List<Job> getSuccessors() {
-        return this.successors;
-    }
-
-    private void isPreceededBy(final Job j) {
-        final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
-        predecessors.add(j);
-        this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));
+    protected void setParentProject(final Project p) {
+        if (this.parentProject == null) {
+            this.parentProject = p;
+        } else {
+            throw new IllegalStateException("Cannot override parent project!");
+        }
     }
 
     public boolean isSink() {
@@ -125,12 +96,41 @@ public class Job {
         return this.isSource;
     }
 
-    protected void setParentProject(final Project p) {
-        if (this.parentProject == null) {
-            this.parentProject = p;
-        } else {
-            throw new IllegalStateException("Cannot override parent project!");
+    public List<Job> getSuccessors() {
+        return this.successors;
+    }
+
+    public List<Job> getRecursiveSuccessors() {
+        return this.recursiveSuccessors;
+    }
+
+    public Collection<JobMode> getJobModes() {
+        return this.jobModes;
+    }
+
+    public JobMode getJobMode(final int id) {
+        if (id < 1 || id > this.jobModes.size()) {
+            throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
         }
+        return this.jobModes.get(id - 1);
+    }
+
+    public int getMaxDuration() {
+        return this.maxDuration;
+    }
+
+    public int getMaxResourceId() {
+        return this.maxResourceId;
+    }
+
+    public List<Job> getPredecessors() {
+        return this.predecessors;
+    }
+
+    private void isPreceededBy(final Job j) {
+        final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
+        predecessors.add(j);
+        this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));
     }
 
     @Override

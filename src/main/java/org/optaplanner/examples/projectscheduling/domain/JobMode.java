@@ -6,10 +6,9 @@ import java.util.Collections;
 public class JobMode {
 
     private final int id;
+    private Job parentJob;
 
     private final int duration;
-
-    private Job parentJob;
     private final Collection<ResourceRequirement> resourceRequirements;
 
     public JobMode(final int id, final int duration, final Collection<ResourceRequirement> resourceRequirements) {
@@ -21,10 +20,6 @@ public class JobMode {
         this.resourceRequirements = Collections.unmodifiableCollection(resourceRequirements);
     }
 
-    public int getDuration() {
-        return this.duration;
-    }
-
     public int getId() {
         return this.id;
     }
@@ -33,16 +28,20 @@ public class JobMode {
         return this.parentJob;
     }
 
-    public Collection<ResourceRequirement> getResourceRequirements() {
-        return this.resourceRequirements;
-    }
-
     protected void setParentJob(final Job parentJob) {
         if (this.parentJob == null) {
             this.parentJob = parentJob;
         } else {
             throw new IllegalStateException("Cannot override job mode's parent job.");
         }
+    }
+
+    public int getDuration() {
+        return this.duration;
+    }
+
+    public Collection<ResourceRequirement> getResourceRequirements() {
+        return this.resourceRequirements;
     }
 
     @Override

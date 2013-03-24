@@ -7,17 +7,17 @@ public class Resource {
     private static final AtomicInteger idGenerator = new AtomicInteger(0);
 
     public static enum ResourceType {
-
-        RENEWABLE, NONRENEWABLE, DOUBLE_CONSTRAINED;
-
+        RENEWABLE,
+        NONRENEWABLE,
+        DOUBLE_CONSTRAINED;
     }
 
     private final int id;
     private final int uniqueId;
 
-    private int capacity = -1;
     private final boolean isGlobal;
     private final boolean isRenewable;
+    private int capacity = -1;
 
     public Resource(final int id) {
         this.isGlobal = true;
@@ -34,10 +34,6 @@ public class Resource {
         this.id = id;
         this.uniqueId = Resource.idGenerator.getAndIncrement();
         this.isRenewable = (type == ResourceType.RENEWABLE);
-    }
-
-    public int getCapacity() {
-        return this.capacity;
     }
 
     public int getId() {
@@ -61,6 +57,10 @@ public class Resource {
 
     public boolean isRenewable() {
         return this.isRenewable;
+    }
+
+    public int getCapacity() {
+        return this.capacity;
     }
 
     public void setCapacity(final int capacity) {

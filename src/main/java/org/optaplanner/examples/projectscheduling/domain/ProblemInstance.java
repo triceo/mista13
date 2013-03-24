@@ -18,17 +18,18 @@ public class ProblemInstance {
     }
 
     private final List<Project> projects;
-    private final int maxDuration;
-    private final int maxStartDate;
-    private final int maxResourceId;
+
     private final int minReleaseDate;
+    private final int maxStartDate;
+    private final int maxDuration;
     private final int totalJobCount;
+    private final int maxResourceId;
 
     public ProblemInstance(final Collection<Project> projects) {
         // and now find the max due date for any of the projects
-        int maxDuration = Integer.MIN_VALUE;
-        int maxStartDate = Integer.MIN_VALUE;
         int minReleaseDate = Integer.MAX_VALUE;
+        int maxStartDate = Integer.MIN_VALUE;
+        int maxDuration = Integer.MIN_VALUE;
         int tmpJobCount = 0;
         final List<Project> tmp = new ArrayList<Project>(projects.size());
         for (final Project p : projects) {
@@ -44,10 +45,10 @@ public class ProblemInstance {
                     Collections.max(p.getAvailableJobStartDates(), new IntegerComparator()));
             tmpJobCount += p.getJobs().size();
         }
-        this.totalJobCount = tmpJobCount;
+        this.minReleaseDate = minReleaseDate;
         this.maxStartDate = maxStartDate;
         this.maxDuration = maxDuration;
-        this.minReleaseDate = minReleaseDate;
+        this.totalJobCount = tmpJobCount;
         this.projects = Collections.unmodifiableList(tmp);
         int maxResourceId = Integer.MIN_VALUE;
         for (final Project p : this.getProjects()) {
@@ -58,24 +59,24 @@ public class ProblemInstance {
         this.maxResourceId = maxResourceId;
     }
 
-    public int getMaxAllowedDueDate() {
-        return this.maxStartDate + this.maxDuration;
-    }
-
-    public int getMaxResourceId() {
-        return this.maxResourceId;
+    public List<Project> getProjects() {
+        return this.projects;
     }
 
     public int getMinReleaseDate() {
         return this.minReleaseDate;
     }
 
-    public List<Project> getProjects() {
-        return this.projects;
+    public int getMaxAllowedDueDate() {
+        return this.maxStartDate + this.maxDuration;
     }
 
     public int getTotalNumberOfJobs() {
         return this.totalJobCount;
+    }
+
+    public int getMaxResourceId() {
+        return this.maxResourceId;
     }
 
 }

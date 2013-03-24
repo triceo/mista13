@@ -18,17 +18,15 @@ public class Project {
         return Collections.unmodifiableCollection(startDates);
     }
 
+    private ProblemInstance parentInstance;
     private final int id;
 
     private final int releaseDate;
-
     private final List<Resource> resources;
-
     private final List<Job> jobs;
 
     private final int criticalPathDuration;
 
-    private ProblemInstance parentInstance;
     private final Collection<Integer> startDates;
 
     public Project(final int id, final int criticalPathDuration, final int releaseDate, final List<Resource> resources,
@@ -45,32 +43,40 @@ public class Project {
                 * Project.TMD_MULTIPLIER);
     }
 
-    public Collection<Integer> getAvailableJobStartDates() {
-        return this.startDates;
+    public ProblemInstance getParentInstance() {
+        return this.parentInstance;
     }
 
-    public int getCriticalPathDuration() {
-        return this.criticalPathDuration;
+    protected void setParentInstance(final ProblemInstance parent) {
+        if (this.parentInstance == null) {
+            this.parentInstance = parent;
+        } else {
+            throw new IllegalStateException("Cannot override job's parent instance.");
+        }
     }
 
     public int getId() {
         return this.id;
     }
 
-    public List<Job> getJobs() {
-        return this.jobs;
-    }
-
-    public ProblemInstance getParentInstance() {
-        return this.parentInstance;
-    }
-
     public int getReleaseDate() {
         return this.releaseDate;
     }
 
+    public List<Job> getJobs() {
+        return this.jobs;
+    }
+
     public List<Resource> getResources() {
         return this.resources;
+    }
+
+    public int getCriticalPathDuration() {
+        return this.criticalPathDuration;
+    }
+
+    public Collection<Integer> getAvailableJobStartDates() {
+        return this.startDates;
     }
 
     private int getTheoreticalMaxDuration() {
@@ -86,14 +92,6 @@ public class Project {
             max = Math.max(max, this.getTheoreticalMaxDuration(successor));
         }
         return max + startWith.getMaxDuration();
-    }
-
-    protected void setParentInstance(final ProblemInstance parent) {
-        if (this.parentInstance == null) {
-            this.parentInstance = parent;
-        } else {
-            throw new IllegalStateException("Cannot override job's parent instance.");
-        }
     }
 
     @Override
