@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
-import org.optaplanner.examples.projectscheduling.domain.Mista2013;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 /**
  * Validates feasibility requirement (7). How many precedence relations are
@@ -57,7 +57,7 @@ public class PrecedenceRelationsTracker {
      */
     private final Map<Job, Set<Job>> brokenBonds;
 
-    public PrecedenceRelationsTracker(final Mista2013 solution) {
+    public PrecedenceRelationsTracker(final ProjectSchedule solution) {
         this.expectedJobCount = solution.getAllocations().size();
         this.allocations = new HashMap<Job, Allocation>(this.expectedJobCount);
         this.brokenBonds = new HashMap<Job, Set<Job>>(this.expectedJobCount);

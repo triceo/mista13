@@ -3,13 +3,13 @@ package org.optaplanner.examples.projectscheduling.solver.score;
 import org.optaplanner.core.api.score.buildin.bendable.BendableScore;
 import org.optaplanner.core.impl.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
-import org.optaplanner.examples.projectscheduling.domain.Mista2013;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.solver.score.util.CapacityTracker;
 import org.optaplanner.examples.projectscheduling.solver.score.util.PrecedenceRelationsTracker;
 import org.optaplanner.examples.projectscheduling.solver.score.util.ProjectPropertiesTracker;
 
-public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
+public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<ProjectSchedule> {
 
     private ProjectPropertiesTracker projectPropertiesTracker;
 
@@ -18,7 +18,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private PrecedenceRelationsTracker precedenceRelationsTracker;
 
     @Override
-    public void resetWorkingSolution(final Mista2013 workingSolution) {
+    public void resetWorkingSolution(final ProjectSchedule workingSolution) {
         // change to the new problem
         final ProblemInstance problem = workingSolution.getProblem();
         this.projectPropertiesTracker = new ProjectPropertiesTracker(problem);

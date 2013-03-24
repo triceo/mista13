@@ -8,7 +8,7 @@
       <inputSolutionFile>data/projectscheduling/input/A-10.txt</inputSolutionFile>
     </problemBenchmarks>
     <solver>
-      <solutionClass>org.optaplanner.examples.projectscheduling.domain.Mista2013</solutionClass>
+      <solutionClass>org.optaplanner.examples.projectscheduling.domain.ProjectSchedule</solutionClass>
       <planningEntityClass>org.optaplanner.examples.projectscheduling.domain.Allocation</planningEntityClass>
 
       <scoreDirectorFactory>

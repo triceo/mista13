@@ -11,7 +11,7 @@ import org.optaplanner.examples.common.persistence.AbstractTxtSolutionImporter;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Job.JobType;
 import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
-import org.optaplanner.examples.projectscheduling.domain.Mista2013;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
@@ -101,7 +101,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
         }
 
         @Override
-        public Mista2013 readSolution() throws IOException {
+        public ProjectSchedule readSolution() throws IOException {
             final RawInstance instance = RawInstance.parse(this.inputFile);
             // prepare global resources
             final List<Resource> globalResources = new ArrayList<Resource>();
@@ -122,7 +122,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                 final Project p = this.buildProject(rp, globalResources);
                 projects.add(p);
             }
-            return new Mista2013(new ProblemInstance(projects));
+            return new ProjectSchedule(new ProblemInstance(projects));
         }
 
     }

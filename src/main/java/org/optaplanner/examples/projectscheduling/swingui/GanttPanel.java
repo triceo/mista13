@@ -9,7 +9,7 @@ import org.optaplanner.examples.common.swingui.SolutionPanel;
 import org.optaplanner.examples.common.swingui.TangoColorFactory;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
-import org.optaplanner.examples.projectscheduling.domain.Mista2013;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -26,7 +26,7 @@ public class GanttPanel extends SolutionPanel {
 
     private static final long serialVersionUID = -1962577861486577643L;
 
-    public static IntervalCategoryDataset createDataset(final Mista2013 solution) {
+    public static IntervalCategoryDataset createDataset(final ProjectSchedule solution) {
         final TaskSeriesCollection collection = new TaskSeriesCollection();
         for (final Project p : solution.getProblem().getProjects()) {
             final TaskSeries series = new TaskSeries("Proj. " + p.getId());
@@ -67,7 +67,7 @@ public class GanttPanel extends SolutionPanel {
 
     @Override
     public void resetPanel(@SuppressWarnings("rawtypes") final Solution solution) {
-        final IntervalCategoryDataset dataset = GanttPanel.createDataset((Mista2013) solution);
+        final IntervalCategoryDataset dataset = GanttPanel.createDataset((ProjectSchedule) solution);
         final JFreeChart chart = this.createChart(dataset);
 
         // add the chart to a panel...

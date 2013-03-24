@@ -14,14 +14,14 @@ import org.optaplanner.core.impl.solution.Solution;
 import org.optaplanner.examples.projectscheduling.solver.solution.Mista2013SolutionCloner;
 
 @PlanningSolution(solutionCloner = Mista2013SolutionCloner.class)
-public class Mista2013 implements Solution<BendableScore> {
+public class ProjectSchedule implements Solution<BendableScore> {
 
     private final ProblemInstance problem;
     private final Collection<Allocation> allocations;
     private final Map<Job, Allocation> allocationsPerJob;
     private BendableScore score;
 
-    public Mista2013(final ProblemInstance input) {
+    public ProjectSchedule(final ProblemInstance input) {
         this.problem = input;
         this.allocationsPerJob = new HashMap<Job, Allocation>(input.getTotalNumberOfJobs());
         final List<Allocation> allocations = new ArrayList<Allocation>(input.getTotalNumberOfJobs());

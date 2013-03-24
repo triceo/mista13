@@ -3,11 +3,11 @@ package org.optaplanner.examples.projectscheduling.domain.solver;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.optaplanner.core.impl.heuristic.selector.common.decorator.SelectionSorterWeightFactory;
 import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
-import org.optaplanner.examples.projectscheduling.domain.Mista2013;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
 import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
 
-public class ExecutionModeStrengthWeightFactory implements SelectionSorterWeightFactory<Mista2013, ExecutionMode> {
+public class ExecutionModeStrengthWeightFactory implements SelectionSorterWeightFactory<ProjectSchedule, ExecutionMode> {
 
     private static class ExecutionModeStrengthWeight implements Comparable<ExecutionModeStrengthWeight> {
 
@@ -40,7 +40,7 @@ public class ExecutionModeStrengthWeightFactory implements SelectionSorterWeight
     }
 
     @Override
-    public Comparable<ExecutionModeStrengthWeight> createSorterWeight(final Mista2013 mista2013, final ExecutionMode executionMode) {
+    public Comparable<ExecutionModeStrengthWeight> createSorterWeight(final ProjectSchedule projectSchedule, final ExecutionMode executionMode) {
         return new ExecutionModeStrengthWeight(executionMode);
     }
 

@@ -7,16 +7,16 @@ import org.optaplanner.examples.common.persistence.AbstractTxtSolutionExporter;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
 import org.optaplanner.examples.projectscheduling.domain.Job;
-import org.optaplanner.examples.projectscheduling.domain.Mista2013;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 
 public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
 
     private final class Mista2013TxtOutputBuilder extends TxtOutputBuilder {
 
-        private Mista2013 solution;
+        private ProjectSchedule solution;
 
-        private int getMaxDueDate(final Mista2013 solution, final Project p) {
+        private int getMaxDueDate(final ProjectSchedule solution, final Project p) {
             int max = Integer.MIN_VALUE;
             for (final Allocation a : solution.getAllocations()) {
                 if (a.getJob().getParentProject() != p) {
@@ -27,7 +27,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
             return max;
         }
 
-        private int getMinStartDate(final Mista2013 solution, final Project p) {
+        private int getMinStartDate(final ProjectSchedule solution, final Project p) {
             int min = Integer.MAX_VALUE;
             for (final Allocation a : solution.getAllocations()) {
                 if (a.getJob().getParentProject() != p) {
@@ -40,10 +40,10 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
 
         @Override
         public void setSolution(@SuppressWarnings("rawtypes") final Solution solution) {
-            if (!(solution instanceof Mista2013)) {
+            if (!(solution instanceof ProjectSchedule)) {
                 throw new IllegalArgumentException("Please provide a valid Mista2013 solution instance.");
             }
-            this.solution = (Mista2013) solution;
+            this.solution = (ProjectSchedule) solution;
         }
 
         @Override
