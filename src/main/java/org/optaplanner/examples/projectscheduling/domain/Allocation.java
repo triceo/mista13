@@ -40,7 +40,7 @@ public class Allocation {
     }
 
     @PlanningVariable(strengthWeightFactoryClass = ExecutionModeStrengthWeightFactory.class)
-    @ValueRange(planningEntityProperty = "executionModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    @ValueRange(planningEntityProperty = "executionModeRange", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public ExecutionMode getExecutionMode() {
         return this.executionMode;
     }
@@ -51,8 +51,12 @@ public class Allocation {
         this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
+    public Collection<ExecutionMode> getExecutionModeRange() {
+        return this.job.getExecutionModes();
+    }
+
     @PlanningVariable(strengthComparatorClass = StartDateStrengthComparator.class)
-    @ValueRange(planningEntityProperty = "startDates", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    @ValueRange(planningEntityProperty = "startDateRange", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
     public Integer getStartDate() {
         return this.startDate;
     }
@@ -61,6 +65,10 @@ public class Allocation {
         this.isStartDateSet = (startDate != null);
         this.startDate = startDate;
         this.setDueDate(this.getStartDate(), this.executionMode);
+    }
+
+    public Collection<Integer> getStartDateRange() {
+        return this.job.getParentProject().getAvailableJobStartDates();
     }
 
     public boolean isInitialized() {
@@ -72,14 +80,6 @@ public class Allocation {
             return;
         }
         this.dueDate = startDate + (jm.getDuration() - 1);
-    }
-
-    public Collection<ExecutionMode> getExecutionModes() {
-        return this.job.getExecutionModes();
-    }
-
-    public Collection<Integer> getStartDates() {
-        return this.job.getParentProject().getAvailableJobStartDates();
     }
 
     @Override
