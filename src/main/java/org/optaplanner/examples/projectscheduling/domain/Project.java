@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Project {
 
-    private static final double TMD_MULTIPLIER = 4;
+    private static final double TMD_MULTIPLIER = 7;
 
     private static Collection<Integer> getStartDates(final int start, final double length) {
         final int actualLength = (int) Math.ceil(length);
@@ -39,7 +39,7 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getTheoreticalMaxDuration()
+        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getTheoreticalMaxDuration() + criticalPathDuration
                 * Project.TMD_MULTIPLIER);
     }
 
