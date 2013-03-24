@@ -18,28 +18,16 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     private PrecedenceRelationsTracker precedenceRelations;
 
     @Override
-    public void afterAllVariablesChanged(final Object entity) {
-        this.insert((Allocation) entity);
-    }
-
-    @Override
-    public void afterEntityAdded(final Object entity) {
-        this.insert((Allocation) entity);
-    }
-
-    @Override
-    public void afterEntityRemoved(final Object entity) {
-        // Do nothing
-    }
-
-    @Override
-    public void afterVariableChanged(final Object entity, final String variableName) {
-        this.insert((Allocation) entity);
-    }
-
-    @Override
-    public void beforeAllVariablesChanged(final Object entity) {
-        this.retract((Allocation) entity);
+    public void resetWorkingSolution(final Mista2013 workingSolution) {
+        // change to the new problem
+        final ProblemInstance problem = workingSolution.getProblem();
+        this.properties = new ProjectPropertiesTracker(problem);
+        this.precedenceRelations = new PrecedenceRelationsTracker(workingSolution);
+        this.resourceUse = new CapacityTracker(problem);
+        // insert new entities
+        for (final Allocation allocation : workingSolution.getAllocations()) {
+            insert(allocation);
+        }
     }
 
     @Override
@@ -48,13 +36,58 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     @Override
-    public void beforeEntityRemoved(final Object entity) {
-        this.retract((Allocation) entity);
+    public void afterEntityAdded(final Object entity) {
+        // TODO the maps/trackers should probably be adjusted
+        insert((Allocation) entity);
+    }
+
+    @Override
+    public void beforeAllVariablesChanged(final Object entity) {
+        retract((Allocation) entity);
+    }
+
+    @Override
+    public void afterAllVariablesChanged(final Object entity) {
+        insert((Allocation) entity);
     }
 
     @Override
     public void beforeVariableChanged(final Object entity, final String variableName) {
-        this.retract((Allocation) entity);
+        retract((Allocation) entity);
+    }
+
+    @Override
+    public void afterVariableChanged(final Object entity, final String variableName) {
+        insert((Allocation) entity);
+    }
+
+    @Override
+    public void beforeEntityRemoved(final Object entity) {
+        retract((Allocation) entity);
+    }
+
+    @Override
+    public void afterEntityRemoved(final Object entity) {
+        // Do nothing
+        // TODO the maps/trackers should probably be adjusted
+    }
+
+    private void insert(final Allocation entity) {
+        if (!entity.isInitialized()) {
+            return;
+        }
+        this.resourceUse.add(entity);
+        this.precedenceRelations.add(entity);
+        this.properties.add(entity);
+    }
+
+    private void retract(final Allocation entity) {
+        if (!entity.isInitialized()) {
+            return;
+        }
+        this.resourceUse.remove(entity);
+        this.precedenceRelations.remove(entity);
+        this.properties.remove(entity);
     }
 
     @Override
@@ -72,34 +105,4 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         return BendableScore.valueOf(new int[]{-hard}, new int[]{-medium, -soft, -this.resourceUse.getIdleCapacity()});
     }
 
-    private void insert(final Allocation entity) {
-        if (!entity.isInitialized()) {
-            return;
-        }
-        this.resourceUse.add(entity);
-        this.precedenceRelations.add(entity);
-        this.properties.add(entity);
-    }
-
-    @Override
-    public void resetWorkingSolution(final Mista2013 workingSolution) {
-        // change to the new problem
-        final ProblemInstance problem = workingSolution.getProblem();
-        this.properties = new ProjectPropertiesTracker(problem);
-        this.precedenceRelations = new PrecedenceRelationsTracker(workingSolution);
-        this.resourceUse = new CapacityTracker(problem);
-        // insert new entities
-        for (final Allocation a : workingSolution.getAllocations()) {
-            this.insert(a);
-        }
-    }
-
-    private void retract(final Allocation entity) {
-        if (!entity.isInitialized()) {
-            return;
-        }
-        this.resourceUse.remove(entity);
-        this.precedenceRelations.remove(entity);
-        this.properties.remove(entity);
-    }
 }
