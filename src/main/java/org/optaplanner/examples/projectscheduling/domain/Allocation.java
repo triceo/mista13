@@ -14,12 +14,12 @@ import org.optaplanner.examples.projectscheduling.domain.solver.StartDateStrengt
 public class Allocation {
 
     private final Job job;
+
     private ExecutionMode executionMode;
     private Integer startDate;
     private int dueDate;
 
     private boolean isExecutionModeSet = false;
-
     private boolean isStartDateSet = false;
 
     public Allocation(final Job job) {
@@ -45,8 +45,10 @@ public class Allocation {
         return this.executionMode;
     }
 
-    public Collection<ExecutionMode> getExecutionModes() {
-        return this.job.getExecutionModes();
+    public void setExecutionMode(final ExecutionMode executionMode) {
+        this.isExecutionModeSet = (executionMode != null);
+        this.executionMode = executionMode;
+        this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
     @PlanningVariable(strengthComparatorClass = StartDateStrengthComparator.class)
@@ -55,8 +57,10 @@ public class Allocation {
         return this.startDate;
     }
 
-    public Collection<Integer> getStartDates() {
-        return this.job.getParentProject().getAvailableJobStartDates();
+    public void setStartDate(final Integer startDate) {
+        this.isStartDateSet = (startDate != null);
+        this.startDate = startDate;
+        this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
     public boolean isInitialized() {
@@ -70,16 +74,12 @@ public class Allocation {
         this.dueDate = startDate + (jm.getDuration() - 1);
     }
 
-    public void setExecutionMode(final ExecutionMode executionMode) {
-        this.isExecutionModeSet = (executionMode != null);
-        this.executionMode = executionMode;
-        this.setDueDate(this.getStartDate(), this.executionMode);
+    public Collection<ExecutionMode> getExecutionModes() {
+        return this.job.getExecutionModes();
     }
 
-    public void setStartDate(final Integer startDate) {
-        this.isStartDateSet = (startDate != null);
-        this.startDate = startDate;
-        this.setDueDate(this.getStartDate(), this.executionMode);
+    public Collection<Integer> getStartDates() {
+        return this.job.getParentProject().getAvailableJobStartDates();
     }
 
     @Override
