@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Project {
 
+    private static final double TMD_MULTIPLIER = 4;
+
     private static Collection<Integer> getStartDates(final int start, final double length) {
         final int actualLength = (int) Math.ceil(length);
         final Collection<Integer> startDates = new ArrayList<Integer>(actualLength);
@@ -23,8 +25,6 @@ public class Project {
     private final List<Resource> resources;
 
     private final List<Job> jobs;
-
-    private static final double TMD_MULTIPLIER = 4;
 
     private final int criticalPathDuration;
 

@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Resource {
 
+    private static final AtomicInteger idGenerator = new AtomicInteger(0);
+
     public static enum ResourceType {
 
         RENEWABLE, NONRENEWABLE, DOUBLE_CONSTRAINED;
@@ -12,8 +14,6 @@ public class Resource {
 
     private final int id;
     private final int uniqueId;
-
-    private static final AtomicInteger idGenerator = new AtomicInteger(0);
 
     private int capacity = -1;
     private final boolean isGlobal;
