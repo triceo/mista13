@@ -10,7 +10,7 @@ import java.util.Map;
 import org.optaplanner.examples.common.persistence.AbstractTxtSolutionImporter;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Job.JobType;
-import org.optaplanner.examples.projectscheduling.domain.JobMode;
+import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
 import org.optaplanner.examples.projectscheduling.domain.Mista2013;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.domain.Project;
@@ -40,7 +40,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     successors.add(jobCache.get(successorId));
                 }
                 // prepare job modes
-                final List<JobMode> modes = new ArrayList<JobMode>(requests.size());
+                final List<ExecutionMode> modes = new ArrayList<ExecutionMode>(requests.size());
                 for (final Request r : requests) {
                     if (r.getJobNumber() != jobId) {
                         continue;
@@ -57,7 +57,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                         }
                         resourceId++;
                     }
-                    modes.add(new JobMode(r.getMode(), r.getDuration(), resourceConsumption));
+                    modes.add(new ExecutionMode(r.getMode(), r.getDuration(), resourceConsumption));
                 }
                 JobType jt = null;
                 if (jobId == precedence.size()) {

@@ -15,7 +15,7 @@ public class Mista2013SolutionCloner implements SolutionCloner<Mista2013> {
             final Job j = a.getJob();
             final Allocation originalAllocation = original.getAllocation(j);
             final Allocation clonedAllocation = clone.getAllocation(j);
-            clonedAllocation.setJobMode(originalAllocation.getJobMode());
+            clonedAllocation.setExecutionMode(originalAllocation.getExecutionMode());
             clonedAllocation.setStartDate(originalAllocation.getStartDate());
         }
         return clone;

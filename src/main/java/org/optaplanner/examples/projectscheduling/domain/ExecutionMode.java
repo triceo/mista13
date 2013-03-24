@@ -3,7 +3,7 @@ package org.optaplanner.examples.projectscheduling.domain;
 import java.util.Collection;
 import java.util.Collections;
 
-public class JobMode {
+public class ExecutionMode {
 
     private final int id;
     private Job parentJob;
@@ -11,7 +11,7 @@ public class JobMode {
     private final int duration;
     private final Collection<ResourceRequirement> resourceRequirements;
 
-    public JobMode(final int id, final int duration, final Collection<ResourceRequirement> resourceRequirements) {
+    public ExecutionMode(final int id, final int duration, final Collection<ResourceRequirement> resourceRequirements) {
         if (id < 0) {
             throw new IllegalArgumentException("Job mode id must be >= 0.");
         }
@@ -47,7 +47,7 @@ public class JobMode {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("JobMode [id=").append(this.id).append(", duration=").append(this.duration)
+        builder.append("ExecutionMode [id=").append(this.id).append(", duration=").append(this.duration)
                 .append(", parentJob=").append(this.parentJob.getId()).append(", resourceRequirements=")
                 .append(this.resourceRequirements).append("]");
         return builder.toString();

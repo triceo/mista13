@@ -2,26 +2,26 @@ package org.optaplanner.examples.projectscheduling.domain.solver;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.optaplanner.core.impl.heuristic.selector.common.decorator.SelectionSorterWeightFactory;
-import org.optaplanner.examples.projectscheduling.domain.JobMode;
+import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
 import org.optaplanner.examples.projectscheduling.domain.Mista2013;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
 import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
 
-public class JobModeStrengthWeightFactory implements SelectionSorterWeightFactory<Mista2013, JobMode> {
+public class ExecutionModeStrengthWeightFactory implements SelectionSorterWeightFactory<Mista2013, ExecutionMode> {
 
-    private static class JobModeStrengthWeight implements Comparable<JobModeStrengthWeight> {
+    private static class ExecutionModeStrengthWeight implements Comparable<ExecutionModeStrengthWeight> {
 
-        private final JobMode jobMode;
+        private final ExecutionMode executionMode;
         private int durationTotal;
 
-        public JobModeStrengthWeight(final JobMode jobMode) {
-            this.jobMode = jobMode;
+        public ExecutionModeStrengthWeight(final ExecutionMode executionMode) {
+            this.executionMode = executionMode;
             this.durationTotal = 0;
-            for (final ResourceRequirement rr : jobMode.getResourceRequirements()) {
+            for (final ResourceRequirement rr : executionMode.getResourceRequirements()) {
                 final int requirement = rr.getRequirement();
                 final Resource resource = rr.getResource();
                 if (resource.isRenewable()) {
-                    this.durationTotal += requirement * this.jobMode.getDuration();
+                    this.durationTotal += requirement * this.executionMode.getDuration();
                 } else {
                     this.durationTotal += requirement;
                 }
@@ -29,19 +29,19 @@ public class JobModeStrengthWeightFactory implements SelectionSorterWeightFactor
         }
 
         @Override
-        public int compareTo(final JobModeStrengthWeight other) {
+        public int compareTo(final ExecutionModeStrengthWeight other) {
             return new CompareToBuilder()
                     // less duration is stronger
                     .append(other.durationTotal, this.durationTotal) // Descending
-                    .append(this.jobMode.getId(), other.jobMode.getId())
+                    .append(this.executionMode.getId(), other.executionMode.getId())
                     .toComparison();
         }
 
     }
 
     @Override
-    public Comparable<JobModeStrengthWeight> createSorterWeight(final Mista2013 mista2013, final JobMode jobMode) {
-        return new JobModeStrengthWeight(jobMode);
+    public Comparable<ExecutionModeStrengthWeight> createSorterWeight(final Mista2013 mista2013, final ExecutionMode executionMode) {
+        return new ExecutionModeStrengthWeight(executionMode);
     }
 
 }

@@ -90,7 +90,7 @@ public class CapacityTracker {
     private void process(final Allocation a, final boolean isAdding) {
         final int startDate = a.getStartDate();
         final int dueDate = a.getDueDate();
-        for (final ResourceRequirement rr : a.getJobMode().getResourceRequirements()) {
+        for (final ResourceRequirement rr : a.getExecutionMode().getResourceRequirements()) {
             final Resource resource = rr.getResource();
             final int requirement = rr.getRequirement();
             final int resourceId = resource.getUniqueId();

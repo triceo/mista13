@@ -7,18 +7,18 @@ import org.optaplanner.core.api.domain.value.ValueRange;
 import org.optaplanner.core.api.domain.value.ValueRangeType;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.examples.projectscheduling.domain.solver.AllocationDifficultyComparator;
-import org.optaplanner.examples.projectscheduling.domain.solver.JobModeStrengthWeightFactory;
+import org.optaplanner.examples.projectscheduling.domain.solver.ExecutionModeStrengthWeightFactory;
 import org.optaplanner.examples.projectscheduling.domain.solver.StartDateStrengthComparator;
 
 @PlanningEntity(difficultyComparatorClass = AllocationDifficultyComparator.class)
 public class Allocation {
 
     private final Job job;
-    private JobMode jobMode;
+    private ExecutionMode executionMode;
     private Integer startDate;
     private int dueDate;
 
-    private boolean isJobModeSet = false;
+    private boolean isExecutionModeSet = false;
 
     private boolean isStartDateSet = false;
 
@@ -39,14 +39,14 @@ public class Allocation {
         return this.job;
     }
 
-    @PlanningVariable(strengthWeightFactoryClass = JobModeStrengthWeightFactory.class)
-    @ValueRange(planningEntityProperty = "jobModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
-    public JobMode getJobMode() {
-        return this.jobMode;
+    @PlanningVariable(strengthWeightFactoryClass = ExecutionModeStrengthWeightFactory.class)
+    @ValueRange(planningEntityProperty = "executionModes", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    public ExecutionMode getExecutionMode() {
+        return this.executionMode;
     }
 
-    public Collection<JobMode> getJobModes() {
-        return this.job.getJobModes();
+    public Collection<ExecutionMode> getExecutionModes() {
+        return this.job.getExecutionModes();
     }
 
     @PlanningVariable(strengthComparatorClass = StartDateStrengthComparator.class)
@@ -60,26 +60,26 @@ public class Allocation {
     }
 
     public boolean isInitialized() {
-        return this.isJobModeSet && this.isStartDateSet;
+        return this.isExecutionModeSet && this.isStartDateSet;
     }
 
-    private void setDueDate(final Integer startDate, final JobMode jm) {
+    private void setDueDate(final Integer startDate, final ExecutionMode jm) {
         if (!this.isInitialized()) {
             return;
         }
         this.dueDate = startDate + (jm.getDuration() - 1);
     }
 
-    public void setJobMode(final JobMode jobMode) {
-        this.isJobModeSet = (jobMode != null);
-        this.jobMode = jobMode;
-        this.setDueDate(this.getStartDate(), this.jobMode);
+    public void setExecutionMode(final ExecutionMode executionMode) {
+        this.isExecutionModeSet = (executionMode != null);
+        this.executionMode = executionMode;
+        this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
     public void setStartDate(final Integer startDate) {
         this.isStartDateSet = (startDate != null);
         this.startDate = startDate;
-        this.setDueDate(this.getStartDate(), this.jobMode);
+        this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
     @Override
@@ -89,8 +89,8 @@ public class Allocation {
         if (job != null) {
             builder.append("job=").append(job).append(", ");
         }
-        if (jobMode != null) {
-            builder.append("jobMode=").append(jobMode.getId()).append(", ");
+        if (executionMode != null) {
+            builder.append("executionMode=").append(executionMode.getId()).append(", ");
         }
         if (startDate != null) {
             builder.append("startDate=").append(startDate);

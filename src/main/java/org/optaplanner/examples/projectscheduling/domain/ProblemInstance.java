@@ -3,7 +3,6 @@ package org.optaplanner.examples.projectscheduling.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ProblemInstance {
@@ -28,7 +27,7 @@ public class ProblemInstance {
             tmp.add(p);
             minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
             for (final Job j : p.getJobs()) {
-                for (final JobMode jm : j.getJobModes()) {
+                for (final ExecutionMode jm : j.getExecutionModes()) {
                     maxDuration = Math.max(maxDuration, jm.getDuration());
                 }
             }

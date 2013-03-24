@@ -22,7 +22,7 @@
       <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
         <valueSelector>
-          <variableName>jobMode</variableName>
+          <variableName>executionMode</variableName>
         </valueSelector>
       </changeMoveSelector>
       <changeMoveSelector>

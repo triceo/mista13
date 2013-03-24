@@ -49,7 +49,7 @@
       <unionMoveSelector>
         <changeMoveSelector>
           <valueSelector>
-            <variableName>jobMode</variableName>
+            <variableName>executionMode</variableName>
           </valueSelector>
         </changeMoveSelector>
         <changeMoveSelector>

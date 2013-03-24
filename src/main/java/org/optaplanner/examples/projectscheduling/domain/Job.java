@@ -29,13 +29,13 @@ public class Job {
     private final boolean isSink;
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
-    private final List<JobMode> jobModes;
+    private final List<ExecutionMode> executionModes;
 
     private final int maxDuration;
     private final int maxResourceId;
     private List<Job> predecessors = new ArrayList<Job>();
 
-    public Job(final int id, final Collection<JobMode> modes, final Collection<Job> successors, final JobType type) {
+    public Job(final int id, final Collection<ExecutionMode> modes, final Collection<Job> successors, final JobType type) {
         this.id = id;
         // update successor info
         this.successors = Collections.unmodifiableList(new ArrayList<Job>(successors));
@@ -49,22 +49,22 @@ public class Job {
             j.isPrecededBy(this);
         }
         // prepare job modes
-        final List<JobMode> jobModes = new ArrayList<JobMode>(modes.size());
-        for (final JobMode m : modes) {
+        final List<ExecutionMode> executionModes = new ArrayList<ExecutionMode>(modes.size());
+        for (final ExecutionMode m : modes) {
             m.setParentJob(this);
-            jobModes.add(m.getId() - 1, m);
+            executionModes.add(m.getId() - 1, m);
         }
-        this.jobModes = Collections.unmodifiableList(jobModes);
+        this.executionModes = Collections.unmodifiableList(executionModes);
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
         int max = Integer.MIN_VALUE;
-        for (final JobMode jm : this.jobModes) {
+        for (final ExecutionMode jm : this.executionModes) {
             max = Math.max(max, jm.getDuration());
         }
         this.maxDuration = max;
         // find the total amount of different resources
         int maxResourceId = Integer.MIN_VALUE;
-        for (final JobMode jm : this.getJobModes()) {
+        for (final ExecutionMode jm : this.getExecutionModes()) {
             for (final ResourceRequirement r : jm.getResourceRequirements()) {
                 maxResourceId = Math.max(maxResourceId, r.getResource().getUniqueId());
             }
@@ -104,15 +104,15 @@ public class Job {
         return this.recursiveSuccessors;
     }
 
-    public Collection<JobMode> getJobModes() {
-        return this.jobModes;
+    public Collection<ExecutionMode> getExecutionModes() {
+        return this.executionModes;
     }
 
-    public JobMode getJobMode(final int id) {
-        if (id < 1 || id > this.jobModes.size()) {
+    public ExecutionMode getExecutionMode(final int id) {
+        if (id < 1 || id > this.executionModes.size()) {
             throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
         }
-        return this.jobModes.get(id - 1);
+        return this.executionModes.get(id - 1);
     }
 
     public int getMaxDuration() {

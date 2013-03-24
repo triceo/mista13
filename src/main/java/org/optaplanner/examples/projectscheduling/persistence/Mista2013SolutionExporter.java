@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.optaplanner.core.impl.solution.Solution;
 import org.optaplanner.examples.common.persistence.AbstractTxtSolutionExporter;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
+import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
 import org.optaplanner.examples.projectscheduling.domain.Job;
-import org.optaplanner.examples.projectscheduling.domain.JobMode;
 import org.optaplanner.examples.projectscheduling.domain.Mista2013;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 
@@ -52,7 +52,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
                 final int id = p.getId();
                 for (final Job j : p.getJobs()) {
                     int startDate = -1;
-                    JobMode jobMode = j.getJobMode(1);
+                    ExecutionMode executionMode = j.getExecutionMode(1);
                     if (j.isSource()) {
                         startDate = this.getMinStartDate(this.solution, p);
                     } else if (j.isSink()) {
@@ -60,13 +60,13 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
                     } else {
                         final Allocation a = this.solution.getAllocation(j);
                         startDate = a.getStartDate();
-                        jobMode = a.getJobMode();
+                        executionMode = a.getExecutionMode();
                     }
                     this.bufferedWriter.write(String.valueOf(id));
                     this.bufferedWriter.write(" ");
                     this.bufferedWriter.write(String.valueOf(j.getId() - 1));
                     this.bufferedWriter.write(" ");
-                    this.bufferedWriter.write(String.valueOf(jobMode.getId() - 1));
+                    this.bufferedWriter.write(String.valueOf(executionMode.getId() - 1));
                     this.bufferedWriter.write(" ");
                     this.bufferedWriter.write(String.valueOf(startDate));
                     this.bufferedWriter.newLine();
