@@ -11,19 +11,19 @@ import org.optaplanner.examples.projectscheduling.solver.score.util.ProjectPrope
 
 public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<Mista2013> {
 
-    private ProjectPropertiesTracker properties;
+    private ProjectPropertiesTracker projectPropertiesTracker;
 
-    private CapacityTracker resourceUse;
+    private CapacityTracker capacityTracker;
 
-    private PrecedenceRelationsTracker precedenceRelations;
+    private PrecedenceRelationsTracker precedenceRelationsTracker;
 
     @Override
     public void resetWorkingSolution(final Mista2013 workingSolution) {
         // change to the new problem
         final ProblemInstance problem = workingSolution.getProblem();
-        this.properties = new ProjectPropertiesTracker(problem);
-        this.precedenceRelations = new PrecedenceRelationsTracker(workingSolution);
-        this.resourceUse = new CapacityTracker(problem);
+        this.projectPropertiesTracker = new ProjectPropertiesTracker(problem);
+        this.precedenceRelationsTracker = new PrecedenceRelationsTracker(workingSolution);
+        this.capacityTracker = new CapacityTracker(problem);
         // insert new entities
         for (final Allocation allocation : workingSolution.getAllocations()) {
             insert(allocation);
@@ -76,18 +76,18 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         if (!entity.isInitialized()) {
             return;
         }
-        this.resourceUse.add(entity);
-        this.precedenceRelations.add(entity);
-        this.properties.add(entity);
+        this.capacityTracker.add(entity);
+        this.precedenceRelationsTracker.add(entity);
+        this.projectPropertiesTracker.add(entity);
     }
 
     private void retract(final Allocation entity) {
         if (!entity.isInitialized()) {
             return;
         }
-        this.resourceUse.remove(entity);
-        this.precedenceRelations.remove(entity);
-        this.properties.remove(entity);
+        this.capacityTracker.remove(entity);
+        this.precedenceRelationsTracker.remove(entity);
+        this.projectPropertiesTracker.remove(entity);
     }
 
     @Override
@@ -96,13 +96,13 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
          * validate MISTA requirements. Requirements (4, 5, 6) won't be
          * validated, as planner does that for us.
          */
-        final int brokenReq1and2and3Count = this.resourceUse.getOverusedCapacity();
-        final int brokenReq7Count = this.precedenceRelations.getBrokenPrecedenceRelationsMeasure();
+        final int brokenReq1and2and3Count = this.capacityTracker.getOverusedCapacity();
+        final int brokenReq7Count = this.precedenceRelationsTracker.getBrokenPrecedenceRelationsMeasure();
         // now assemble the constraints
-        final int soft = this.properties.getTotalMakespan();
-        final int medium = this.properties.getTotalProjectDelay();
         final int hard = brokenReq1and2and3Count + brokenReq7Count;
-        return BendableScore.valueOf(new int[]{-hard}, new int[]{-medium, -soft, -this.resourceUse.getIdleCapacity()});
+        final int medium = this.projectPropertiesTracker.getTotalProjectDelay();
+        final int soft = this.projectPropertiesTracker.getTotalMakespan();
+        return BendableScore.valueOf(new int[]{-hard}, new int[]{-medium, -soft, -capacityTracker.getIdleCapacity()});
     }
 
 }
