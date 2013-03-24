@@ -46,7 +46,7 @@ public class Job {
                 .unmodifiableList(new ArrayList<Job>(Job.countSuccessorsRecursively(this)));
         // update predecessor info
         for (final Job j : this.successors) {
-            j.isPreceededBy(this);
+            j.isPrecededBy(this);
         }
         // prepare job modes
         final List<JobMode> jobModes = new ArrayList<JobMode>(modes.size());
@@ -127,7 +127,7 @@ public class Job {
         return this.predecessors;
     }
 
-    private void isPreceededBy(final Job j) {
+    private void isPrecededBy(final Job j) {
         final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
         predecessors.add(j);
         this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));
