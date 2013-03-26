@@ -12,27 +12,24 @@ public class ExecutionModeStrengthWeightFactory implements SelectionSorterWeight
     private static class ExecutionModeStrengthWeight implements Comparable<ExecutionModeStrengthWeight> {
 
         private final ExecutionMode executionMode;
-        private int durationTotal;
+        private int averageRatio;
 
         public ExecutionModeStrengthWeight(final ExecutionMode executionMode) {
             this.executionMode = executionMode;
-            this.durationTotal = 0;
+            double totalRatio = 0;
             for (final ResourceRequirement rr : executionMode.getResourceRequirements()) {
-                final int requirement = rr.getRequirement();
+                final double requirement = rr.getRequirement();
                 final Resource resource = rr.getResource();
-                if (resource.isRenewable()) {
-                    this.durationTotal += requirement * this.executionMode.getDuration();
-                } else {
-                    this.durationTotal += requirement;
-                }
+                totalRatio += requirement * 1000 / resource.getCapacity();
             }
+            this.averageRatio = (int)Math.round(totalRatio / executionMode.getResourceRequirements().size());
         }
 
         @Override
         public int compareTo(final ExecutionModeStrengthWeight other) {
             return new CompareToBuilder()
                     // less duration is stronger
-                    .append(other.durationTotal, this.durationTotal) // Descending
+                    .append(other.averageRatio, this.averageRatio) // Descending
                     .append(this.executionMode.getId(), other.executionMode.getId())
                     .toComparison();
         }
