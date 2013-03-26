@@ -22,7 +22,7 @@
       <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
     </problemBenchmarks>
     <solver>
-      <solutionClass>org.optaplanner.examples.projectscheduling.domain.Mista2013</solutionClass>
+      <solutionClass>org.optaplanner.examples.projectscheduling.domain.ProjectSchedule</solutionClass>
       <planningEntityClass>org.optaplanner.examples.projectscheduling.domain.Allocation</planningEntityClass>
     
       <scoreDirectorFactory>
@@ -48,7 +48,7 @@
       <unionMoveSelector>
         <changeMoveSelector>
           <valueSelector>
-            <variableName>jobMode</variableName>
+            <variableName>executionMode</variableName>
           </valueSelector>
         </changeMoveSelector>
         <changeMoveSelector>
