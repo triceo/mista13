@@ -44,7 +44,7 @@
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT</constructionHeuristicType>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
