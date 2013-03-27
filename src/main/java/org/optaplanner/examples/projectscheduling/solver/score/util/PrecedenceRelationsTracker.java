@@ -45,8 +45,7 @@ public class PrecedenceRelationsTracker {
     private int totalCachedResult = 0;
 
     /**
-     * Allocations that have been {@link #add(Allocation)}ed and not yet
-     * {@link #remove(Allocation)}d.
+     * Allocations that have been {@link #add(Allocation)}ed and not yet {@link #remove(Allocation)}d.
      */
     private final Map<Job, Allocation> allocations;
 
@@ -122,10 +121,10 @@ public class PrecedenceRelationsTracker {
     public void remove(final Allocation a) {
         final Job current = a.getJob();
         for (final Job j : current.getPredecessors()) {
-            this.unbind(j, a);
+            this.unbind(j, current);
         }
         for (final Job j : current.getSuccessors()) {
-            this.unbind(a, j);
+            this.unbind(current, j);
         }
         this.allocations.remove(current);
         if (a.getStartDate() < current.getParentProject().getReleaseDate()) {
@@ -133,30 +132,12 @@ public class PrecedenceRelationsTracker {
         }
     }
 
-    private void unbind(final Allocation fromAlloc, final Allocation toAlloc) {
-        final Job from = fromAlloc.getJob();
-        final Job to = toAlloc.getJob();
+    private void unbind(final Job from, final Job to) {
         if (from.isSource() || to.isSink()) {
             return;
         }
         if (this.isBondBroken(from, to)) {
             this.totalCachedResult -= PrecedenceRelationsTracker.mendBond(from, to, this.brokenBonds);
         }
-    }
-
-    private void unbind(final Allocation from, final Job to) {
-        final Allocation a = this.allocations.get(to);
-        if (a == null) {
-            return;
-        }
-        this.unbind(from, a);
-    }
-
-    private void unbind(final Job from, final Allocation to) {
-        final Allocation a = this.allocations.get(from);
-        if (a == null) {
-            return;
-        }
-        this.unbind(a, to);
     }
 }
