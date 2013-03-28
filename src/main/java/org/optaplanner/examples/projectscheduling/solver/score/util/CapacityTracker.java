@@ -18,6 +18,12 @@ public class CapacityTracker {
      */
     private final int[][] renewableResourceConsumptionInTime;
 
+    /**
+     * Key is the {@link Resource#getUniqueId()} of a resource and value is the
+     * resource usage currently registered.
+     */
+    private final int[] nonRenewableResourceConsumption;
+
     private final int maxResourceId;
 
     private int overused = 0;
@@ -27,6 +33,7 @@ public class CapacityTracker {
     public CapacityTracker(final ProblemInstance problem) {
         this.maxResourceId = problem.getMaxResourceId();
         this.renewableResourceConsumptionInTime = new int[problem.getMaxAllowedDueDate() + 1][];
+        this.nonRenewableResourceConsumption = new int[this.maxResourceId + 1];
     }
 
     public void add(final Allocation a) {
@@ -78,8 +85,7 @@ public class CapacityTracker {
      * 
      * @param a
      *            The allocation in question.
-     * @param isAdding
-     *            Whether or not the allocation is being added or removed.
+     *            @param isAdding Whether or not the allocation is being added or removed.
      */
     private void process(final Allocation a, final boolean isAdding) {
         final int startDate = a.getStartDate();
@@ -89,12 +95,12 @@ public class CapacityTracker {
             final int requirement = rr.getRequirement();
             final int resourceId = resource.getUniqueId();
             final int resourceCapacity = resource.getCapacity();
-            /*
-             * even though non-renewables aren't time based, multiply their resource use by time as with renewables.
-             * this will prevent score traps.
-             */
-            for (int time = startDate; time++ <= dueDate;) {
-                this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.getConsumptionInTime(time));
+            if (resource.isRenewable()) {
+                for (int time = startDate; time++ <= dueDate;) {
+                    this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.getConsumptionInTime(time));
+                }
+            } else {
+                this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.nonRenewableResourceConsumption);
             }
         }
     }
