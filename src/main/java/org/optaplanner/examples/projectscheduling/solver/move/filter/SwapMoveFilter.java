@@ -4,11 +4,9 @@ import org.optaplanner.core.impl.heuristic.selector.common.decorator.SelectionFi
 import org.optaplanner.core.impl.heuristic.selector.move.generic.SwapMove;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
-import org.optaplanner.examples.projectscheduling.domain.Project;
 
 /**
- * Make sure that only values for {@link Allocation}s in the same {@link Project} are
- * swapped.
+ * Make sure that only mutually acceptable values are swapped.
  */
 public class SwapMoveFilter implements SelectionFilter<SwapMove> {
 
@@ -16,7 +14,13 @@ public class SwapMoveFilter implements SelectionFilter<SwapMove> {
     public boolean accept(final ScoreDirector scoreDirector, final SwapMove selection) {
         final Allocation left = (Allocation) selection.getLeftEntity();
         final Allocation right = (Allocation) selection.getRightEntity();
-        return left.getJob().getParentProject() == right.getJob().getParentProject();
+        if (!left.getStartDateRange().contains(right.getStartDate())){
+            return false;
+        } else if (!right.getStartDateRange().contains(left.getStartDate())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }
