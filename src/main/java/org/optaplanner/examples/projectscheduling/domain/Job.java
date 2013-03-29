@@ -33,6 +33,17 @@ public class Job {
         return Collections.unmodifiableSet(result);
     }
 
+    private static int getCriticalPathDurationUntil(final Job until) {
+        if (until.isSource()) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        for (final Job predecessor : until.getPredecessors()) {
+            min = Math.min(min, Job.getCriticalPathDurationUntil(predecessor));
+        }
+        return min + until.getMinDuration();
+    }
+
     private final int id;
     private Project parentProject;
 
@@ -45,6 +56,7 @@ public class Job {
 
     private final int maxDuration;
     private final int maxResourceId;
+    private final int minDuration;
     private List<Job> predecessors = new ArrayList<Job>();
 
     public Job(final int id, final Collection<ExecutionMode> modes, final Collection<Job> successors, final JobType type) {
@@ -70,10 +82,13 @@ public class Job {
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
         int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
         for (final ExecutionMode jm : this.executionModes) {
             max = Math.max(max, jm.getDuration());
+            min = Math.min(min, jm.getDuration());
         }
         this.maxDuration = max;
+        this.minDuration = min;
         // find the total amount of different resources
         int maxResourceId = Integer.MIN_VALUE;
         for (final ExecutionMode jm : this.getExecutionModes()) {
@@ -95,7 +110,14 @@ public class Job {
     protected void setParentProject(final Project p) {
         if (this.parentProject == null) {
             this.parentProject = p;
-            this.startDates = Job.getStartDates(p.getReleaseDate(), p.getTheoreticalMaxDuration() + p.getCriticalPathDuration()
+            /*
+             * start date range starts no sooner than it teoretically can.
+             */
+            final int startDate = p.getReleaseDate() + Job.getCriticalPathDurationUntil(this);
+            /*
+             * and now the start dates are assembled
+             */
+            this.startDates = Job.getStartDates(startDate, p.getTheoreticalMaxDuration() + p.getCriticalPathDuration()
                     * Job.TMD_MULTIPLIER);
         } else {
             throw new IllegalStateException("Cannot override parent project!");
@@ -139,6 +161,10 @@ public class Job {
 
     public int getMaxResourceId() {
         return this.maxResourceId;
+    }
+
+    public int getMinDuration() {
+        return this.minDuration;
     }
 
     public List<Job> getPredecessors() {
