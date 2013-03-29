@@ -25,9 +25,12 @@ public class ProblemInstance {
             p.setParentInstance(this);
             minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
             for (final Job j : p.getJobs()) {
+                maxResourceId = Math.max(maxResourceId, j.getMaxResourceId());
+                if (j.isSink() || j.isSource()) {
+                    continue;
+                }
                 final int dueDate = j.getMaxDuration() + Collections.max(j.getAvailableJobStartDates());
                 maxDueDate = Math.max(maxDueDate, dueDate);
-                maxResourceId = Math.max(maxResourceId, j.getMaxResourceId());
             }
             tmpJobCount += p.getJobs().size();
             tmp.add(p);

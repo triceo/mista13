@@ -117,7 +117,7 @@ public class Job {
             /*
              * and now the start dates are assembled
              */
-            this.startDates = Job.getStartDates(startDate, p.getTheoreticalMaxDuration() + p.getCriticalPathDuration()
+            this.startDates = Job.getStartDates(startDate, Project.getTheoreticalMaxDurationAfter(this) + p.getCriticalPathDuration()
                     * Job.TMD_MULTIPLIER);
         } else {
             throw new IllegalStateException("Cannot override parent project!");
