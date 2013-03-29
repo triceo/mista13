@@ -13,6 +13,17 @@ public class Job {
         SOURCE, SINK, STANDARD
     };
 
+    private static final double TMD_MULTIPLIER = 7;
+
+    private static Collection<Integer> getStartDates(final int start, final double length) {
+        final int actualLength = (int) Math.ceil(length);
+        final Collection<Integer> startDates = new ArrayList<Integer>(actualLength);
+        for (int i = 0; i < actualLength; i++) {
+            startDates.add(i + start);
+        }
+        return Collections.unmodifiableCollection(startDates);
+    }
+
     private static Set<Job> countSuccessorsRecursively(final Job j) {
         final Set<Job> result = new HashSet<Job>();
         for (final Job successor : j.getSuccessors()) {
@@ -30,6 +41,7 @@ public class Job {
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
     private final List<ExecutionMode> executionModes;
+    private Collection<Integer> startDates;
 
     private final int maxDuration;
     private final int maxResourceId;
@@ -83,6 +95,8 @@ public class Job {
     protected void setParentProject(final Project p) {
         if (this.parentProject == null) {
             this.parentProject = p;
+            this.startDates = Job.getStartDates(p.getReleaseDate(), p.getTheoreticalMaxDuration() + p.getCriticalPathDuration()
+                    * Job.TMD_MULTIPLIER);
         } else {
             throw new IllegalStateException("Cannot override parent project!");
         }
@@ -94,6 +108,10 @@ public class Job {
 
     public boolean isSource() {
         return this.isSource;
+    }
+
+    public Collection<Integer> getAvailableJobStartDates() {
+        return this.startDates;
     }
 
     public List<Job> getSuccessors() {

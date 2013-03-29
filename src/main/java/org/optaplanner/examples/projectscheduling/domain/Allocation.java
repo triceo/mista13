@@ -68,7 +68,7 @@ public class Allocation {
     }
 
     public Collection<Integer> getStartDateRange() {
-        return this.job.getParentProject().getAvailableJobStartDates();
+        return this.job.getAvailableJobStartDates();
     }
 
     public boolean isInitialized() {
@@ -84,16 +84,16 @@ public class Allocation {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("Allocation [");
-        if (job != null) {
-            builder.append("job=").append(job).append(", ");
+        if (this.job != null) {
+            builder.append("job=").append(this.job).append(", ");
         }
-        if (executionMode != null) {
-            builder.append("executionMode=").append(executionMode.getId()).append(", ");
+        if (this.executionMode != null) {
+            builder.append("executionMode=").append(this.executionMode.getId()).append(", ");
         }
-        if (startDate != null) {
-            builder.append("startDate=").append(startDate);
+        if (this.startDate != null) {
+            builder.append("startDate=").append(this.startDate);
         }
         builder.append("]");
         return builder.toString();

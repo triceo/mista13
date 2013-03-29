@@ -1,22 +1,9 @@
 package org.optaplanner.examples.projectscheduling.domain;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class Project {
-
-    private static final double TMD_MULTIPLIER = 7;
-
-    private static Collection<Integer> getStartDates(final int start, final double length) {
-        final int actualLength = (int) Math.ceil(length);
-        final Collection<Integer> startDates = new ArrayList<Integer>(actualLength);
-        for (int i = 0; i < actualLength; i++) {
-            startDates.add(i + start);
-        }
-        return Collections.unmodifiableCollection(startDates);
-    }
 
     private ProblemInstance parentInstance;
     private final int id;
@@ -26,8 +13,6 @@ public class Project {
     private final List<Job> jobs;
 
     private final int criticalPathDuration;
-
-    private final Collection<Integer> startDates;
 
     public Project(final int id, final int criticalPathDuration, final int releaseDate, final List<Resource> resources,
             final List<Job> jobs) {
@@ -39,8 +24,6 @@ public class Project {
         for (final Job j : jobs) {
             j.setParentProject(this);
         }
-        this.startDates = Project.getStartDates(this.getReleaseDate(), this.getTheoreticalMaxDuration() + criticalPathDuration
-                * Project.TMD_MULTIPLIER);
     }
 
     public ProblemInstance getParentInstance() {
@@ -75,11 +58,7 @@ public class Project {
         return this.criticalPathDuration;
     }
 
-    public Collection<Integer> getAvailableJobStartDates() {
-        return this.startDates;
-    }
-
-    private int getTheoreticalMaxDuration() {
+    protected int getTheoreticalMaxDuration() {
         return this.getTheoreticalMaxDuration(this.jobs.get(0));
     }
 
