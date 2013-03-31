@@ -13,7 +13,7 @@ public class Job {
         SOURCE, SINK, STANDARD
     };
 
-    private static final double TMD_MULTIPLIER = 7;
+    private static final double TMD_MULTIPLIER = 97;
 
     private static Collection<Integer> getStartDates(final int start, final double length) {
         final int actualLength = (int) Math.ceil(length);
@@ -117,8 +117,7 @@ public class Job {
             /*
              * and now the start dates are assembled
              */
-            this.startDates = Job.getStartDates(startDate, Project.getTheoreticalMaxDurationAfter(this) + p.getCriticalPathDuration()
-                    * Job.TMD_MULTIPLIER);
+            this.startDates = Job.getStartDates(startDate, Project.getTheoreticalMaxDurationAfter(this) * Job.TMD_MULTIPLIER);
         } else {
             throw new IllegalStateException("Cannot override parent project!");
         }
