@@ -19,8 +19,15 @@ public class PrecedenceRelationsTracker {
 
     private static final int ESTIMATED_NUMBER_OF_BONDS = 4;
 
-    private static int getBrokenPrecedenceValidation(final Job to) {
-        return 1 + to.getRecursiveSuccessors().size();
+    private static int getBrokenPrecedenceValidation(final Allocation from, final Allocation to) {
+        final int endFrom = from.getDueDate();
+        final int startTo = to.getStartDate();
+        if (startTo > endFrom) {
+            return 0;
+        } else {
+            // jobs must start after others end, hence the +1
+            return endFrom - startTo + 1;
+        }
     }
 
     private static boolean isPrecedenceCorrect(final Allocation pre, final Allocation current) {
@@ -30,8 +37,7 @@ public class PrecedenceRelationsTracker {
     private int totalCachedResult = 0;
 
     /**
-     * Allocations that have been {@link #add(Allocation)}ed and not yet
-     * {@link #remove(Allocation)}d.
+     * Allocations that have been {@link #add(Allocation)}ed and not yet {@link #remove(Allocation)}d.
      */
     private final Map<Job, Allocation> allocations;
 
@@ -40,12 +46,12 @@ public class PrecedenceRelationsTracker {
      * yet through {@link #mendBond(Job, Job, Map)}. This map always has a
      * predecessor as a key and a direct successor as a value.
      */
-    private final Map<Job, Set<Job>> brokenBonds;
+    private final Map<Allocation, Set<Allocation>> brokenBonds;
 
     public PrecedenceRelationsTracker(final ProjectSchedule solution) {
         this.expectedJobCount = solution.getAllocations().size();
         this.allocations = new HashMap<Job, Allocation>(this.expectedJobCount);
-        this.brokenBonds = new HashMap<Job, Set<Job>>(this.expectedJobCount);
+        this.brokenBonds = new HashMap<Allocation, Set<Allocation>>(this.expectedJobCount);
     }
 
     public void add(final Allocation a) {
@@ -57,21 +63,20 @@ public class PrecedenceRelationsTracker {
         for (final Job j : current.getSuccessors()) {
             this.bind(a, j);
         }
-        if (a.getStartDate() < current.getParentProject().getReleaseDate()) {
-            this.totalCachedResult += PrecedenceRelationsTracker.getBrokenPrecedenceValidation(current);
+        final int difference = a.getStartDate() - current.getParentProject().getReleaseDate();
+        if (difference < 0) {
+            this.totalCachedResult -= difference;
         }
     }
 
-    private void bind(final Allocation fromAlloc, final Allocation toAlloc) {
-        final Job from = fromAlloc.getJob();
-        final Job to = toAlloc.getJob();
-        if (from.isSource() || to.isSink()) {
+    private void bind(final Allocation from, final Allocation to) {
+        if (from.getJob().isSource() || to.getJob().isSink()) {
             return;
         }
         if (this.isBondBroken(from, to)) {
             return;
         }
-        if (!PrecedenceRelationsTracker.isPrecedenceCorrect(fromAlloc, toAlloc)) {
+        if (!PrecedenceRelationsTracker.isPrecedenceCorrect(from, to)) {
             this.totalCachedResult += this.breakBond(from, to);
         }
     }
@@ -92,31 +97,31 @@ public class PrecedenceRelationsTracker {
         this.bind(a, to);
     }
 
-    private int breakBond(final Job from, final Job to) {
-        Set<Job> relation = this.brokenBonds.get(from);
+    private int breakBond(final Allocation from, final Allocation to) {
+        Set<Allocation> relation = this.brokenBonds.get(from);
         if (relation == null) {
-            relation = new HashSet<Job>(PrecedenceRelationsTracker.ESTIMATED_NUMBER_OF_BONDS);
+            relation = new HashSet<Allocation>(PrecedenceRelationsTracker.ESTIMATED_NUMBER_OF_BONDS);
             this.brokenBonds.put(from, relation);
         }
         relation.add(to);
-        return PrecedenceRelationsTracker.getBrokenPrecedenceValidation(to);
+        return PrecedenceRelationsTracker.getBrokenPrecedenceValidation(from, to);
     }
 
     public int getBrokenPrecedenceRelationsMeasure() {
         return this.totalCachedResult;
     }
 
-    private boolean isBondBroken(final Job from, final Job to) {
-        final Set<Job> related = this.brokenBonds.get(from);
+    private boolean isBondBroken(final Allocation from, final Allocation to) {
+        final Set<Allocation> related = this.brokenBonds.get(from);
         if (related == null) {
             return false;
         }
         return related.contains(to);
     }
 
-    private int mendBond(final Job from, final Job to) {
+    private int mendBond(final Allocation from, final Allocation to) {
         this.brokenBonds.get(from).remove(to);
-        return PrecedenceRelationsTracker.getBrokenPrecedenceValidation(to);
+        return PrecedenceRelationsTracker.getBrokenPrecedenceValidation(from, to);
     }
 
     public void remove(final Allocation a) {
@@ -128,15 +133,14 @@ public class PrecedenceRelationsTracker {
             this.unbind(a, j);
         }
         this.allocations.remove(current);
-        if (a.getStartDate() < current.getParentProject().getReleaseDate()) {
-            this.totalCachedResult -= PrecedenceRelationsTracker.getBrokenPrecedenceValidation(current);
+        final int difference = a.getStartDate() - current.getParentProject().getReleaseDate();
+        if (difference < 0) {
+            this.totalCachedResult += difference;
         }
     }
 
-    private void unbind(final Allocation fromAlloc, final Allocation toAlloc) {
-        final Job from = fromAlloc.getJob();
-        final Job to = toAlloc.getJob();
-        if (from.isSource() || to.isSink()) {
+    private void unbind(final Allocation from, final Allocation to) {
+        if (from.getJob().isSource() || to.getJob().isSink()) {
             return;
         }
         if (this.isBondBroken(from, to)) {
