@@ -15,25 +15,25 @@ public class Resource {
     private final int id;
     private final int uniqueId;
 
-    private final boolean isGlobal;
-    private final boolean isRenewable;
+    private final boolean global;
+    private final boolean renewable;
     private int capacity = -1;
 
     public Resource(final int id) {
-        this.isGlobal = true;
+        this.global = true;
         this.id = id;
         this.uniqueId = Resource.idGenerator.getAndIncrement();
-        this.isRenewable = true;
+        this.renewable = true;
     }
 
     public Resource(final int id, final ResourceType type) {
         if (type == ResourceType.DOUBLE_CONSTRAINED) {
             throw new IllegalArgumentException("Double-constrained resources aren't yet supported.");
         }
-        this.isGlobal = false;
+        this.global = false;
         this.id = id;
         this.uniqueId = Resource.idGenerator.getAndIncrement();
-        this.isRenewable = (type == ResourceType.RENEWABLE);
+        this.renewable = (type == ResourceType.RENEWABLE);
     }
 
     public int getId() {
@@ -52,11 +52,11 @@ public class Resource {
     }
 
     public boolean isGlobal() {
-        return this.isGlobal;
+        return this.global;
     }
 
     public boolean isRenewable() {
-        return this.isRenewable;
+        return this.renewable;
     }
 
     public int getCapacity() {
@@ -74,9 +74,9 @@ public class Resource {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append(this.isGlobal ? "G" : "L");
+        builder.append(this.global ? "G" : "L");
         builder.append("R");
-        builder.append(this.isRenewable ? "R" : "N");
+        builder.append(this.renewable ? "R" : "N");
         builder.append(this.id);
         builder.append("-");
         builder.append(this.capacity);
