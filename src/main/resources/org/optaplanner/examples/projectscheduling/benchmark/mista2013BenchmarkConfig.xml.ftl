@@ -48,6 +48,9 @@
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
+        <moveIteratorFactory>
+          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
+        </moveIteratorFactory>
         <changeMoveSelector>
           <valueSelector>
             <variableName>executionMode</variableName>

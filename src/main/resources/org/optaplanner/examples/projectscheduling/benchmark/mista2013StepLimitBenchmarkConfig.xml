@@ -29,6 +29,9 @@
       <termination>
         <maximumStepCount>30000</maximumStepCount>
       </termination>
+      <moveIteratorFactory>
+        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
+      </moveIteratorFactory>
       <unionMoveSelector>
         <changeMoveSelector>
           <valueSelector>

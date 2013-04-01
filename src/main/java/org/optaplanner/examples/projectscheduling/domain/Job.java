@@ -13,15 +13,15 @@ public class Job {
         SOURCE, SINK, STANDARD
     };
 
-    private static final double TMD_MULTIPLIER = 97;
+    private static final double TMD_MULTIPLIER = 37;
 
-    private static Collection<Integer> getStartDates(final int start, final double length) {
+    private static List<Integer> getStartDates(final int start, final double length) {
         final int actualLength = (int) Math.ceil(length);
-        final Collection<Integer> startDates = new ArrayList<Integer>(actualLength);
+        final List<Integer> startDates = new ArrayList<Integer>(actualLength);
         for (int i = 0; i < actualLength; i++) {
             startDates.add(i + start);
         }
-        return Collections.unmodifiableCollection(startDates);
+        return Collections.unmodifiableList(startDates);
     }
 
     private static Set<Job> countSuccessorsRecursively(final Job j) {
@@ -52,7 +52,7 @@ public class Job {
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
     private final List<ExecutionMode> executionModes;
-    private Collection<Integer> startDates;
+    private List<Integer> startDates;
 
     private final int maxDuration;
     private final int maxResourceId;
@@ -131,7 +131,7 @@ public class Job {
         return this.isSource;
     }
 
-    public Collection<Integer> getAvailableJobStartDates() {
+    public List<Integer> getAvailableJobStartDates() {
         return this.startDates;
     }
 

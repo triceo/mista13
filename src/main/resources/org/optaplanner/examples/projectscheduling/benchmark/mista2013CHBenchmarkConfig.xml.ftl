@@ -44,31 +44,6 @@
       <constructionHeuristic>
         <constructionHeuristicType>${ch}</constructionHeuristicType>
       </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>executionMode</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-        </changeMoveSelector>
-        <swapMoveSelector>
-          <variableNameInclude>startDate</variableNameInclude>
-          <filterClass>org.optaplanner.examples.projectscheduling.solver.move.filter.SwapMoveFilter</filterClass>
-        </swapMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <planningEntityTabuSize>7</planningEntityTabuSize>
-        <lateAcceptanceSize>1000000</lateAcceptanceSize>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>128</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
     </solver>
   </solverBenchmark>
 </#list>

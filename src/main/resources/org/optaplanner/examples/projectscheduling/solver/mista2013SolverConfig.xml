@@ -15,10 +15,14 @@
   </termination>
   
   <constructionHeuristic>
-    <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
+    <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
+      <!-- Custom move to move entire sections of a job. -->
+      <moveIteratorFactory>
+        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
+      </moveIteratorFactory>
       <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
         <valueSelector>
@@ -38,7 +42,7 @@
     </unionMoveSelector>
     <acceptor>
       <planningEntityTabuSize>7</planningEntityTabuSize>
-      <lateAcceptanceSize>1000000</lateAcceptanceSize>
+      <lateAcceptanceSize>100000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <minimalAcceptedSelection>128</minimalAcceptedSelection>
