@@ -41,11 +41,11 @@
       </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <planningEntityTabuSize>7</planningEntityTabuSize>
-      <lateAcceptanceSize>100000</lateAcceptanceSize>
+      <planningEntityTabuSize>11</planningEntityTabuSize>
+      <lateAcceptanceSize>50000</lateAcceptanceSize>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>128</minimalAcceptedSelection>
+      <minimalAcceptedSelection>64</minimalAcceptedSelection>
     </forager>
   </localSearch>
 </solver>
