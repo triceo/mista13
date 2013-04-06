@@ -82,7 +82,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.optaplanner.examples.projectscheduling.app.Mista2013BenchmarkApp</mainClass>
+              <mainClass>org.optaplanner.examples.projectscheduling.app.Mista2013CompetitionApp</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
