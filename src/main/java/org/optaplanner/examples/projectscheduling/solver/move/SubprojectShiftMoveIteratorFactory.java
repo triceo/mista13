@@ -8,12 +8,13 @@ import org.apache.commons.lang.NotImplementedException;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveIteratorFactory;
 import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
-import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
+
+    private static final int ALLOWED_OFFSET = 25;
 
     private static final class RandomIterator implements Iterator<Move> {
 
@@ -44,8 +45,8 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
                 isBoundary = randomJob.isSource() || randomJob.isSink();
                 precedsSink = !isBoundary && randomJob.getSuccessors().get(0).isSink();
             } while (randomJob == null || isBoundary || precedsSink);
-            // and move the job and the ones after it by +/- 50
-            return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(100) - 50);
+            // and move the job and the ones after it by +/- ALLOWED_OFFSET
+            return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(2 * SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET) - SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET);
         }
 
         @Override
@@ -58,11 +59,7 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
     @Override
     public long getSize(final ScoreDirector scoreDirector) {
         final ProjectSchedule schedule = (ProjectSchedule) scoreDirector.getWorkingSolution();
-        long total = 0;
-        for (final Allocation a : schedule.getAllocations()) {
-            total += a.getStartDateRange().size();
-        }
-        return total;
+        return 2 * SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET * schedule.getAllocations().size();
     }
 
     @Override
