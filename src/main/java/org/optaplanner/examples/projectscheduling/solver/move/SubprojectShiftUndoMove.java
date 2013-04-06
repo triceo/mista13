@@ -19,7 +19,7 @@ public class SubprojectShiftUndoMove implements Move {
         this.startDateDifference = startDateDifference;
         this.toProcess.add(p.getAllocation(j));
         for (final Job successor : j.getRecursiveSuccessors()) {
-            if (successor.isSink() || successor.isSource()) {
+            if (successor.isSink()) {
                 continue;
             }
             this.toProcess.add(p.getAllocation(successor));

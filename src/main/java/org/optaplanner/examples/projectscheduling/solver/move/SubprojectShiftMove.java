@@ -33,7 +33,7 @@ public class SubprojectShiftMove implements Move {
         this.startDateDifference = startDateDifference;
         this.addAllocation(j);
         for (final Job successor : j.getRecursiveSuccessors()) {
-            if (successor.isSink() || successor.isSource()) {
+            if (successor.isSink()) {
                 continue;
             }
             this.addAllocation(successor);
