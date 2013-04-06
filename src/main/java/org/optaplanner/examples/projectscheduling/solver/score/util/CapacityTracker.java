@@ -30,6 +30,8 @@ public class CapacityTracker {
 
     private int idle = 0;
 
+    private int total = 0;
+
     public CapacityTracker(final ProblemInstance problem) {
         this.maxResourceId = problem.getMaxResourceId();
         this.renewableResourceConsumptionInTime = new int[problem.getMaxAllowedDueDate() + 1][];
@@ -66,6 +68,10 @@ public class CapacityTracker {
         return -this.idle;
     }
 
+    public int getTotalCapacity() {
+        return this.total;
+    }
+
     public int getOverusedCapacity() {
         return this.overused;
     }
@@ -85,7 +91,8 @@ public class CapacityTracker {
      * 
      * @param a
      *            The allocation in question.
-     *            @param isAdding Whether or not the allocation is being added or removed.
+     * @param isAdding
+     *            Whether or not the allocation is being added or removed.
      */
     private void process(final Allocation a, final boolean isAdding) {
         final int startDate = a.getStartDate();
@@ -118,6 +125,7 @@ public class CapacityTracker {
             // the capacity remains idle
             this.idle -= requirement;
         }
+        this.total += capacity;
         return newTotalUse;
     }
 
@@ -134,6 +142,7 @@ public class CapacityTracker {
             // the capacity remains idle
             this.idle += requirement;
         }
+        this.total -= capacity;
         return newTotalUse;
     }
 

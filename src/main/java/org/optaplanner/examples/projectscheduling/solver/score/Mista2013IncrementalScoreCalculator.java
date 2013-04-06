@@ -3,8 +3,8 @@ package org.optaplanner.examples.projectscheduling.solver.score;
 import org.optaplanner.core.api.score.buildin.bendable.BendableScore;
 import org.optaplanner.core.impl.score.director.incremental.AbstractIncrementalScoreCalculator;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
-import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
+import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 import org.optaplanner.examples.projectscheduling.solver.score.util.CapacityTracker;
 import org.optaplanner.examples.projectscheduling.solver.score.util.PrecedenceRelationsTracker;
 import org.optaplanner.examples.projectscheduling.solver.score.util.ProjectPropertiesTracker;
@@ -26,7 +26,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         this.capacityTracker = new CapacityTracker(problem);
         // insert new entities
         for (final Allocation allocation : workingSolution.getAllocations()) {
-            insert(allocation);
+            this.insert(allocation);
         }
     }
 
@@ -38,32 +38,32 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     @Override
     public void afterEntityAdded(final Object entity) {
         // TODO the maps/trackers should probably be adjusted
-        insert((Allocation) entity);
+        this.insert((Allocation) entity);
     }
 
     @Override
     public void beforeAllVariablesChanged(final Object entity) {
-        retract((Allocation) entity);
+        this.retract((Allocation) entity);
     }
 
     @Override
     public void afterAllVariablesChanged(final Object entity) {
-        insert((Allocation) entity);
+        this.insert((Allocation) entity);
     }
 
     @Override
     public void beforeVariableChanged(final Object entity, final String variableName) {
-        retract((Allocation) entity);
+        this.retract((Allocation) entity);
     }
 
     @Override
     public void afterVariableChanged(final Object entity, final String variableName) {
-        insert((Allocation) entity);
+        this.insert((Allocation) entity);
     }
 
     @Override
     public void beforeEntityRemoved(final Object entity) {
-        retract((Allocation) entity);
+        this.retract((Allocation) entity);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
         final int hard = brokenReq1and2and3Count + brokenReq7Count;
         final int medium = this.projectPropertiesTracker.getTotalProjectDelay();
         final int soft = this.projectPropertiesTracker.getTotalMakespan();
-        return BendableScore.valueOf(new int[]{-hard}, new int[]{-medium, -soft, -capacityTracker.getIdleCapacity()});
+        return BendableScore.valueOf(new int[]{-hard}, new int[]{-medium, -soft, -this.capacityTracker.getIdleCapacity(), -this.capacityTracker.getTotalCapacity()});
     }
 
 }

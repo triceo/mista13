@@ -28,7 +28,7 @@
       <scoreDirectorFactory>
         <scoreDefinitionType>BENDABLE</scoreDefinitionType>
         <bendableHardLevelCount>1</bendableHardLevelCount>
-        <bendableSoftLevelCount>3</bendableSoftLevelCount>
+        <bendableSoftLevelCount>4</bendableSoftLevelCount>
         <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
@@ -37,9 +37,9 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [96, 128, 160, 192] as minimalAcceptedSelection>
-<#list [100000] as lateAcceptance>
-<#list [7, 11, 13, 17] as planningEntityTabuSize>
+<#list [32, 64, 96, 128] as minimalAcceptedSelection>
+<#list [5000, 50000, 500000] as lateAcceptance>
+<#list [7, 11, 13] as planningEntityTabuSize>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
     <solver>
