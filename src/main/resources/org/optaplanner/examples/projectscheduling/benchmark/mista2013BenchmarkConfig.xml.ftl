@@ -37,14 +37,14 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [32, 64, 96, 128] as minimalAcceptedSelection>
+<#list [32] as minimalAcceptedSelection>
 <#list [5000, 50000, 500000] as lateAcceptance>
-<#list [7, 11, 13] as planningEntityTabuSize>
+<#list [0, 11, 17] as planningEntityTabuSize>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
@@ -67,7 +67,9 @@
         </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
+        <#if planningEntityTabuSize != 0>
         <planningEntityTabuSize>${planningEntityTabuSize}</planningEntityTabuSize>
+        </#if>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
       </acceptor>
       <forager>

@@ -38,13 +38,11 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
             final List<Job> allJobs = randomProject.getJobs();
             Job randomJob = null;
             boolean isBoundary = false;
-            boolean precedsSink = false;
             do {
                 final int random = this.random.nextInt(allJobs.size());
                 randomJob = allJobs.get(random);
                 isBoundary = randomJob.isSource() || randomJob.isSink();
-                precedsSink = !isBoundary && randomJob.getSuccessors().get(0).isSink();
-            } while (randomJob == null || isBoundary || precedsSink);
+            } while (randomJob == null || isBoundary || randomJob.isImmediatelyBeforeSink());
             // and move the job and the ones after it by +/- ALLOWED_OFFSET
             return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(2 * SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET) - SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET);
         }

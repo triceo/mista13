@@ -15,7 +15,7 @@
   </termination>
   
   <constructionHeuristic>
-    <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
+    <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
@@ -41,7 +41,7 @@
       </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <planningEntityTabuSize>11</planningEntityTabuSize>
+      <planningEntityTabuSize>17</planningEntityTabuSize>
       <lateAcceptanceSize>50000</lateAcceptanceSize>
     </acceptor>
     <forager>

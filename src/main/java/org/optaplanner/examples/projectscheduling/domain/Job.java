@@ -49,6 +49,9 @@ public class Job {
 
     private final boolean isSource;
     private final boolean isSink;
+    private boolean isImmediatelyAfterSource = false;
+    private boolean isImmediatelyBeforeSink = false;
+    
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
     private final List<ExecutionMode> executionModes;
@@ -70,6 +73,7 @@ public class Job {
                 .unmodifiableList(new ArrayList<Job>(Job.countSuccessorsRecursively(this)));
         // update predecessor info
         for (final Job j : this.successors) {
+            this.isImmediatelyBeforeSink = this.isImmediatelyBeforeSink || j.isSink();
             j.isPrecededBy(this);
         }
         // prepare job modes
@@ -169,8 +173,17 @@ public class Job {
     public List<Job> getPredecessors() {
         return this.predecessors;
     }
+    
+    public boolean isImmediatelyAfterSource() {
+        return this.isImmediatelyAfterSource;
+    }
+
+    public boolean isImmediatelyBeforeSink() {
+        return this.isImmediatelyBeforeSink;
+    }
 
     private void isPrecededBy(final Job j) {
+        this.isImmediatelyAfterSource = this.isImmediatelyAfterSource || j.isSource();
         final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
         predecessors.add(j);
         this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));
