@@ -1,5 +1,7 @@
 package org.optaplanner.examples.projectscheduling.solver.score.util;
 
+import java.util.Arrays;
+
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.ProblemInstance;
 import org.optaplanner.examples.projectscheduling.domain.Resource;
@@ -10,13 +12,15 @@ import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
  * resources would we need than we have capacity for.
  */
 public class CapacityTracker {
+    
+    private final static int DEFAULT_TIME_COUNT = 100;
 
     /**
      * Key is the time at which the resource use is registered. Value has the
      * same meaning as {@link #nonRenewableResourceConsumption}, only for renewable
      * resources.
      */
-    private final int[][] renewableResourceConsumptionInTime;
+    private int[][] renewableResourceConsumptionInTime;
 
     /**
      * Key is the {@link Resource#getUniqueId()} of a resource and value is the
@@ -34,7 +38,7 @@ public class CapacityTracker {
 
     public CapacityTracker(final ProblemInstance problem) {
         this.maxResourceId = problem.getMaxResourceId();
-        this.renewableResourceConsumptionInTime = new int[problem.getMaxAllowedDueDate() + 1][];
+        this.renewableResourceConsumptionInTime = new int[CapacityTracker.DEFAULT_TIME_COUNT][];
         this.nonRenewableResourceConsumption = new int[this.maxResourceId + 1];
     }
 
@@ -50,6 +54,10 @@ public class CapacityTracker {
      * @return Key is the {@link Resource#getUniqueId()}, value is the consumption.
      */
     private int[] getConsumptionInTime(final int time) {
+        final int length = this.renewableResourceConsumptionInTime.length; 
+        if (time >= length) {
+            this.renewableResourceConsumptionInTime = Arrays.copyOf(this.renewableResourceConsumptionInTime, time + 1);
+        }
         final int[] totalUse = this.renewableResourceConsumptionInTime[time];
         if (totalUse == null) {
             /*

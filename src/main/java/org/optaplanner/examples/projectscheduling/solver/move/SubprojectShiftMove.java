@@ -48,13 +48,7 @@ public class SubprojectShiftMove implements Move {
         for (final Map.Entry<Allocation, Integer> entry : this.toProcess.entrySet()) {
             final Allocation alloc = entry.getKey();
             final int value = entry.getValue();
-            final Collection<Integer> range = alloc.getStartDateRange();
-            if (value < alloc.getJob().getParentProject().getReleaseDate() || value > Collections.max(range)) {
-                /*
-                 * make sure that if we shift start date at the beginning, the start date at the end isn't going to go
-                 * out of range. but allow shifts to the left to the boundary of project release date, even when the
-                 * range would not allow. (this helps with optimizing the smaller problems.)
-                 */
+            if (value < alloc.getJob().getParentProject().getReleaseDate()) {
                 return false;
             }
         }

@@ -1,6 +1,9 @@
 package org.optaplanner.examples.projectscheduling.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.value.ValueRange;
@@ -68,7 +71,22 @@ public class Allocation {
     }
 
     public Collection<Integer> getStartDateRange() {
-        return this.job.getAvailableJobStartDates();
+        final Job job = this.getJob();
+        final Project parent = job.getParentProject();
+        // establish parameters
+        final int absoluteMinimumStartDate = parent.getReleaseDate() + Job.getCriticalPathDurationUntil(job);
+        final int midRangeStartDate = this.isInitialized() ? this.getStartDate() : parent.getReleaseDate() + Job.getMaxDurationUntil(job);
+        final int leftSidedRange = parent.getCriticalPathDuration() * 2;
+        final int rightSidedRange = parent.getCriticalPathDuration() * 3;
+        // infer actual range
+        final int left = Math.max(absoluteMinimumStartDate, midRangeStartDate - leftSidedRange);
+        final int right = midRangeStartDate + rightSidedRange;
+        // and finally create it
+        final List<Integer> range = new ArrayList<Integer>(right - left);
+        for (int i = left; i <= right; i++) {
+            range.add(i);
+        }
+        return Collections.unmodifiableCollection(range);
     }
 
     public boolean isInitialized() {

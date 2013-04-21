@@ -10,14 +10,12 @@ public class ProblemInstance {
     private final List<Project> projects;
 
     private final int minReleaseDate;
-    private final int maxDueDate;
     private final int totalJobCount;
     private final int maxResourceId;
 
     public ProblemInstance(final Collection<Project> projects) {
         // and now find the max due date for any of the projects
         int minReleaseDate = Integer.MAX_VALUE;
-        int maxDueDate = Integer.MIN_VALUE;
         int maxResourceId = Integer.MIN_VALUE;
         int tmpJobCount = 0;
         final List<Project> tmp = new ArrayList<Project>(projects.size());
@@ -29,14 +27,11 @@ public class ProblemInstance {
                 if (j.isSink() || j.isSource()) {
                     continue;
                 }
-                final int dueDate = j.getMaxDuration() + Collections.max(j.getAvailableJobStartDates());
-                maxDueDate = Math.max(maxDueDate, dueDate);
             }
             tmpJobCount += p.getJobs().size();
             tmp.add(p);
         }
         this.minReleaseDate = minReleaseDate;
-        this.maxDueDate = maxDueDate;
         this.maxResourceId = maxResourceId;
         this.totalJobCount = tmpJobCount;
         this.projects = Collections.unmodifiableList(tmp);
@@ -48,10 +43,6 @@ public class ProblemInstance {
 
     public int getMinReleaseDate() {
         return this.minReleaseDate;
-    }
-
-    public int getMaxAllowedDueDate() {
-        return this.maxDueDate;
     }
 
     public int getTotalNumberOfJobs() {

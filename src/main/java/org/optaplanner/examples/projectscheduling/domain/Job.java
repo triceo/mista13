@@ -13,17 +13,6 @@ public class Job {
         SOURCE, SINK, STANDARD
     };
 
-    private static final double TMD_MULTIPLIER = 37;
-
-    private static List<Integer> getStartDates(final int start, final double length) {
-        final int actualLength = (int) Math.ceil(length);
-        final List<Integer> startDates = new ArrayList<Integer>(actualLength);
-        for (int i = 0; i < actualLength; i++) {
-            startDates.add(i + start);
-        }
-        return Collections.unmodifiableList(startDates);
-    }
-
     private static Set<Job> countSuccessorsRecursively(final Job j) {
         final Set<Job> result = new HashSet<Job>();
         for (final Job successor : j.getSuccessors()) {
@@ -33,7 +22,7 @@ public class Job {
         return Collections.unmodifiableSet(result);
     }
 
-    private static int getCriticalPathDurationUntil(final Job until) {
+    protected static int getCriticalPathDurationUntil(final Job until) {
         if (until.isSource()) {
             return 0;
         }
@@ -44,6 +33,17 @@ public class Job {
         return min + until.getMinDuration();
     }
 
+    protected static int getMaxDurationUntil(final Job until) {
+        if (until.isSource()) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        for (final Job predecessor : until.getPredecessors()) {
+            max = Math.max(max, Job.getMaxDurationUntil(predecessor));
+        }
+        return max + until.getMaxDuration();
+    }
+
     private final int id;
     private Project parentProject;
 
@@ -51,11 +51,10 @@ public class Job {
     private final boolean isSink;
     private boolean isImmediatelyAfterSource = false;
     private boolean isImmediatelyBeforeSink = false;
-    
+
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
     private final List<ExecutionMode> executionModes;
-    private List<Integer> startDates;
 
     private final int maxDuration;
     private final int maxResourceId;
@@ -114,14 +113,6 @@ public class Job {
     protected void setParentProject(final Project p) {
         if (this.parentProject == null) {
             this.parentProject = p;
-            /*
-             * start date range starts no sooner than it teoretically can.
-             */
-            final int startDate = p.getReleaseDate() + Job.getCriticalPathDurationUntil(this);
-            /*
-             * and now the start dates are assembled
-             */
-            this.startDates = Job.getStartDates(startDate, Project.getTheoreticalMaxDurationAfter(this) * Job.TMD_MULTIPLIER);
         } else {
             throw new IllegalStateException("Cannot override parent project!");
         }
@@ -133,10 +124,6 @@ public class Job {
 
     public boolean isSource() {
         return this.isSource;
-    }
-
-    public List<Integer> getAvailableJobStartDates() {
-        return this.startDates;
     }
 
     public List<Job> getSuccessors() {
@@ -173,7 +160,7 @@ public class Job {
     public List<Job> getPredecessors() {
         return this.predecessors;
     }
-    
+
     public boolean isImmediatelyAfterSource() {
         return this.isImmediatelyAfterSource;
     }
