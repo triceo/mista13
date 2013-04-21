@@ -14,8 +14,6 @@ import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
 
-    private static final int ALLOWED_OFFSET = 25;
-
     private static final class RandomIterator implements Iterator<Move> {
 
         private final Random random;
@@ -43,8 +41,9 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
                 randomJob = allJobs.get(random);
                 isBoundary = randomJob.isSource() || randomJob.isSink();
             } while (randomJob == null || isBoundary || randomJob.isImmediatelyBeforeSink());
-            // and move the job and the ones after it by +/- ALLOWED_OFFSET
-            return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(2 * SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET) - SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET);
+            // and move the job and the ones after it by +/- CPD
+            final int cpd = randomProject.getCriticalPathDuration();
+            return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(2 * cpd) - cpd);
         }
 
         @Override
@@ -57,7 +56,12 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
     @Override
     public long getSize(final ScoreDirector scoreDirector) {
         final ProjectSchedule schedule = (ProjectSchedule) scoreDirector.getWorkingSolution();
-        return 2 * SubprojectShiftMoveIteratorFactory.ALLOWED_OFFSET * schedule.getAllocations().size();
+        int total = 0;
+        for (Project p: schedule.getProblem().getProjects()) {
+            // -2 for source and sink
+            total += 2 * (p.getJobs().size() - 2) * p.getCriticalPathDuration();
+        }
+        return total;
     }
 
     @Override
