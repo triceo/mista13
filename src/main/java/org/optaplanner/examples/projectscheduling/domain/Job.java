@@ -33,6 +33,17 @@ public class Job {
         return min + until.getMinDuration();
     }
 
+    protected static int getCriticalPathDurationAfter(final Job after) {
+        if (after.isSink()) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        for (final Job successor : after.getSuccessors()) {
+            min = Math.min(min, Job.getCriticalPathDurationUntil(successor));
+        }
+        return min + after.getMinDuration();
+    }
+
     protected static int getMaxDurationUntil(final Job until) {
         if (until.isSource()) {
             return 0;
@@ -42,6 +53,17 @@ public class Job {
             max = Math.max(max, Job.getMaxDurationUntil(predecessor));
         }
         return max + until.getMaxDuration();
+    }
+
+    protected static int getMaxDurationAfter(final Job after) {
+        if (after.isSink()) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        for (final Job successor : after.getSuccessors()) {
+            max = Math.max(max, Job.getMaxDurationAfter(successor));
+        }
+        return max + after.getMaxDuration();
     }
 
     private final int id;
