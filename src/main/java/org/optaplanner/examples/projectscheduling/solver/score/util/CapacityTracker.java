@@ -12,7 +12,7 @@ import org.optaplanner.examples.projectscheduling.domain.ResourceRequirement;
  * resources would we need than we have capacity for.
  */
 public class CapacityTracker {
-    
+
     private final static int DEFAULT_TIME_COUNT = 100;
 
     /**
@@ -46,6 +46,10 @@ public class CapacityTracker {
         this.process(a, true);
     }
 
+    private void resizeArray(final int newMinimumLength) {
+        this.renewableResourceConsumptionInTime = Arrays.copyOf(this.renewableResourceConsumptionInTime, (int) (newMinimumLength * 1.1));
+    }
+
     /**
      * Retrieve resource consumption existing at a given time.
      * 
@@ -54,9 +58,9 @@ public class CapacityTracker {
      * @return Key is the {@link Resource#getUniqueId()}, value is the consumption.
      */
     private int[] getConsumptionInTime(final int time) {
-        final int length = this.renewableResourceConsumptionInTime.length; 
+        final int length = this.renewableResourceConsumptionInTime.length;
         if (time >= length) {
-            this.renewableResourceConsumptionInTime = Arrays.copyOf(this.renewableResourceConsumptionInTime, time + 1);
+            this.resizeArray(time + 1);
         }
         final int[] totalUse = this.renewableResourceConsumptionInTime[time];
         if (totalUse == null) {
