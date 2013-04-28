@@ -8,6 +8,8 @@ public class Mista2013BenchmarkApp extends CommonBenchmarkApp {
             = "/org/optaplanner/examples/projectscheduling/benchmark/mista2013BenchmarkConfig.xml.ftl";
     public static final String STEP_LIMIT_BENCHMARK_CONFIG
             = "/org/optaplanner/examples/projectscheduling/benchmark/mista2013StepLimitBenchmarkConfig.xml";
+    public static final String PROBABILITIES_LIMIT_BENCHMARK_CONFIG
+    = "/org/optaplanner/examples/projectscheduling/benchmark/mista2013PSBenchmarkConfig.xml.ftl";
     public static final String CONSTRUCTION_HEURISTICS_BENCHMARK_CONFIG
     = "/org/optaplanner/examples/projectscheduling/benchmark/mista2013CHBenchmarkConfig.xml.ftl";
 
@@ -19,6 +21,9 @@ public class Mista2013BenchmarkApp extends CommonBenchmarkApp {
                 return;
             } else if (argument.equals("constructionHeuristics")) {
                 new Mista2013BenchmarkApp().buildFromTemplateAndBenchmark(CONSTRUCTION_HEURISTICS_BENCHMARK_CONFIG);
+                return;
+            } else if (argument.equals("probabilities")) {
+                new Mista2013BenchmarkApp().buildFromTemplateAndBenchmark(PROBABILITIES_LIMIT_BENCHMARK_CONFIG);
                 return;
             }
         }
