@@ -17,7 +17,7 @@ import org.optaplanner.examples.projectscheduling.solver.solution.Mista2013Solut
 public class ProjectSchedule implements Solution<BendableScore> {
 
     private final ProblemInstance problem;
-    private final Collection<Allocation> allocations;
+    private final List<Allocation> allocations;
     private final Map<Job, Allocation> allocationsPerJob;
     private BendableScore score;
 
@@ -48,7 +48,7 @@ public class ProjectSchedule implements Solution<BendableScore> {
     }
 
     @PlanningEntityCollectionProperty
-    public Collection<Allocation> getAllocations() {
+    public List<Allocation> getAllocations() {
         return this.allocations;
     }
 

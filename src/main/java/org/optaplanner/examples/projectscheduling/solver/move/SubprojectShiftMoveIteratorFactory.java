@@ -8,6 +8,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveIteratorFactory;
 import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
+import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
@@ -31,18 +32,14 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
 
         @Override
         public Move next() {
-            final List<Project> allProjects = this.project.getProblem().getProjects();
-            final Project randomProject = allProjects.get(this.random.nextInt(allProjects.size()));
-            final List<Job> allJobs = randomProject.getJobs();
+            final List<Allocation> allocations = this.project.getAllocations();
             Job randomJob = null;
-            boolean isBoundary = false;
             do {
-                final int random = this.random.nextInt(allJobs.size());
-                randomJob = allJobs.get(random);
-                isBoundary = randomJob.isSource() || randomJob.isSink();
-            } while (randomJob == null || isBoundary || randomJob.isImmediatelyBeforeSink());
+                final int random = this.random.nextInt(allocations.size());
+                randomJob = allocations.get(random).getJob();
+            } while (randomJob == null || randomJob.isImmediatelyBeforeSink());
             // and move the job and the ones after it by +/- CPD
-            final int cpd = randomProject.getCriticalPathDuration();
+            final int cpd = randomJob.getParentProject().getCriticalPathDuration();
             return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(2 * cpd) - cpd);
         }
 
