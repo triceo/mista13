@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plannerBenchmark>
-  <parallelBenchmarkCount>2</parallelBenchmarkCount>
+  <parallelBenchmarkCount>3</parallelBenchmarkCount>
   <benchmarkDirectory>local/data/projectscheduling</benchmarkDirectory>
   <warmUpSecondsSpend>30</warmUpSecondsSpend>
   <solverBenchmarkRankingType>TOTAL_RANKING</solverBenchmarkRankingType>
@@ -37,9 +37,9 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [32] as minimalAcceptedSelection>
-<#list [5000, 50000, 500000] as lateAcceptance>
-<#list [0, 11, 17] as planningEntityTabuSize>
+<#list [24, 32, 40] as minimalAcceptedSelection>
+<#list [50000, 500000] as lateAcceptance>
+<#list [5] as planningEntityTabuSize>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
     <solver>
@@ -67,9 +67,7 @@
         </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <#if planningEntityTabuSize != 0>
         <planningEntityTabuSize>${planningEntityTabuSize}</planningEntityTabuSize>
-        </#if>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
       </acceptor>
       <forager>
