@@ -82,7 +82,11 @@ public class Allocation {
         final int left = Math.max(absoluteMinimumStartDate, midRangeStartDate - leftSidedRange);
         final int right = midRangeStartDate + rightSidedRange;
         // and finally create it
-        final List<Integer> range = new ArrayList<Integer>(right - left);
+        final int size = right - left;
+        if (size < 1) {
+            return Collections.emptyList();
+        }
+        final List<Integer> range = new ArrayList<Integer>(size);
         for (int i = left; i <= right; i++) {
             range.add(i);
         }
