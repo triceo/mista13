@@ -39,7 +39,7 @@
 
 <#list [24, 32, 40] as minimalAcceptedSelection>
 <#list [50000, 500000] as lateAcceptance>
-<#list [5] as planningEntityTabuSize>
+<#list [5, 11] as planningEntityTabuSize>
   <solverBenchmark>
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
     <solver>
@@ -50,20 +50,24 @@
       <unionMoveSelector>
         <moveIteratorFactory>
           <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
+          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
         </moveIteratorFactory>
         <changeMoveSelector>
           <valueSelector>
             <variableName>executionMode</variableName>
           </valueSelector>
+          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
         </changeMoveSelector>
         <changeMoveSelector>
           <valueSelector>
             <variableName>startDate</variableName>
           </valueSelector>
+          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
         </changeMoveSelector>
         <swapMoveSelector>
           <variableNameInclude>startDate</variableNameInclude>
           <filterClass>org.optaplanner.examples.projectscheduling.solver.move.filter.SwapMoveFilter</filterClass>
+          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
         </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>

@@ -49,7 +49,7 @@
       <lateAcceptanceSize>50000</lateAcceptanceSize>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>32</minimalAcceptedSelection>
+      <acceptedCountLimit>32</acceptedCountLimit>
     </forager>
   </localSearch>
 </solver>

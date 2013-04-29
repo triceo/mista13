@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.optaplanner</groupId>
     <artifactId>optaplanner</artifactId>
-    <version>6.0.0.Beta1</version>
+    <version>6.0.0.Beta2</version>
   </parent>
 
   <groupId>org.optaplanner.examples</groupId>
@@ -42,17 +42,17 @@
     <dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-core</artifactId>
-      <version>6.0.0.Beta1</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-benchmark</artifactId>
-      <version>6.0.0.Beta1</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-examples</artifactId>
-      <version>6.0.0.Beta1</version>
+      <version>${project.parent.version}</version>
     </dependency>
 
     <dependency>
