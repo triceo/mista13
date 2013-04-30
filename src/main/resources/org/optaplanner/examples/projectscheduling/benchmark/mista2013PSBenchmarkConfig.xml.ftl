@@ -57,7 +57,7 @@
     <name>${subprojectMove}-${executionChangeMove}-${startChangeMove}-${swapMove}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
