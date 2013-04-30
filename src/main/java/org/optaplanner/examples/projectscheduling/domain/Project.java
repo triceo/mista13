@@ -27,6 +27,17 @@ public class Project {
         return min + until.getMinDuration();
     }
 
+    public static int getTheoreticalMaxDurationUntil(final Job endWith) {
+        if (endWith.isSource()) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        for (final Job predecessor : endWith.getPredecessors()) {
+            max = Math.max(max, Project.getTheoreticalMaxDurationUntil(predecessor));
+        }
+        return max + endWith.getMaxDuration();
+    }
+
     public static int getTheoreticalMaxDurationAfter(final Job startWith) {
         if (startWith.isSink()) {
             return 0;
