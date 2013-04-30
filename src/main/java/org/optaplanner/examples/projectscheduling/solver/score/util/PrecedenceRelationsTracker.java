@@ -34,6 +34,7 @@ public class PrecedenceRelationsTracker {
         return current.getStartDate() > pre.getDueDate();
     }
 
+    private int delaySum = 0;
     private int totalCachedResult = 0;
 
     /**
@@ -70,14 +71,13 @@ public class PrecedenceRelationsTracker {
     }
 
     private void bind(final Allocation from, final Allocation to) {
-        if (from.getJob().isSource() || to.getJob().isSink()) {
-            return;
-        }
         if (this.isBondBroken(from, to)) {
             return;
         }
         if (!PrecedenceRelationsTracker.isPrecedenceCorrect(from, to)) {
             this.totalCachedResult += this.breakBond(from, to);
+        } else {
+            this.delaySum += to.getStartDate() - from.getDueDate() - 1;
         }
     }
 
@@ -90,6 +90,10 @@ public class PrecedenceRelationsTracker {
     }
 
     private void bind(final Job from, final Allocation to) {
+        if (from.isSource()) {
+            this.delaySum += to.getStartDate() - to.getJob().getParentProject().getReleaseDate();
+            return;
+        }
         final Allocation a = this.allocations.get(from);
         if (a == null) {
             return;
@@ -109,6 +113,10 @@ public class PrecedenceRelationsTracker {
 
     public int getBrokenPrecedenceRelationsMeasure() {
         return this.totalCachedResult;
+    }
+    
+    public int getSumOfDelaysBetweenJobs() {
+        return this.delaySum;
     }
 
     private boolean isBondBroken(final Allocation from, final Allocation to) {
@@ -140,11 +148,10 @@ public class PrecedenceRelationsTracker {
     }
 
     private void unbind(final Allocation from, final Allocation to) {
-        if (from.getJob().isSource() || to.getJob().isSink()) {
-            return;
-        }
         if (this.isBondBroken(from, to)) {
             this.totalCachedResult -= this.mendBond(from, to);
+        } else {
+            this.delaySum -= to.getStartDate() - from.getDueDate() - 1;
         }
     }
 
@@ -157,6 +164,10 @@ public class PrecedenceRelationsTracker {
     }
 
     private void unbind(final Job from, final Allocation to) {
+        if (from.isSource()) {
+            this.delaySum -= to.getStartDate() - to.getJob().getParentProject().getReleaseDate();
+            return;
+        }
         final Allocation a = this.allocations.get(from);
         if (a == null) {
             return;
