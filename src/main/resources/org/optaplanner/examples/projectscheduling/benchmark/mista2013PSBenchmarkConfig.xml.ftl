@@ -50,7 +50,6 @@
 <#list [0, 1, 2, 4] as subprojectMove>
 <#list [1, 2, 4] as executionChangeMove> <#-- no other move changes execution modes; 0 is not possible -->
 <#list [0, 1, 2, 4] as startChangeMove>
-<#list [0, 1, 2, 4] as swapMove>
   <#-- 2, 2, 2, 2 is the same as 1, 1, 1, 1; don't repeat; this works as long as the values are always powers of 2 -->
   <#if subprojectMove % 2 == 1 || executionChangeMove % 2 == 1 || startChangeMove % 2 == 1 || swapMove % 2 == 1>
   <solverBenchmark>
@@ -77,11 +76,6 @@
           </valueSelector>
           <fixedProbabilityWeight>${startChangeMove}.0</fixedProbabilityWeight>
         </changeMoveSelector>
-        <swapMoveSelector>
-          <variableNameInclude>startDate</variableNameInclude>
-          <filterClass>org.optaplanner.examples.projectscheduling.solver.move.filter.SwapMoveFilter</filterClass>
-          <fixedProbabilityWeight>${swapMove}.0</fixedProbabilityWeight>
-        </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
         <planningEntityTabuSize>5</planningEntityTabuSize>
@@ -94,7 +88,6 @@
     </solver>
   </solverBenchmark>
   </#if>
-</#list>
 </#list>
 </#list>
 </#list>

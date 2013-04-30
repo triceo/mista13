@@ -22,7 +22,7 @@
       <!-- Custom move to move entire sections of a job. -->
       <moveIteratorFactory>
         <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
-        <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
       </moveIteratorFactory>
       <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
@@ -37,12 +37,6 @@
         </valueSelector>
         <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
       </changeMoveSelector>
-      <!--  This swaps start dates. It needn't care about job modes. -->
-      <swapMoveSelector>
-        <variableNameInclude>startDate</variableNameInclude>
-        <filterClass>org.optaplanner.examples.projectscheduling.solver.move.filter.SwapMoveFilter</filterClass>
-        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-      </swapMoveSelector>
     </unionMoveSelector>
     <acceptor>
       <planningEntityTabuSize>5</planningEntityTabuSize>

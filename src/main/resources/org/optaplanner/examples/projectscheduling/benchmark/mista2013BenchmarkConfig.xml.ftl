@@ -60,7 +60,7 @@
       <unionMoveSelector>
         <moveIteratorFactory>
           <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
         </moveIteratorFactory>
         <changeMoveSelector>
           <valueSelector>
@@ -74,11 +74,6 @@
           </valueSelector>
           <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
         </changeMoveSelector>
-        <swapMoveSelector>
-          <variableNameInclude>startDate</variableNameInclude>
-          <filterClass>org.optaplanner.examples.projectscheduling.solver.move.filter.SwapMoveFilter</filterClass>
-          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-        </swapMoveSelector>
       </unionMoveSelector>
       <acceptor>
         <planningEntityTabuSize>${planningEntityTabuSize}</planningEntityTabuSize>
