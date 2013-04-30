@@ -17,6 +17,16 @@
       <inputSolutionFile>data/projectscheduling/input/A-8.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/A-9.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/A-10.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-1.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-2.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-3.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-4.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-5.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-6.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-7.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-8.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-9.txt</inputSolutionFile>
+      <inputSolutionFile>data/projectscheduling/input/B-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
       <problemStatisticType>BEST_SOLUTION_CHANGED</problemStatisticType>
       <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
@@ -44,7 +54,7 @@
     <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>BEST_FIT_DECREASING</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
