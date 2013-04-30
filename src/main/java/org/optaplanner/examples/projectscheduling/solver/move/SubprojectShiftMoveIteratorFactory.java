@@ -16,7 +16,7 @@ import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
 
     private static int getLeftRangeBounds(final Job j) {
-        return Math.max(j.getParentProject().getReleaseDate(), Project.getTheoreticalMaxDurationUntil(j));
+        return Project.getTheoreticalMaxDurationUntil(j);
     }
 
     private static int getRightRangeBounds(final Job j) {
