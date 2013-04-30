@@ -14,13 +14,13 @@ import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
-    
-    private static int getLeftRangeBounds(Job j) {
+
+    private static int getLeftRangeBounds(final Job j) {
         return Math.max(j.getParentProject().getReleaseDate(), Project.getTheoreticalMaxDurationUntil(j));
     }
 
-    private static int getRightRangeBounds(Job j) {
-        return Project.getTheoreticalMaxDurationAfter(j);
+    private static int getRightRangeBounds(final Job j) {
+        return Project.getCriticalPathDurationAfter(j);
     }
 
     private static final class RandomIterator implements Iterator<Move> {
@@ -46,9 +46,12 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
                 final int random = this.random.nextInt(allocations.size());
                 randomJob = allocations.get(random).getJob();
             } while (randomJob == null || randomJob.isImmediatelyBeforeSink());
-            // and move the job and the ones after it by +/- CPD
-            final int leftRangeEnd = getLeftRangeBounds(randomJob);
-            final int rightRangeEnd = getRightRangeBounds(randomJob);
+            /*
+             * and move the job and the ones after it; the right interval should always be slightly smaller than the
+             * left, otherwise the jobs are going to fly to the right without a chance of ever getting back
+             */
+            final int leftRangeEnd = SubprojectShiftMoveIteratorFactory.getLeftRangeBounds(randomJob);
+            final int rightRangeEnd = SubprojectShiftMoveIteratorFactory.getRightRangeBounds(randomJob);
             return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
         }
 
@@ -63,13 +66,13 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
     public long getSize(final ScoreDirector scoreDirector) {
         final ProjectSchedule schedule = (ProjectSchedule) scoreDirector.getWorkingSolution();
         int total = 0;
-        for (Project p: schedule.getProblem().getProjects()) {
-            for (Job j: p.getJobs()) {
+        for (final Project p : schedule.getProblem().getProjects()) {
+            for (final Job j : p.getJobs()) {
                 if (j.isSink() || j.isSource()) {
                     continue;
                 }
-                final int leftRangeEnd = getLeftRangeBounds(j);
-                final int rightRangeEnd = getRightRangeBounds(j);
+                final int leftRangeEnd = SubprojectShiftMoveIteratorFactory.getLeftRangeBounds(j);
+                final int rightRangeEnd = SubprojectShiftMoveIteratorFactory.getRightRangeBounds(j);
                 total += leftRangeEnd + rightRangeEnd;
             }
         }
