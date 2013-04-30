@@ -38,7 +38,7 @@
       <scoreDirectorFactory>
         <scoreDefinitionType>BENDABLE</scoreDefinitionType>
         <bendableHardLevelCount>1</bendableHardLevelCount>
-        <bendableSoftLevelCount>4</bendableSoftLevelCount>
+        <bendableSoftLevelCount>2</bendableSoftLevelCount>
         <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
