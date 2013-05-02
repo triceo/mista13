@@ -59,7 +59,7 @@
     <localSearch>
       <unionMoveSelector>
         <moveIteratorFactory>
-          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
+          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
           <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
         </moveIteratorFactory>
         <changeMoveSelector>

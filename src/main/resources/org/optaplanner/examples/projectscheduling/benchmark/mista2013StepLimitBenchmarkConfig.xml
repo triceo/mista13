@@ -49,7 +49,7 @@
         <maximumStepCount>30000</maximumStepCount>
       </termination>
       <moveIteratorFactory>
-        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.SubprojectShiftMoveIteratorFactory</moveIteratorFactoryClass>
+        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
       </moveIteratorFactory>
       <unionMoveSelector>
         <changeMoveSelector>

@@ -1,4 +1,4 @@
-package org.optaplanner.examples.projectscheduling.solver.move;
+package org.optaplanner.examples.projectscheduling.solver.move.chainshift;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +15,7 @@ import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
  * FIXME this is a concept. it is absolutely horrific performance-wise; reimplement when proven worthy.
  * 
  */
-public class SubprojectShiftMove implements Move {
+public class ChainShiftMove implements Move {
 
     private final ProjectSchedule project;
     private final Job startWith;
@@ -27,7 +27,7 @@ public class SubprojectShiftMove implements Move {
         this.toProcess.put(a, a.getStartDate() + this.startDateDifference);
     }
 
-    public SubprojectShiftMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
+    public ChainShiftMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
         this.project = p;
         this.startWith = j;
         this.startDateDifference = startDateDifference;
@@ -57,7 +57,7 @@ public class SubprojectShiftMove implements Move {
 
     @Override
     public Move createUndoMove(final ScoreDirector scoreDirector) {
-        return new SubprojectShiftUndoMove(this.project, this.startWith, this.startDateDifference);
+        return new ChainShiftUndoMove(this.project, this.startWith, this.startDateDifference);
     }
 
     @Override

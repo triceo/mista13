@@ -1,4 +1,4 @@
-package org.optaplanner.examples.projectscheduling.solver.move;
+package org.optaplanner.examples.projectscheduling.solver.move.chainshift;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -10,12 +10,12 @@ import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
-public class SubprojectShiftUndoMove implements Move {
+public class ChainShiftUndoMove implements Move {
 
     private final int startDateDifference;
     private final Collection<Allocation> toProcess = new LinkedHashSet<Allocation>();
 
-    public SubprojectShiftUndoMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
+    public ChainShiftUndoMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
         this.startDateDifference = startDateDifference;
         this.toProcess.add(p.getAllocation(j));
         for (final Job successor : j.getRecursiveSuccessors()) {

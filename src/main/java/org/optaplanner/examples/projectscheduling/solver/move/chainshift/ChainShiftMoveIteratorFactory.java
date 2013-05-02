@@ -1,4 +1,4 @@
-package org.optaplanner.examples.projectscheduling.solver.move;
+package org.optaplanner.examples.projectscheduling.solver.move.chainshift;
 
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
-public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
+public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
 
     private static int getLeftRangeBounds(final Job j) {
         return Project.getTheoreticalMaxDurationUntil(j);
@@ -50,9 +50,9 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
              * and move the job and the ones after it; the right interval should always be slightly smaller than the
              * left, otherwise the jobs are going to fly to the right without a chance of ever getting back
              */
-            final int leftRangeEnd = SubprojectShiftMoveIteratorFactory.getLeftRangeBounds(randomJob);
-            final int rightRangeEnd = SubprojectShiftMoveIteratorFactory.getRightRangeBounds(randomJob);
-            return new SubprojectShiftMove(this.project, randomJob, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
+            final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(randomJob);
+            final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(randomJob);
+            return new ChainShiftMove(this.project, randomJob, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
         }
 
         @Override
@@ -71,8 +71,8 @@ public class SubprojectShiftMoveIteratorFactory implements MoveIteratorFactory {
                 if (j.isSink() || j.isSource()) {
                     continue;
                 }
-                final int leftRangeEnd = SubprojectShiftMoveIteratorFactory.getLeftRangeBounds(j);
-                final int rightRangeEnd = SubprojectShiftMoveIteratorFactory.getRightRangeBounds(j);
+                final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(j);
+                final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(j);
                 total += leftRangeEnd + rightRangeEnd;
             }
         }
