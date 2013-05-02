@@ -8,7 +8,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveIteratorFactory;
 import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
-import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
@@ -26,10 +25,10 @@ public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
     private static final class RandomIterator implements Iterator<Move> {
 
         private final Random random;
-        private final ProjectSchedule project;
+        private final ProjectSchedule schedule;
 
-        public RandomIterator(final ProjectSchedule project, final Random random) {
-            this.project = project;
+        public RandomIterator(final ProjectSchedule schedule, final Random random) {
+            this.schedule = schedule;
             this.random = random;
         }
 
@@ -40,19 +39,13 @@ public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
 
         @Override
         public Move next() {
-            final List<Allocation> allocations = this.project.getAllocations();
-            Job randomJob = null;
-            do {
-                final int random = this.random.nextInt(allocations.size());
-                randomJob = allocations.get(random).getJob();
-            } while (randomJob == null || randomJob.isImmediatelyBeforeSink());
-            /*
-             * and move the job and the ones after it; the right interval should always be slightly smaller than the
-             * left, otherwise the jobs are going to fly to the right without a chance of ever getting back
-             */
-            final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(randomJob);
-            final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(randomJob);
-            return new ChainShiftMove(this.project, randomJob, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
+            final List<Project> projects = this.schedule.getProblem().getProjects();
+            final Project project = projects.get(this.random.nextInt(projects.size()));
+            final List<Job> jobs = project.getJobs();
+            final Job job = jobs.get(this.random.nextInt(jobs.size() - 1)); // -1 to ignore sink
+            final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(job);
+            final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(job);
+            return new ChainShiftMove(this.schedule, job, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
         }
 
         @Override

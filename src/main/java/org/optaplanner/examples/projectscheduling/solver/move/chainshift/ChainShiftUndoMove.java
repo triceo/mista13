@@ -17,7 +17,6 @@ public class ChainShiftUndoMove implements Move {
 
     public ChainShiftUndoMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
         this.startDateDifference = startDateDifference;
-        this.toProcess.add(p.getAllocation(j));
         for (final Job successor : j.getRecursiveSuccessors()) {
             if (successor.isSink()) {
                 continue;

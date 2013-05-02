@@ -31,7 +31,6 @@ public class ChainShiftMove implements Move {
         this.project = p;
         this.startWith = j;
         this.startDateDifference = startDateDifference;
-        this.addAllocation(j);
         for (final Job successor : j.getRecursiveSuccessors()) {
             if (successor.isSink()) {
                 continue;
