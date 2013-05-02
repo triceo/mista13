@@ -34,6 +34,7 @@ public class ProjectPropertiesTracker {
 
     private final TObjectIntMap<Project> projectDelays;
     private int totalProjectDelay = 0;
+    private int totalWeightedProjectDelay = 0;
 
     private int totalMakespan;
 
@@ -67,6 +68,7 @@ public class ProjectPropertiesTracker {
         if (newMax > previousLocalMax) {
             final int newDelay = ProjectPropertiesTracker.calculateProjectDelay(p, newMax);
             final int previousDelay = this.projectDelays.put(p, newDelay);
+            this.totalWeightedProjectDelay += Math.pow(newDelay, 2) - Math.pow(previousDelay, 2);
             this.totalProjectDelay += newDelay - previousDelay;
             if (newMax > previousGlobalMax) {
                 this.totalMakespan = this.calculateTotalMakespan(newMax);
@@ -80,6 +82,10 @@ public class ProjectPropertiesTracker {
 
     public int getTotalMakespan() {
         return this.totalMakespan;
+    }
+
+    public int getWeightedTotalDelay() {
+        return this.totalWeightedProjectDelay;
     }
 
     public int getTotalProjectDelay() {
@@ -99,6 +105,7 @@ public class ProjectPropertiesTracker {
         if (previousMax > newLocalMax) {
             final int newDelay = ProjectPropertiesTracker.calculateProjectDelay(p, newLocalMax);
             final int previousDelay = this.projectDelays.put(p, newDelay);
+            this.totalWeightedProjectDelay += Math.pow(newDelay, 2) - Math.pow(previousDelay, 2);
             this.totalProjectDelay += newDelay - previousDelay;
             final int newGlobalMax = ProjectPropertiesTracker.getMax(this.dueDates);
             if (previousMax > newGlobalMax) {
