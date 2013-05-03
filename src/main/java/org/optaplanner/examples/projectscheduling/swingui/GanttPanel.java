@@ -1,5 +1,6 @@
 package org.optaplanner.examples.projectscheduling.swingui;
 
+import java.awt.Dimension;
 import java.util.Date;
 
 import javax.swing.BoxLayout;
@@ -56,6 +57,8 @@ public class GanttPanel extends SolutionPanel {
     }
 
     public GanttPanel() {
+        final BoxLayout bl = new BoxLayout(this, BoxLayout.Y_AXIS);
+        this.setLayout(bl);
     }
 
     private static final TangoColorFactory TANGO = new TangoColorFactory();
@@ -76,12 +79,10 @@ public class GanttPanel extends SolutionPanel {
 
         // add the chart to a panel...
         final ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(1280, 720));
+        chartPanel.setPreferredSize(new Dimension(1280, 720));
 
         // add panel to the component
         this.removeAll();
-        final BoxLayout bl = new BoxLayout(this, BoxLayout.Y_AXIS);
-        this.setLayout(bl);
         this.add(chartPanel);
     }
 
