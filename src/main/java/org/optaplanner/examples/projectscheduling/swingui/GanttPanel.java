@@ -33,7 +33,7 @@ public class GanttPanel extends SolutionPanel {
         final ProjectSchedule solution = GanttPanel.CLONER.cloneSolution(input);
         final TaskSeriesCollection collection = new TaskSeriesCollection();
         for (final Project p : solution.getProblem().getProjects()) {
-            final TaskSeries series = new TaskSeries("Proj. " + p.getId());
+            final TaskSeries series = new TaskSeries("P" + p.getId());
             for (final Job j : p.getJobs()) {
                 if (j.isSink() || j.isSource()) {
                     continue;
@@ -42,7 +42,7 @@ public class GanttPanel extends SolutionPanel {
                 if (!a.isInitialized()) {
                     continue;
                 }
-                series.add(new Task("Job " + j.getId(), new SimpleTimePeriod(GanttPanel.date(a.getStartDate()),
+                series.add(new Task("J" + j.getId(), new SimpleTimePeriod(GanttPanel.date(a.getStartDate()),
                         GanttPanel.date(a.getDueDate()))));
             }
             collection.add(series);
