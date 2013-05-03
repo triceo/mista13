@@ -11,6 +11,7 @@ import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
+import org.optaplanner.examples.projectscheduling.solver.move.StartDateUndoMove;
 
 public class GapRemovingMove implements Move {
 
@@ -60,7 +61,7 @@ public class GapRemovingMove implements Move {
         for (final Map.Entry<Allocation, Integer> entry : this.newDates.entrySet()) {
             oldDates.put(entry.getKey(), entry.getKey().getStartDate());
         }
-        return new GenericUndoMove(Collections.unmodifiableMap(oldDates));
+        return new StartDateUndoMove(Collections.unmodifiableMap(oldDates));
     }
 
     @Override

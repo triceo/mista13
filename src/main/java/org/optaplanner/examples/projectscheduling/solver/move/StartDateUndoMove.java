@@ -1,4 +1,4 @@
-package org.optaplanner.examples.projectscheduling.solver.move.gapremover;
+package org.optaplanner.examples.projectscheduling.solver.move;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,11 +9,11 @@ import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 
-public class GenericUndoMove implements Move {
+public class StartDateUndoMove implements Move {
 
     private final Map<Allocation, Integer> newDates;
 
-    public GenericUndoMove(final Map<Allocation, Integer> newDates) {
+    public StartDateUndoMove(final Map<Allocation, Integer> newDates) {
         this.newDates = newDates;
     }
 

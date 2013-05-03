@@ -15,6 +15,7 @@ import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
+import org.optaplanner.examples.projectscheduling.solver.move.ExecutionModeUndoMove;
 import org.optaplanner.examples.projectscheduling.solver.move.subcritical.CriticalPathFinder.CriticalPath;
 
 /**
@@ -72,7 +73,7 @@ public class SubcriticalOptimizingMove implements Move {
         for (final Map.Entry<Allocation, ExecutionMode> entry : this.newExecutionModes.entrySet()) {
             oldModes.put(entry.getKey(), entry.getKey().getExecutionMode());
         }
-        return new GenericUndoMove(Collections.unmodifiableMap(oldModes));
+        return new ExecutionModeUndoMove(Collections.unmodifiableMap(oldModes));
     }
 
     @Override

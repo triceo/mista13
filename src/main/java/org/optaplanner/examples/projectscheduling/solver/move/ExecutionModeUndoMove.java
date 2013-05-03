@@ -1,4 +1,4 @@
-package org.optaplanner.examples.projectscheduling.solver.move.subcritical;
+package org.optaplanner.examples.projectscheduling.solver.move;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -10,11 +10,11 @@ import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.ExecutionMode;
 
-public class GenericUndoMove implements Move {
+public class ExecutionModeUndoMove implements Move {
 
     private final Map<Allocation, ExecutionMode> newModes;
 
-    public GenericUndoMove(final Map<Allocation, ExecutionMode> newModes) {
+    public ExecutionModeUndoMove(final Map<Allocation, ExecutionMode> newModes) {
         this.newModes = newModes;
     }
 
