@@ -29,6 +29,11 @@ public class SubcriticalOptimizingMove implements Move {
     private final Collection<Allocation> notOnCriticalPath = new LinkedHashSet<Allocation>();
     private final Map<Allocation, ExecutionMode> newExecutionModes = new LinkedHashMap<Allocation, ExecutionMode>();
 
+    @Override
+    public String toString() {
+        return "SubcriticalOptimizingMove [project=" + this.project + "]";
+    }
+
     public SubcriticalOptimizingMove(final ProjectSchedule schedule, final Project p, final Random random) {
         this.project = p;
         this.pathFinder = new CriticalPathFinder(schedule);
