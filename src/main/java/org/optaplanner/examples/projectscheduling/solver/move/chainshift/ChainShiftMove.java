@@ -11,6 +11,7 @@ import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
 import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
+import org.optaplanner.examples.projectscheduling.solver.move.StartDateUndoMove;
 
 /**
  * FIXME this is a concept. it is absolutely horrific performance-wise; reimplement when proven worthy.
@@ -18,26 +19,29 @@ import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
  */
 public class ChainShiftMove implements Move {
 
-    private final ProjectSchedule project;
-    private final Job startWith;
     private final int startDateDifference;
+    private final Job job;
     private final Map<Allocation, Integer> toProcess = new LinkedHashMap<Allocation, Integer>();
 
-    private void addAllocation(final Job j) {
-        final Allocation a = this.project.getAllocation(j);
+    private void addAllocation(final ProjectSchedule p, final Job j) {
+        final Allocation a = p.getAllocation(j);
         this.toProcess.put(a, a.getStartDate() + this.startDateDifference);
     }
 
     public ChainShiftMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
-        this.project = p;
-        this.startWith = j;
         this.startDateDifference = startDateDifference;
+        this.job = j;
         for (final Job successor : j.getRecursiveSuccessors()) {
             if (successor.isSink()) {
                 continue;
             }
-            this.addAllocation(successor);
+            this.addAllocation(p, successor);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ChainShiftMove [startDateDifference=" + this.startDateDifference + ", job=" + this.job + "]";
     }
 
     @Override
@@ -59,7 +63,11 @@ public class ChainShiftMove implements Move {
 
     @Override
     public Move createUndoMove(final ScoreDirector scoreDirector) {
-        return new ChainShiftUndoMove(this.project, this.startWith, this.startDateDifference);
+        final Map<Allocation, Integer> oldDates = new LinkedHashMap<Allocation, Integer>();
+        for (final Map.Entry<Allocation, Integer> entry : this.toProcess.entrySet()) {
+            oldDates.put(entry.getKey(), entry.getKey().getStartDate());
+        }
+        return new StartDateUndoMove(Collections.unmodifiableMap(oldDates));
     }
 
     @Override
