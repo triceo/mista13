@@ -54,7 +54,7 @@ public class ChainShiftMove implements Move {
             final Job job = alloc.getJob();
             final Project project = job.getParentProject();
             final int value = entry.getValue();
-            if (value < project.getReleaseDate() || value > project.getParentInstance().getMaximumAllowedLength()) {
+            if (value < project.getReleaseDate()) {
                 return false;
             }
         }
