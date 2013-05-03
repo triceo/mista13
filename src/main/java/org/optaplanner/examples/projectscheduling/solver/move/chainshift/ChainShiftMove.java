@@ -9,6 +9,7 @@ import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
 import org.optaplanner.examples.projectscheduling.domain.Job;
+import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 /**
@@ -46,8 +47,10 @@ public class ChainShiftMove implements Move {
         }
         for (final Map.Entry<Allocation, Integer> entry : this.toProcess.entrySet()) {
             final Allocation alloc = entry.getKey();
+            final Job job = alloc.getJob();
+            final Project project = job.getParentProject();
             final int value = entry.getValue();
-            if (value < alloc.getJob().getParentProject().getReleaseDate()) {
+            if (value < project.getReleaseDate() || value > project.getParentInstance().getMaximumAllowedLength()) {
                 return false;
             }
         }

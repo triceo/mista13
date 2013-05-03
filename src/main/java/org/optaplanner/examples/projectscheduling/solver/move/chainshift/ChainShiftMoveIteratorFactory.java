@@ -15,11 +15,11 @@ import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
 
     private static int getLeftRangeBounds(final Job j) {
-        return Project.getTheoreticalMaxDurationUntil(j);
+        return j.getParentProject().getCriticalPathDuration();
     }
 
     private static int getRightRangeBounds(final Job j) {
-        return Project.getCriticalPathDurationAfter(j);
+        return j.getParentProject().getCriticalPathDuration();
     }
 
     private static final class RandomIterator implements Iterator<Move> {
@@ -42,7 +42,7 @@ public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
             final List<Project> projects = this.schedule.getProblem().getProjects();
             final Project project = projects.get(this.random.nextInt(projects.size()));
             final List<Job> jobs = project.getJobs();
-            final Job job = jobs.get(this.random.nextInt(jobs.size() - 1)); // -1 to ignore sink
+            final Job job = jobs.get(this.random.nextInt(jobs.size() - 1)); // -1 to ignore the sink
             final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(job);
             final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(job);
             return new ChainShiftMove(this.schedule, job, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
