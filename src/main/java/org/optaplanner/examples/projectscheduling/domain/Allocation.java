@@ -75,7 +75,7 @@ public class Allocation {
         final Project parent = job.getParentProject();
         // establish parameters; constants gathered experimentally
         final int absoluteMinimumStartDate = parent.getReleaseDate();
-        final int midRangeStartDate = this.isInitialized() ? this.getStartDate() : parent.getReleaseDate() + Job.getMaxDurationUntil(job);
+        final int midRangeStartDate = this.isInitialized() ? this.getStartDate() : parent.getReleaseDate() + Project.getMaxDurationUntil(job);
         final int leftSidedRange = parent.getCriticalPathDuration();
         final int rightSidedRange = parent.getCriticalPathDuration();
         // infer actual range

@@ -22,57 +22,11 @@ public class Job {
         return Collections.unmodifiableSet(result);
     }
 
-    protected static int getCriticalPathDurationUntil(final Job until) {
-        if (until.isSource()) {
-            return 0;
-        }
-        int min = Integer.MAX_VALUE;
-        for (final Job predecessor : until.getPredecessors()) {
-            min = Math.min(min, Job.getCriticalPathDurationUntil(predecessor));
-        }
-        return min + until.getMinDuration();
-    }
-
-    protected static int getCriticalPathDurationAfter(final Job after) {
-        if (after.isSink()) {
-            return 0;
-        }
-        int min = Integer.MAX_VALUE;
-        for (final Job successor : after.getSuccessors()) {
-            min = Math.min(min, Job.getCriticalPathDurationUntil(successor));
-        }
-        return min + after.getMinDuration();
-    }
-
-    protected static int getMaxDurationUntil(final Job until) {
-        if (until.isSource()) {
-            return 0;
-        }
-        int max = Integer.MIN_VALUE;
-        for (final Job predecessor : until.getPredecessors()) {
-            max = Math.max(max, Job.getMaxDurationUntil(predecessor));
-        }
-        return max + until.getMaxDuration();
-    }
-
-    protected static int getMaxDurationAfter(final Job after) {
-        if (after.isSink()) {
-            return 0;
-        }
-        int max = Integer.MIN_VALUE;
-        for (final Job successor : after.getSuccessors()) {
-            max = Math.max(max, Job.getMaxDurationAfter(successor));
-        }
-        return max + after.getMaxDuration();
-    }
-
     private final int id;
     private Project parentProject;
 
     private final boolean isSource;
     private final boolean isSink;
-    private boolean isImmediatelyAfterSource = false;
-    private boolean isImmediatelyBeforeSink = false;
 
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
@@ -94,7 +48,6 @@ public class Job {
                 .unmodifiableList(new ArrayList<Job>(Job.countSuccessorsRecursively(this)));
         // update predecessor info
         for (final Job j : this.successors) {
-            this.isImmediatelyBeforeSink = this.isImmediatelyBeforeSink || j.isSink();
             j.isPrecededBy(this);
         }
         // prepare job modes
@@ -183,16 +136,7 @@ public class Job {
         return this.predecessors;
     }
 
-    public boolean isImmediatelyAfterSource() {
-        return this.isImmediatelyAfterSource;
-    }
-
-    public boolean isImmediatelyBeforeSink() {
-        return this.isImmediatelyBeforeSink;
-    }
-
     private void isPrecededBy(final Job j) {
-        this.isImmediatelyAfterSource = this.isImmediatelyAfterSource || j.isSource();
         final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
         predecessors.add(j);
         this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));

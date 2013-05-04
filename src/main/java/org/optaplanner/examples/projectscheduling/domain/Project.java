@@ -5,17 +5,6 @@ import java.util.List;
 
 public class Project {
 
-    public static int getCriticalPathDurationAfter(final Job after) {
-        if (after.isSink()) {
-            return 0;
-        }
-        int min = Integer.MAX_VALUE;
-        for (final Job successor : after.getSuccessors()) {
-            min = Math.min(min, Project.getCriticalPathDurationAfter(successor));
-        }
-        return min + after.getMinDuration();
-    }
-
     public static int getCriticalPathDurationUntil(final Job until) {
         if (until.isSource()) {
             return 0;
@@ -27,26 +16,15 @@ public class Project {
         return min + until.getMinDuration();
     }
 
-    public static int getTheoreticalMaxDurationUntil(final Job endWith) {
-        if (endWith.isSource()) {
+    protected static int getMaxDurationUntil(final Job until) {
+        if (until.isSource()) {
             return 0;
         }
         int max = Integer.MIN_VALUE;
-        for (final Job predecessor : endWith.getPredecessors()) {
-            max = Math.max(max, Project.getTheoreticalMaxDurationUntil(predecessor));
+        for (final Job predecessor : until.getPredecessors()) {
+            max = Math.max(max, Project.getMaxDurationUntil(predecessor));
         }
-        return max + endWith.getMaxDuration();
-    }
-
-    public static int getTheoreticalMaxDurationAfter(final Job startWith) {
-        if (startWith.isSink()) {
-            return 0;
-        }
-        int max = Integer.MIN_VALUE;
-        for (final Job successor : startWith.getSuccessors()) {
-            max = Math.max(max, Project.getTheoreticalMaxDurationAfter(successor));
-        }
-        return max + startWith.getMaxDuration();
+        return max + until.getMaxDuration();
     }
 
     private ProblemInstance parentInstance;

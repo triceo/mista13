@@ -35,7 +35,7 @@ public class GapRemovingMoveIteratorFactory implements MoveIteratorFactory {
         @Override
         public Move next() {
             // find out what is occupied
-            boolean[] containsSomethingAtTime = new boolean[this.schedule.getProblem().getMaximumAllowedLength()];
+            boolean[] containsSomethingAtTime = new boolean[1]; // will be extended
             Arrays.fill(containsSomethingAtTime, false);
             for (final Allocation a : this.schedule.getAllocations()) {
                 for (int i = a.getStartDate(); i <= a.getDueDate(); i++) {
