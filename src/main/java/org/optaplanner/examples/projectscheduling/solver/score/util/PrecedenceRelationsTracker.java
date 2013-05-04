@@ -34,7 +34,6 @@ public class PrecedenceRelationsTracker {
         return current.getStartDate() > pre.getDueDate();
     }
 
-    private int delaySum = 0;
     private int totalCachedResult = 0;
 
     /**
@@ -76,8 +75,6 @@ public class PrecedenceRelationsTracker {
         }
         if (!PrecedenceRelationsTracker.isPrecedenceCorrect(from, to)) {
             this.totalCachedResult += this.breakBond(from, to);
-        } else {
-            this.delaySum += to.getStartDate() - from.getDueDate() - 1;
         }
     }
 
@@ -91,7 +88,6 @@ public class PrecedenceRelationsTracker {
 
     private void bind(final Job from, final Allocation to) {
         if (from.isSource()) {
-            this.delaySum += to.getStartDate() - to.getJob().getParentProject().getReleaseDate();
             return;
         }
         final Allocation a = this.allocations.get(from);
@@ -115,10 +111,6 @@ public class PrecedenceRelationsTracker {
         return this.totalCachedResult;
     }
     
-    public int getSumOfDelaysBetweenJobs() {
-        return this.delaySum;
-    }
-
     private boolean isBondBroken(final Allocation from, final Allocation to) {
         final Set<Allocation> related = this.brokenBonds.get(from);
         if (related == null) {
@@ -150,8 +142,6 @@ public class PrecedenceRelationsTracker {
     private void unbind(final Allocation from, final Allocation to) {
         if (this.isBondBroken(from, to)) {
             this.totalCachedResult -= this.mendBond(from, to);
-        } else {
-            this.delaySum -= to.getStartDate() - from.getDueDate() - 1;
         }
     }
 
@@ -165,7 +155,6 @@ public class PrecedenceRelationsTracker {
 
     private void unbind(final Job from, final Allocation to) {
         if (from.isSource()) {
-            this.delaySum -= to.getStartDate() - to.getJob().getParentProject().getReleaseDate();
             return;
         }
         final Allocation a = this.allocations.get(from);

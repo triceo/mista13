@@ -32,10 +32,6 @@ public class CapacityTracker {
 
     private int overused = 0;
 
-    private int idle = 0;
-
-    private int total = 0;
-
     public CapacityTracker(final ProblemInstance problem) {
         this.maxResourceId = problem.getMaxResourceId();
         this.renewableResourceConsumptionInTime = new int[CapacityTracker.DEFAULT_TIME_COUNT][];
@@ -74,14 +70,6 @@ public class CapacityTracker {
         } else {
             return totalUse;
         }
-    }
-
-    public int getIdleCapacity() {
-        return -this.idle;
-    }
-
-    public int getTotalCapacity() {
-        return this.total;
     }
 
     public int getOverusedCapacity() {
@@ -132,12 +120,9 @@ public class CapacityTracker {
         } else if (newTotalUse > capacity) {
             // the capacity is newly overreached
             this.overused += newTotalUse - capacity;
-            this.idle -= capacity - currentTotalUse;
         } else {
             // the capacity remains idle
-            this.idle -= requirement;
         }
-        this.total += capacity;
         return newTotalUse;
     }
 
@@ -149,12 +134,9 @@ public class CapacityTracker {
         } else if (currentTotalUse > capacity) {
             // the capacity is newly idle
             this.overused -= currentTotalUse - capacity;
-            this.idle += capacity - newTotalUse;
         } else {
             // the capacity remains idle
-            this.idle += requirement;
         }
-        this.total -= capacity;
         return newTotalUse;
     }
 
