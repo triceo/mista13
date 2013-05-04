@@ -76,13 +76,10 @@ public class CapacityTracker {
         return this.overused;
     }
 
-    private void changeConsumption(final boolean isAdding, final int resourceId, final int resourceCapacity, final int newRequirement,
-            final int[] overallConsumption) {
-        if (isAdding) {
-            overallConsumption[resourceId] = this.recalculateConsumptionOnAddition(overallConsumption[resourceId], newRequirement, resourceCapacity);
-        } else {
-            overallConsumption[resourceId] = this.recalculateConsumptionOnRemoval(overallConsumption[resourceId], newRequirement, resourceCapacity);
-        }
+    private int recalculateConsumption(final int consumption, final int newRequirement, final int resourceCapacity, final boolean isAdding) {
+        return isAdding ? 
+                this.recalculateConsumptionOnAddition(consumption, newRequirement, resourceCapacity) :
+                    this.recalculateConsumptionOnRemoval(consumption, newRequirement, resourceCapacity);
     }
 
     /**
@@ -98,18 +95,26 @@ public class CapacityTracker {
         final int startDate = a.getStartDate();
         final int dueDate = a.getDueDate();
         for (final ResourceRequirement rr : a.getExecutionMode().getResourceRequirements()) {
-            final Resource resource = rr.getResource();
-            final int requirement = rr.getRequirement();
-            final int resourceId = resource.getUniqueId();
-            final int resourceCapacity = resource.getCapacity();
-            if (resource.isRenewable()) {
-                for (int time = startDate; time++ <= dueDate;) {
-                    this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.getConsumptionInTime(time));
-                }
-            } else {
-                this.changeConsumption(isAdding, resourceId, resourceCapacity, requirement, this.nonRenewableResourceConsumption);
-            }
+            this.processRequirement(startDate, dueDate, rr, isAdding);
         }
+    }
+
+    private void processRequirement(final int startDate, final int dueDate, final ResourceRequirement rr, final boolean isAdding) {
+        final Resource resource = rr.getResource();
+        final int requirement = rr.getRequirement();
+        final int resourceId = resource.getUniqueId();
+        final int resourceCapacity = resource.getCapacity();
+        if (resource.isRenewable()) {
+            for (int time = startDate; time++ <= dueDate;) {
+                this.modifyConsumption(resourceId, requirement, resourceCapacity, this.getConsumptionInTime(time), isAdding);
+            }
+        } else {
+            this.modifyConsumption(resourceId, requirement, resourceCapacity, this.nonRenewableResourceConsumption, isAdding);
+        }
+    }
+
+    private void modifyConsumption(final int resourceId, final int requirement, final int resourceCapacity, final int[] consumptionInTime, final boolean isAdding) {
+        consumptionInTime[resourceId] = this.recalculateConsumption(consumptionInTime[resourceId], requirement, resourceCapacity, isAdding);
     }
 
     private int recalculateConsumptionOnAddition(final int currentTotalUse, final int requirement, final int capacity) {
