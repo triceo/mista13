@@ -15,11 +15,14 @@
   </termination>
   
   <constructionHeuristic>
-    <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+    <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
-      <!-- Custom move to move entire sections of a job. -->
+      <moveIteratorFactory>
+        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
+        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+      </moveIteratorFactory>
       <moveIteratorFactory>
         <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
         <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
@@ -39,11 +42,10 @@
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <planningEntityTabuSize>5</planningEntityTabuSize>
       <lateAcceptanceSize>50000</lateAcceptanceSize>
     </acceptor>
     <forager>
-      <acceptedCountLimit>32</acceptedCountLimit>
+      <acceptedCountLimit>8</acceptedCountLimit>
     </forager>
   </localSearch>
 </solver>
