@@ -78,7 +78,7 @@
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <planningEntityTabuSize>5</planningEntityTabuSize>
+        <entityTabuSize>5</entityTabuSize>
         <lateAcceptanceSize>50000</lateAcceptanceSize>
       </acceptor>
       <forager>

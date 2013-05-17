@@ -80,7 +80,7 @@
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <planningEntityTabuRatio>${entityTabu}</planningEntityTabuRatio>
+        <entityTabuRatio>${entityTabu}</entityTabuRatio>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
       </acceptor>
       <forager>
