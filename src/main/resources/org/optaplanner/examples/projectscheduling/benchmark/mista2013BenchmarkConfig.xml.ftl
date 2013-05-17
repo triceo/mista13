@@ -42,22 +42,26 @@
         <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
-        <maximumMinutesSpend>6</maximumMinutesSpend>
+        <maximumMinutesSpend>3</maximumMinutesSpend>
       </termination>
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [24, 32, 40] as minimalAcceptedSelection>
-<#list [50000, 500000] as lateAcceptance>
-<#list [5, 11] as planningEntityTabuSize>
+<#list [4, 8] as acceptedCountLimit>
+<#list [500, 2000, 8000] as lateAcceptance>
+<#list [0.6, 0.7, 0.8, 0.9] as entityTabu>
   <solverBenchmark>
-    <name>MAS${minimalAcceptedSelection}-LAS${lateAcceptance}-PETS${planningEntityTabuSize}</name>
+    <name>ACL${acceptedCountLimit}-LAS${lateAcceptance}-ETS${entityTabu}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
       </constructionHeuristic>
     <localSearch>
       <unionMoveSelector>
+        <moveIteratorFactory>
+          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
+          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+        </moveIteratorFactory>
         <moveIteratorFactory>
           <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
           <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
@@ -66,21 +70,21 @@
           <valueSelector>
             <variableName>executionMode</variableName>
           </valueSelector>
-          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+          <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
         </changeMoveSelector>
         <changeMoveSelector>
           <valueSelector>
             <variableName>startDate</variableName>
           </valueSelector>
-          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+          <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <planningEntityTabuSize>${planningEntityTabuSize}</planningEntityTabuSize>
+        <planningEntityTabuRatio>${entityTabu}</planningEntityTabuRatio>
         <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
       </acceptor>
       <forager>
-        <minimalAcceptedSelection>${minimalAcceptedSelection}</minimalAcceptedSelection>
+        <acceptedCountLimit>${acceptedCountLimit}</acceptedCountLimit>
       </forager>
     </localSearch>
     </solver>
