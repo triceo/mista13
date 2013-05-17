@@ -57,19 +57,7 @@ public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
 
     @Override
     public long getSize(final ScoreDirector scoreDirector) {
-        final ProjectSchedule schedule = (ProjectSchedule) scoreDirector.getWorkingSolution();
-        int total = 0;
-        for (final Project p : schedule.getProblem().getProjects()) {
-            for (final Job j : p.getJobs()) {
-                if (j.isSink() || j.isSource()) {
-                    continue;
-                }
-                final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(j);
-                final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(j);
-                total += leftRangeEnd + rightRangeEnd;
-            }
-        }
-        return total;
+        throw new UnsupportedOperationException();
     }
 
     @Override
