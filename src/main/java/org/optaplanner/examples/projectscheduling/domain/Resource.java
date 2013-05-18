@@ -4,7 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Resource {
 
-    private static final AtomicInteger idGenerator = new AtomicInteger(0);
+    private static final AtomicInteger renewableIdGenerator = new AtomicInteger(0);
+    private static final AtomicInteger nonRenewableIdGenerator = new AtomicInteger(0);
 
     public static enum ResourceType {
         RENEWABLE,
@@ -22,7 +23,7 @@ public class Resource {
     public Resource(final int id) {
         this.global = true;
         this.id = id;
-        this.uniqueId = Resource.idGenerator.getAndIncrement();
+        this.uniqueId = Resource.renewableIdGenerator.getAndIncrement();
         this.renewable = true;
     }
 
@@ -32,8 +33,8 @@ public class Resource {
         }
         this.global = false;
         this.id = id;
-        this.uniqueId = Resource.idGenerator.getAndIncrement();
         this.renewable = (type == ResourceType.RENEWABLE);
+        this.uniqueId = this.renewable ? Resource.renewableIdGenerator.getAndIncrement() : Resource.nonRenewableIdGenerator.getAndIncrement();
     }
 
     public int getId() {
@@ -74,9 +75,8 @@ public class Resource {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append(this.global ? "G" : "L");
-        builder.append("R");
         builder.append(this.renewable ? "R" : "N");
+        builder.append(this.global ? "G" : "L");
         builder.append(this.id);
         builder.append("-");
         builder.append(this.capacity);

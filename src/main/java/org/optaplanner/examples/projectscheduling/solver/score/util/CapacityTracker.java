@@ -33,9 +33,9 @@ public class CapacityTracker {
     private int overused = 0;
 
     public CapacityTracker(final ProblemInstance problem) {
-        this.maxResourceId = problem.getMaxResourceId();
+        this.maxResourceId = problem.getMaxRenewableResourceId();
         this.renewableResourceConsumptionInTime = new int[CapacityTracker.DEFAULT_TIME_COUNT][];
-        this.nonRenewableResourceConsumption = new int[this.maxResourceId + 1];
+        this.nonRenewableResourceConsumption = new int[problem.getMaxNonRenewableResourceId() + 1];
     }
 
     public void add(final Allocation a) {

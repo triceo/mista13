@@ -33,7 +33,8 @@ public class Job {
     private final List<ExecutionMode> executionModes;
 
     private final int maxDuration;
-    private final int maxResourceId;
+    private final int maxRenewableResourceId;
+    private final int maxNonRenewableResourceId;
     private final int minDuration;
     private List<Job> predecessors = new ArrayList<Job>();
 
@@ -68,13 +69,19 @@ public class Job {
         this.maxDuration = max;
         this.minDuration = min;
         // find the total amount of different resources
-        int maxResourceId = Integer.MIN_VALUE;
+        int maxRenewableResourceId = Integer.MIN_VALUE;
+        int maxNonRenewableResourceId = Integer.MIN_VALUE;
         for (final ExecutionMode jm : this.getExecutionModes()) {
             for (final ResourceRequirement r : jm.getResourceRequirements()) {
-                maxResourceId = Math.max(maxResourceId, r.getResource().getUniqueId());
+                if (r.getResource().isRenewable()) {
+                    maxRenewableResourceId = Math.max(maxRenewableResourceId, r.getResource().getUniqueId());
+                } else {
+                    maxNonRenewableResourceId = Math.max(maxNonRenewableResourceId, r.getResource().getUniqueId());
+                }
             }
         }
-        this.maxResourceId = maxResourceId;
+        this.maxRenewableResourceId = maxRenewableResourceId;
+        this.maxNonRenewableResourceId = maxNonRenewableResourceId;
     }
 
     public int getId() {
@@ -124,8 +131,12 @@ public class Job {
         return this.maxDuration;
     }
 
-    public int getMaxResourceId() {
-        return this.maxResourceId;
+    public int getMaxRenewableResourceId() {
+        return this.maxRenewableResourceId;
+    }
+
+    public int getMaxNonRenewableResourceId() {
+        return this.maxNonRenewableResourceId;
     }
 
     public int getMinDuration() {

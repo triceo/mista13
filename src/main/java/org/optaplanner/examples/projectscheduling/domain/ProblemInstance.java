@@ -11,19 +11,22 @@ public class ProblemInstance {
 
     private final int minReleaseDate;
     private final int totalJobCount;
-    private final int maxResourceId;
+    private final int maxRenewableResourceId;
+    private final int maxNonRenewableResourceId;
 
     public ProblemInstance(final Collection<Project> projects) {
         // and now find the max due date for any of the projects
         int minReleaseDate = Integer.MAX_VALUE;
-        int maxResourceId = Integer.MIN_VALUE;
+        int maxRenewableResourceId = Integer.MIN_VALUE;
+        int maxNonRenewableResourceId = Integer.MIN_VALUE;
         int tmpJobCount = 0;
         final List<Project> tmp = new ArrayList<Project>(projects.size());
         for (final Project p : projects) {
             p.setParentInstance(this);
             minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
             for (final Job j : p.getJobs()) {
-                maxResourceId = Math.max(maxResourceId, j.getMaxResourceId());
+                maxRenewableResourceId = Math.max(maxRenewableResourceId, j.getMaxRenewableResourceId());
+                maxNonRenewableResourceId = Math.max(maxNonRenewableResourceId, j.getMaxNonRenewableResourceId());
                 if (j.isSink() || j.isSource()) {
                     continue;
                 }
@@ -32,7 +35,8 @@ public class ProblemInstance {
             tmp.add(p);
         }
         this.minReleaseDate = minReleaseDate;
-        this.maxResourceId = maxResourceId;
+        this.maxRenewableResourceId = maxRenewableResourceId;
+        this.maxNonRenewableResourceId = maxNonRenewableResourceId;
         this.totalJobCount = tmpJobCount;
         this.projects = Collections.unmodifiableList(tmp);
     }
@@ -49,8 +53,12 @@ public class ProblemInstance {
         return this.totalJobCount;
     }
 
-    public int getMaxResourceId() {
-        return this.maxResourceId;
+    public int getMaxRenewableResourceId() {
+        return this.maxRenewableResourceId;
+    }
+
+    public int getMaxNonRenewableResourceId() {
+        return this.maxNonRenewableResourceId;
     }
 
 }
