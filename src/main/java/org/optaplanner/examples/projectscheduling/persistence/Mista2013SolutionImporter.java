@@ -2,7 +2,6 @@ package org.optaplanner.examples.projectscheduling.persistence;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     }
                     // prepare resource consumption data
                     int resourceId = 0;
-                    final Collection<ResourceRequirement> resourceConsumption = new ArrayList<ResourceRequirement>(resources.size());
+                    final ArrayList<ResourceRequirement> resourceConsumption = new ArrayList<ResourceRequirement>(resources.size());
                     for (final Resource resource : resources) {
                         final int consumption = r.getResources().get(resourceId);
                         if (consumption > 0) {
@@ -57,6 +56,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                         }
                         resourceId++;
                     }
+                    resourceConsumption.trimToSize();
                     modes.add(new ExecutionMode(r.getMode(), r.getDuration(), resourceConsumption));
                 }
                 JobType jt = null;
