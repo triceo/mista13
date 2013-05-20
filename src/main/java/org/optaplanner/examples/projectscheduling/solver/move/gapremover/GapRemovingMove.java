@@ -28,7 +28,7 @@ public class GapRemovingMove implements Move {
 
     public GapRemovingMove(final ProjectSchedule schedule, final IntRange gap) {
         this.gap = gap;
-        final int gapSize = gap.getMaximumInteger() - gap.getMinimumInteger() + 1;
+        final int gapSize = gap.getMaximumInteger() - gap.getMinimumInteger();
         if (gapSize < 1) {
             return;
         }
