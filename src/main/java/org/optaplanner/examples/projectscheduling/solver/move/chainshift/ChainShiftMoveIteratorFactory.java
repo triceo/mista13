@@ -14,10 +14,6 @@ import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
 
-    private static int getLeftRangeBounds(final Job j) {
-        return j.getParentProject().getCriticalPathDuration();
-    }
-
     private static int getRightRangeBounds(final Job j) {
         return j.getParentProject().getCriticalPathDuration();
     }
@@ -43,7 +39,16 @@ public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
             final Project project = projects.get(this.random.nextInt(projects.size()));
             final List<Job> jobs = project.getJobs();
             final Job job = jobs.get(this.random.nextInt(jobs.size() - 1)); // -1 to ignore the sink
-            final int leftRangeEnd = ChainShiftMoveIteratorFactory.getLeftRangeBounds(job);
+            int startDate = Integer.MAX_VALUE;
+            if (job.isSource()) {
+                startDate = project.getReleaseDate();
+                for (Job succ: job.getSuccessors()) {
+                    startDate = Math.min(startDate, this.schedule.getAllocation(succ).getStartDate());
+                }
+            } else {
+                startDate = this.schedule.getAllocation(job).getStartDate();
+            }
+            final int leftRangeEnd = Math.max(0, startDate - job.getParentProject().getReleaseDate());
             final int rightRangeEnd = ChainShiftMoveIteratorFactory.getRightRangeBounds(job);
             return new ChainShiftMove(this.schedule, job, this.random.nextInt(leftRangeEnd + rightRangeEnd) - leftRangeEnd);
         }
