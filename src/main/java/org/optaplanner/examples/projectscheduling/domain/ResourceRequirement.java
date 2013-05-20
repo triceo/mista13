@@ -8,6 +8,8 @@ public class ResourceRequirement {
     public ResourceRequirement(final Resource resource, final int requirement) {
         if (requirement < 1) {
             throw new IllegalArgumentException("Zero requirements are useless, you needn't create those.");
+        } else if (requirement > resource.getCapacity()) {
+            throw new IllegalArgumentException("Cannot require more than capacity.");
         }
         this.resource = resource;
         this.requirement = requirement;
