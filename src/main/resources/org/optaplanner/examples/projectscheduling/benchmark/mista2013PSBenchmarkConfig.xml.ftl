@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plannerBenchmark>
-  <parallelBenchmarkCount>3</parallelBenchmarkCount>
+  <parallelBenchmarkCount>2</parallelBenchmarkCount>
   <benchmarkDirectory>local/data/projectscheduling</benchmarkDirectory>
   <warmUpSecondsSpend>30</warmUpSecondsSpend>
   <solverBenchmarkRankingType>TOTAL_RANKING</solverBenchmarkRankingType>
@@ -28,8 +28,6 @@
       <inputSolutionFile>data/projectscheduling/input/B-9.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
-      <problemStatisticType>BEST_SOLUTION_CHANGED</problemStatisticType>
-      <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
     </problemBenchmarks>
     <solver>
       <solutionClass>org.optaplanner.examples.projectscheduling.domain.ProjectSchedule</solutionClass>
@@ -47,44 +45,56 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [0, 1, 2, 4] as subprojectMove>
-<#list [1, 2, 4] as executionChangeMove> <#-- no other move changes execution modes; 0 is not possible -->
-<#list [0, 1, 2, 4] as startChangeMove>
+<#list [0, 1, 2, 4, 8, 16, 32] as ra>
+<#list [0, 1, 2, 4, 8, 16, 32] as gr>
+<#list [0, 1, 2, 4, 8, 16, 32] as cs>
   <#-- 2, 2, 2, 2 is the same as 1, 1, 1, 1; don't repeat; this works as long as the values are always powers of 2 -->
-  <#if subprojectMove % 2 == 1 || executionChangeMove % 2 == 1 || startChangeMove % 2 == 1 || swapMove % 2 == 1>
+  <#if ra % 2 == 1 || gr % 2 == 1 || cs % 2 == 1>
   <solverBenchmark>
-    <name>${subprojectMove}-${executionChangeMove}-${startChangeMove}-${swapMove}</name>
+    <name>${ra}-${gr}-${cs}</name>
     <solver>
       <constructionHeuristic>
-        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
       </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
-        <moveIteratorFactory>
-          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>${subprojectMove}.0</fixedProbabilityWeight>
-        </moveIteratorFactory>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>executionMode</variableName>
-          </valueSelector>
-          <fixedProbabilityWeight>${executionChangeMove}.0</fixedProbabilityWeight>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-          <fixedProbabilityWeight>${startChangeMove}.0</fixedProbabilityWeight>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <entityTabuSize>5</entityTabuSize>
-        <lateAcceptanceSize>50000</lateAcceptanceSize>
-      </acceptor>
-      <forager>
-        <minimalAcceptedSelection>32</minimalAcceptedSelection>
-      </forager>
-    </localSearch>
+      <localSearch>
+        <unionMoveSelector>
+          <unionMoveSelector>
+            <moveIteratorFactory>
+              <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.realign.RealignMoveIteratorFactory</moveIteratorFactoryClass>
+              <fixedProbabilityWeight>${ra}.0</fixedProbabilityWeight>
+            </moveIteratorFactory>
+            <moveIteratorFactory>
+              <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
+              <fixedProbabilityWeight>${gr}.0</fixedProbabilityWeight>
+            </moveIteratorFactory>
+            <moveIteratorFactory>
+              <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
+              <fixedProbabilityWeight>${cs}.0</fixedProbabilityWeight>
+            </moveIteratorFactory>
+            <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
+          </unionMoveSelector>
+          <!-- Moves that assign various valid values to the entities -->
+          <changeMoveSelector>
+            <valueSelector>
+              <variableName>executionMode</variableName>
+            </valueSelector>
+            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+          </changeMoveSelector>
+          <changeMoveSelector>
+            <valueSelector>
+              <variableName>startDate</variableName>
+            </valueSelector>
+            <fixedProbabilityWeight>64.0</fixedProbabilityWeight>
+          </changeMoveSelector>
+        </unionMoveSelector>
+        <acceptor>
+          <entityTabuRatio>0.7</entityTabuRatio>
+          <lateAcceptanceSize>2000</lateAcceptanceSize>
+        </acceptor>
+        <forager>
+          <acceptedCountLimit>4</acceptedCountLimit>
+        </forager>
+      </localSearch>
     </solver>
   </solverBenchmark>
   </#if>

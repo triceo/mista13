@@ -19,31 +19,38 @@
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
-      <moveIteratorFactory>
-        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
-        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-      </moveIteratorFactory>
-      <moveIteratorFactory>
-        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-      </moveIteratorFactory>
+      <unionMoveSelector>
+        <moveIteratorFactory>
+          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.realign.RealignMoveIteratorFactory</moveIteratorFactoryClass>
+          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+        </moveIteratorFactory>
+        <moveIteratorFactory>
+          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
+          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+        </moveIteratorFactory>
+        <moveIteratorFactory>
+          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
+          <fixedProbabilityWeight>32.0</fixedProbabilityWeight>
+        </moveIteratorFactory>
+        <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
+      </unionMoveSelector>
       <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
         <valueSelector>
           <variableName>executionMode</variableName>
         </valueSelector>
-        <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
       </changeMoveSelector>
       <changeMoveSelector>
         <valueSelector>
           <variableName>startDate</variableName>
         </valueSelector>
-        <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>64.0</fixedProbabilityWeight>
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
-      <lateAcceptanceSize>2000</lateAcceptanceSize>
       <entityTabuRatio>0.7</entityTabuRatio>
+      <lateAcceptanceSize>2000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <acceptedCountLimit>4</acceptedCountLimit>
