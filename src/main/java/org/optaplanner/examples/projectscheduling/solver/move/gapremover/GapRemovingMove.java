@@ -33,12 +33,6 @@ public class GapRemovingMove implements Move {
             return;
         }
         for (final Allocation a : schedule.getAllocations()) {
-            final int projectRelease = a.getJob().getParentProject().getReleaseDate();
-            final boolean accept = projectRelease <= gap.getMinimumInteger();
-            if (!accept) {
-                this.newDates.clear();
-                return;
-            }
             if (a.getStartDate() > gap.getMaximumInteger()) {
                 this.newDates.put(a, a.getStartDate() - gapSize);
             }

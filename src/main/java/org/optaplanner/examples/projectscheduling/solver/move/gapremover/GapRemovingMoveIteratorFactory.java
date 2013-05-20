@@ -12,6 +12,7 @@ import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveIteratorFac
 import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.examples.projectscheduling.domain.Allocation;
+import org.optaplanner.examples.projectscheduling.domain.Project;
 import org.optaplanner.examples.projectscheduling.domain.ProjectSchedule;
 
 // FIXME proof of concept; terrible performance-wise
@@ -57,11 +58,29 @@ public class GapRemovingMoveIteratorFactory implements MoveIteratorFactory {
                     gapStart = -1;
                 }
             }
+            /* filter gaps to not include those which still have unstarted 
+               projects after them; we do this so that every gap removal is an
+               improving step.
+            */
+            List<IntRange> filteredList = new ArrayList<IntRange>();
+            for (IntRange range: list) {
+                boolean canAccept = true;
+                for (Project p: this.schedule.getProblem().getProjects()) {
+                    if (p.getReleaseDate() > range.getMinimumInteger()) {
+                        canAccept = false;
+                        break;
+                    }
+                }
+                if (canAccept) {
+                    filteredList.add(range);
+                }
+            }
             // pick one at random
-            if (list.size() == 0) {
+            final int listSize = filteredList.size();
+            if (listSize == 0) {
                 return new GapRemovingMove();
             } else {
-                final IntRange range = list.get(this.random.nextInt(list.size()));
+                final IntRange range = filteredList.get(this.random.nextInt(listSize));
                 return new GapRemovingMove(this.schedule, range);
             }
         }
