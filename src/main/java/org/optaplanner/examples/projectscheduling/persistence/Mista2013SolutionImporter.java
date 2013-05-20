@@ -21,8 +21,12 @@ import org.optaplanner.examples.projectscheduling.persistence.parsers.instance.R
 import org.optaplanner.examples.projectscheduling.persistence.parsers.project.Precedence;
 import org.optaplanner.examples.projectscheduling.persistence.parsers.project.RawProjectData;
 import org.optaplanner.examples.projectscheduling.persistence.parsers.project.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(Mista2013SolutionImporter.class);
 
     private class Mista2013TxtInputBuilder extends TxtInputBuilder {
 
@@ -57,7 +61,19 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                         resourceId++;
                     }
                     resourceConsumption.trimToSize();
-                    modes.add(new ExecutionMode(r.getMode(), r.getDuration(), resourceConsumption));
+                    // and now make sure that no resources are over-consumed, leaving the EM useless
+                    boolean proper = true;
+                    for (ResourceRequirement rr: resourceConsumption) {
+                        if (rr.getRequirement() > rr.getResource().getCapacity()) {
+                            proper = false;
+                            break;
+                        }
+                    }
+                    if (proper) {
+                        modes.add(new ExecutionMode(r.getMode(), r.getDuration(), resourceConsumption));
+                    } else {
+                        Mista2013SolutionImporter.LOGGER.info("Ignoring execution mode {} of job {} of project {} because it overconsumes at least one of its resources.", r.getMode(), jobId, data.getProject().getNumber());
+                    }
                 }
                 JobType jt = null;
                 if (jobId == precedence.size()) {

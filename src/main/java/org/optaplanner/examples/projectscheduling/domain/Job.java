@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class Job {
 
@@ -30,7 +32,7 @@ public class Job {
 
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
-    private final List<ExecutionMode> executionModes;
+    private final Map<Integer, ExecutionMode> executionModes;
 
     private final int maxDuration;
     private final int maxRenewableResourceId;
@@ -52,27 +54,21 @@ public class Job {
             j.isPrecededBy(this);
         }
         // prepare job modes
-        final List<ExecutionMode> executionModes = new ArrayList<ExecutionMode>(modes.size());
-        for (final ExecutionMode m : modes) {
-            m.setParentJob(this);
-            executionModes.add(m.getId() - 1, m);
-        }
-        this.executionModes = Collections.unmodifiableList(executionModes);
-        this.isSource = type == JobType.SOURCE;
-        this.isSink = type == JobType.SINK;
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
-        for (final ExecutionMode jm : this.executionModes) {
-            max = Math.max(max, jm.getDuration());
-            min = Math.min(min, jm.getDuration());
-        }
-        this.maxDuration = max;
-        this.minDuration = min;
-        // find the total amount of different resources
         int maxRenewableResourceId = Integer.MIN_VALUE;
         int maxNonRenewableResourceId = Integer.MIN_VALUE;
-        for (final ExecutionMode jm : this.getExecutionModes()) {
-            for (final ResourceRequirement r : jm.getResourceRequirements()) {
+        if (modes.size() < 1) {
+            throw new IllegalArgumentException("Job has no execution modes!");
+        }
+        final Map<Integer, ExecutionMode> executionModes = new TreeMap<Integer, ExecutionMode>();
+        for (final ExecutionMode m : modes) {
+            m.setParentJob(this);
+            executionModes.put(m.getId(), m);
+            // determine additional properties
+            max = Math.max(max, m.getDuration());
+            min = Math.min(min, m.getDuration());
+            for (final ResourceRequirement r : m.getResourceRequirements()) {
                 if (r.getResource().isRenewable()) {
                     maxRenewableResourceId = Math.max(maxRenewableResourceId, r.getResource().getUniqueId());
                 } else {
@@ -80,6 +76,11 @@ public class Job {
                 }
             }
         }
+        this.executionModes = Collections.unmodifiableMap(executionModes);
+        this.isSource = type == JobType.SOURCE;
+        this.isSink = type == JobType.SINK;
+        this.maxDuration = max;
+        this.minDuration = min;
         this.maxRenewableResourceId = maxRenewableResourceId;
         this.maxNonRenewableResourceId = maxNonRenewableResourceId;
     }
@@ -117,14 +118,14 @@ public class Job {
     }
 
     public Collection<ExecutionMode> getExecutionModes() {
-        return this.executionModes;
+        return this.executionModes.values();
     }
 
     public ExecutionMode getExecutionMode(final int id) {
-        if (id < 1 || id > this.executionModes.size()) {
+        if (!this.executionModes.containsKey(id)) {
             throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
         }
-        return this.executionModes.get(id - 1);
+        return this.executionModes.get(id);
     }
 
     public int getMaxDuration() {
