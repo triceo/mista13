@@ -28,9 +28,9 @@ public class ExecutionModeStrengthWeightFactory implements SelectionSorterWeight
         @Override
         public int compareTo(final ExecutionModeStrengthWeight other) {
             return new CompareToBuilder()
-                    // less duration is stronger
-                    .append(other.averageRatio, this.averageRatio) // Descending
-                    .append(this.executionMode.getId(), other.executionMode.getId())
+                    .append(other.averageRatio, this.averageRatio)
+                    .append(other.executionMode.getDuration(), this.executionMode.getDuration())
+                    .append(other.executionMode.getId(), this.executionMode.getId())
                     .toComparison();
         }
 
