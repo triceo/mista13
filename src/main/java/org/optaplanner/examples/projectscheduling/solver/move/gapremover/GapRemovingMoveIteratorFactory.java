@@ -59,7 +59,7 @@ public class GapRemovingMoveIteratorFactory implements MoveIteratorFactory {
             }
             // pick one at random
             if (list.size() == 0) {
-                return new GapRemovingMove(this.schedule, new IntRange(0, 0));
+                return new GapRemovingMove();
             } else {
                 final IntRange range = list.get(this.random.nextInt(list.size()));
                 return new GapRemovingMove(this.schedule, range);

@@ -21,14 +21,24 @@ public class GapRemovingMove implements Move {
     public String toString() {
         return "GapRemovingMove [gap=" + this.gap + "]";
     }
+    
+    public GapRemovingMove() {
+        this.gap = null;
+    }
 
     public GapRemovingMove(final ProjectSchedule schedule, final IntRange gap) {
         this.gap = gap;
-        final int gapSize = gap.getMaximumInteger() - gap.getMinimumInteger();
-        if (gapSize == 0) {
+        final int gapSize = gap.getMaximumInteger() - gap.getMinimumInteger() + 1;
+        if (gapSize < 1) {
             return;
         }
         for (final Allocation a : schedule.getAllocations()) {
+            final int projectRelease = a.getJob().getParentProject().getReleaseDate();
+            final boolean accept = projectRelease <= gap.getMinimumInteger();
+            if (!accept) {
+                this.newDates.clear();
+                return;
+            }
             if (a.getStartDate() > gap.getMaximumInteger()) {
                 this.newDates.put(a, a.getStartDate() - gapSize);
             }
@@ -37,7 +47,7 @@ public class GapRemovingMove implements Move {
 
     @Override
     public boolean isMoveDoable(final ScoreDirector scoreDirector) {
-        return this.gap.getMaximumInteger() > 0;
+        return this.newDates.size() > 0;
     }
 
     @Override
