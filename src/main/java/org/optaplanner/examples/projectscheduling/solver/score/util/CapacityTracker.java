@@ -105,7 +105,7 @@ public class CapacityTracker {
         final int resourceId = resource.getUniqueId();
         final int resourceCapacity = resource.getCapacity();
         if (resource.isRenewable()) {
-            for (int time = startDate; time++ <= dueDate;) {
+            for (int time = startDate; time <= dueDate; time++) {
                 this.modifyConsumption(resourceId, requirement, resourceCapacity, this.getConsumptionInTime(time), isAdding);
             }
         } else {
