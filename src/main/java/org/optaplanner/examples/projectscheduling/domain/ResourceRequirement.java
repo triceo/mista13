@@ -2,6 +2,14 @@ package org.optaplanner.examples.projectscheduling.domain;
 
 public class ResourceRequirement {
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ResourceRequirement [resource=" + resource + ", requirement=" + requirement + "]";
+    }
+
     private final Resource resource;
     private final int requirement;
 
