@@ -52,7 +52,7 @@ public class Mista2013SolutionExporter extends AbstractTxtSolutionExporter {
                 final int id = p.getId();
                 for (final Job j : p.getJobs()) {
                     int startDate = -1;
-                    ExecutionMode executionMode = j.getExecutionModes().iterator().next();
+                    ExecutionMode executionMode = j.getExecutionModes().get(0);
                     if (j.isSource()) {
                         startDate = this.getMinStartDate(this.solution, p);
                     } else if (j.isSink()) {

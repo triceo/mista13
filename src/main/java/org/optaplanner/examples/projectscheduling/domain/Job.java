@@ -5,9 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class Job {
 
@@ -32,7 +30,7 @@ public class Job {
 
     private final List<Job> successors;
     private final List<Job> recursiveSuccessors;
-    private final Map<Integer, ExecutionMode> executionModes;
+    private final List<ExecutionMode> executionModes;
 
     private final int maxDuration;
     private final int maxRenewableResourceId;
@@ -61,10 +59,10 @@ public class Job {
         if (modes.size() < 1) {
             throw new IllegalArgumentException("Job has no execution modes!");
         }
-        final Map<Integer, ExecutionMode> executionModes = new TreeMap<Integer, ExecutionMode>();
+        final List<ExecutionMode> executionModes = new ArrayList<ExecutionMode>(modes.size());
         for (final ExecutionMode m : modes) {
             m.setParentJob(this);
-            executionModes.put(m.getId(), m);
+            executionModes.add(m);
             // determine additional properties
             max = Math.max(max, m.getDuration());
             min = Math.min(min, m.getDuration());
@@ -76,7 +74,7 @@ public class Job {
                 }
             }
         }
-        this.executionModes = Collections.unmodifiableMap(executionModes);
+        this.executionModes = Collections.unmodifiableList(executionModes);
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
         this.maxDuration = max;
@@ -117,15 +115,8 @@ public class Job {
         return this.recursiveSuccessors;
     }
 
-    public Collection<ExecutionMode> getExecutionModes() {
-        return this.executionModes.values();
-    }
-
-    public ExecutionMode getExecutionMode(final int id) {
-        if (!this.executionModes.containsKey(id)) {
-            throw new IllegalArgumentException("Job " + this + " has not mode #" + id);
-        }
-        return this.executionModes.get(id);
+    public List<ExecutionMode> getExecutionModes() {
+        return this.executionModes;
     }
 
     public int getMaxDuration() {
