@@ -50,7 +50,7 @@
     </unionMoveSelector>
     <acceptor>
       <entityTabuRatio>0.7</entityTabuRatio>
-      <lateAcceptanceSize>2000</lateAcceptanceSize>
+      <lateAcceptanceSize>8000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <acceptedCountLimit>4</acceptedCountLimit>
