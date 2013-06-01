@@ -58,14 +58,22 @@ public class PrecedenceRelationsTracker {
         final Job current = a.getJob();
         this.allocations.put(current, a);
         for (final Job j : current.getPredecessors()) {
+            if (j.isSource()) {
+                // first job in the project starts before project release date
+                final int difference = a.getStartDate() - current.getParentProject().getReleaseDate();
+                if (difference < 0) {
+                    this.totalCachedResult -= difference;
+                }
+                // other than that, we're not interested in such jobs
+                continue;
+            }
             this.bind(j, a);
         }
         for (final Job j : current.getSuccessors()) {
+            if (j.isSink()) {
+                continue;
+            }
             this.bind(a, j);
-        }
-        final int difference = a.getStartDate() - current.getParentProject().getReleaseDate();
-        if (difference < 0) {
-            this.totalCachedResult -= difference;
         }
     }
 
@@ -87,9 +95,6 @@ public class PrecedenceRelationsTracker {
     }
 
     private void bind(final Job from, final Allocation to) {
-        if (from.isSource()) {
-            return;
-        }
         final Allocation a = this.allocations.get(from);
         if (a == null) {
             return;
@@ -112,6 +117,9 @@ public class PrecedenceRelationsTracker {
     }
     
     private boolean isBondBroken(final Allocation from, final Allocation to) {
+        if (from == null || to == null) {
+            return false;
+        }
         final Set<Allocation> related = this.brokenBonds.get(from);
         if (related == null) {
             return false;
@@ -127,16 +135,24 @@ public class PrecedenceRelationsTracker {
     public void remove(final Allocation a) {
         final Job current = a.getJob();
         for (final Job j : current.getPredecessors()) {
+            if (j.isSource()) {
+                // counter-adjust for the same operation performed in add().
+                final int difference = a.getStartDate() - current.getParentProject().getReleaseDate();
+                if (difference < 0) {
+                    this.totalCachedResult += difference;
+                }
+                // other than that, we're not interested in such jobs
+                continue;
+            }
             this.unbind(j, a);
         }
         for (final Job j : current.getSuccessors()) {
+            if (j.isSink()) {
+                continue;
+            }
             this.unbind(a, j);
         }
         this.allocations.remove(current);
-        final int difference = a.getStartDate() - current.getParentProject().getReleaseDate();
-        if (difference < 0) {
-            this.totalCachedResult += difference;
-        }
     }
 
     private void unbind(final Allocation from, final Allocation to) {
@@ -146,21 +162,10 @@ public class PrecedenceRelationsTracker {
     }
 
     private void unbind(final Allocation from, final Job to) {
-        final Allocation a = this.allocations.get(to);
-        if (a == null) {
-            return;
-        }
-        this.unbind(from, a);
+        this.unbind(from, this.allocations.get(to));
     }
 
     private void unbind(final Job from, final Allocation to) {
-        if (from.isSource()) {
-            return;
-        }
-        final Allocation a = this.allocations.get(from);
-        if (a == null) {
-            return;
-        }
-        this.unbind(a, to);
+        this.unbind(this.allocations.get(from), to);
     }
 }
