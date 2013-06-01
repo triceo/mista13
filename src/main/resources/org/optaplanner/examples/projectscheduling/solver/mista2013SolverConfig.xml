@@ -19,21 +19,10 @@
   </constructionHeuristic>
   <localSearch>
     <unionMoveSelector>
-      <unionMoveSelector>
-        <moveIteratorFactory>
-          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.realign.RealignMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-        </moveIteratorFactory>
-        <moveIteratorFactory>
-          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-        </moveIteratorFactory>
-        <moveIteratorFactory>
-          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>32.0</fixedProbabilityWeight>
-        </moveIteratorFactory>
-        <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
-      </unionMoveSelector>
+      <moveIteratorFactory>
+        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
+        <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+      </moveIteratorFactory>
       <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
         <valueSelector>
@@ -45,7 +34,7 @@
         <valueSelector>
           <variableName>startDate</variableName>
         </valueSelector>
-        <fixedProbabilityWeight>64.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>

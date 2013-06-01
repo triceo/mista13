@@ -45,46 +45,35 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [0, 1, 2, 4, 8, 16, 32] as ra>
-<#list [0, 1, 2, 4, 8, 16, 32] as gr>
-<#list [0, 1, 2, 4, 8, 16, 32] as cs>
+<#list [1, 2, 4, 8, 16, 32, 64] as sd>
+<#list [1, 2, 4, 8, 16, 32, 64] as em>
+<#list [1, 2, 4, 8, 16, 32, 64] as cs>
   <#-- 2, 2, 2, 2 is the same as 1, 1, 1, 1; don't repeat; this works as long as the values are always powers of 2 -->
-  <#if ra % 2 == 1 || gr % 2 == 1 || cs % 2 == 1>
+  <#if sd % 2 == 1 || em % 2 == 1 || cs % 2 == 1>
   <solverBenchmark>
-    <name>${ra}-${gr}-${cs}</name>
+    <name>${sd}-${em}-${cs}</name>
     <solver>
       <constructionHeuristic>
         <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
       </constructionHeuristic>
       <localSearch>
         <unionMoveSelector>
-          <unionMoveSelector>
-            <moveIteratorFactory>
-              <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.realign.RealignMoveIteratorFactory</moveIteratorFactoryClass>
-              <fixedProbabilityWeight>${ra}.0</fixedProbabilityWeight>
-            </moveIteratorFactory>
-            <moveIteratorFactory>
-              <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
-              <fixedProbabilityWeight>${gr}.0</fixedProbabilityWeight>
-            </moveIteratorFactory>
-            <moveIteratorFactory>
-              <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-              <fixedProbabilityWeight>${cs}.0</fixedProbabilityWeight>
-            </moveIteratorFactory>
-            <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
-          </unionMoveSelector>
+          <moveIteratorFactory>
+            <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
+            <fixedProbabilityWeight>${cs}.0</fixedProbabilityWeight>
+          </moveIteratorFactory>
           <!-- Moves that assign various valid values to the entities -->
           <changeMoveSelector>
             <valueSelector>
               <variableName>executionMode</variableName>
             </valueSelector>
-            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+            <fixedProbabilityWeight>${em}.0</fixedProbabilityWeight>
           </changeMoveSelector>
           <changeMoveSelector>
             <valueSelector>
               <variableName>startDate</variableName>
             </valueSelector>
-            <fixedProbabilityWeight>64.0</fixedProbabilityWeight>
+            <fixedProbabilityWeight>${sd}.0</fixedProbabilityWeight>
           </changeMoveSelector>
         </unionMoveSelector>
         <acceptor>

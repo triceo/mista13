@@ -56,45 +56,34 @@
       <constructionHeuristic>
         <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
       </constructionHeuristic>
-    <localSearch>
-      <unionMoveSelector>
+      <localSearch>
         <unionMoveSelector>
           <moveIteratorFactory>
-            <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.realign.RealignMoveIteratorFactory</moveIteratorFactoryClass>
-            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-          </moveIteratorFactory>
-          <moveIteratorFactory>
-            <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
-            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-          </moveIteratorFactory>
-          <moveIteratorFactory>
             <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-            <fixedProbabilityWeight>32.0</fixedProbabilityWeight>
+            <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
           </moveIteratorFactory>
-          <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
+          <!-- Moves that assign various valid values to the entities -->
+          <changeMoveSelector>
+            <valueSelector>
+              <variableName>executionMode</variableName>
+            </valueSelector>
+            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+          </changeMoveSelector>
+          <changeMoveSelector>
+            <valueSelector>
+              <variableName>startDate</variableName>
+            </valueSelector>
+            <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
+          </changeMoveSelector>
         </unionMoveSelector>
-        <!-- Moves that assign various valid values to the entities -->
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>executionMode</variableName>
-          </valueSelector>
-          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-        </changeMoveSelector>
-        <changeMoveSelector>
-          <valueSelector>
-            <variableName>startDate</variableName>
-          </valueSelector>
-          <fixedProbabilityWeight>64.0</fixedProbabilityWeight>
-        </changeMoveSelector>
-      </unionMoveSelector>
-      <acceptor>
-        <entityTabuRatio>${entityTabu}</entityTabuRatio>
-        <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
-      </acceptor>
-      <forager>
-        <acceptedCountLimit>${acceptedCountLimit}</acceptedCountLimit>
-      </forager>
-    </localSearch>
+        <acceptor>
+          <entityTabuRatio>${entityTabu}</entityTabuRatio>
+          <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
+        </acceptor>
+        <forager>
+          <acceptedCountLimit>${acceptedCountLimit}</acceptedCountLimit>
+        </forager>
+      </localSearch>
     </solver>
   </solverBenchmark>
 </#list>
