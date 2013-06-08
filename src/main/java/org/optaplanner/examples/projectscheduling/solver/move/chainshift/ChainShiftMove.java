@@ -50,7 +50,7 @@ public class ChainShiftMove implements Move {
         }
         for (final Map.Entry<Allocation, Integer> entry : this.toProcess.entrySet()) {
             final int value = entry.getValue();
-            if (value < 0) {
+            if (value < entry.getKey().getJob().getMinimalPossibleStartDate()) {
                 return false;
             }
         }
