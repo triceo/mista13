@@ -13,6 +13,28 @@ public class Job {
         SOURCE, SINK, STANDARD
     };
 
+    private static int getCriticalPathDurationUntil(final Job until) {
+        if (until.isSource()) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        for (final Job predecessor : until.getPredecessors()) {
+            min = Math.min(min, Job.getCriticalPathDurationUntil(predecessor) + predecessor.getMinDuration());
+        }
+        return min;
+    }
+
+    private static int getMaxDurationUntil(final Job until) {
+        if (until.isSource()) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        for (final Job predecessor : until.getPredecessors()) {
+            max = Math.max(max, Job.getMaxDurationUntil(predecessor) + predecessor.getMaxDuration());
+        }
+        return max;
+    }
+
     private static Set<Job> countSuccessorsRecursively(final Job j) {
         final Set<Job> result = new HashSet<Job>();
         for (final Job successor : j.getSuccessors()) {
@@ -36,6 +58,8 @@ public class Job {
     private final int maxRenewableResourceId;
     private final int maxNonRenewableResourceId;
     private final int minDuration;
+    private int minimalPossibleStartDate = 0;
+    private int maximalPossibleStartDateWithoutDelays = 0;
     private List<Job> predecessors = new ArrayList<Job>();
 
     public Job(final int id, final Collection<ExecutionMode> modes, final Collection<Job> successors, final JobType type) {
@@ -94,6 +118,9 @@ public class Job {
     protected void setParentProject(final Project p) {
         if (this.parentProject == null) {
             this.parentProject = p;
+            final int releaseDate = p.getReleaseDate();
+            this.minimalPossibleStartDate = releaseDate + Job.getCriticalPathDurationUntil(this);
+            this.maximalPossibleStartDateWithoutDelays = releaseDate + Job.getMaxDurationUntil(this);
         } else {
             throw new IllegalStateException("Cannot override parent project!");
         }
@@ -121,6 +148,14 @@ public class Job {
 
     public int getMaxDuration() {
         return this.maxDuration;
+    }
+
+    public int getMinimalPossibleStartDate() {
+        return this.minimalPossibleStartDate;
+    }
+
+    public int getMaximalPossibleStartDateWithoutDelays() {
+        return this.maximalPossibleStartDateWithoutDelays;
     }
 
     public int getMaxRenewableResourceId() {

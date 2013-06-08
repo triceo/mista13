@@ -16,10 +16,10 @@ public class AllocationDifficultyComparator implements Comparator<Allocation> {
         final Job bJob = b.getJob();
         final Project bParent = bJob.getParentProject();
         return new CompareToBuilder()
-            .append(bParent.getReleaseDate(), aParent.getReleaseDate())
-            .append(aParent.getCriticalPathDuration(), bParent.getCriticalPathDuration())
-            .append(Project.getCriticalPathDurationUntil(aJob), Project.getCriticalPathDurationUntil(bJob))
-            .toComparison();
+                .append(bParent.getReleaseDate(), aParent.getReleaseDate())
+                .append(aParent.getCriticalPathDuration(), bParent.getCriticalPathDuration())
+                .append(aJob.getMinimalPossibleStartDate(), bJob.getMinimalPossibleStartDate())
+                .toComparison();
     }
 
 }

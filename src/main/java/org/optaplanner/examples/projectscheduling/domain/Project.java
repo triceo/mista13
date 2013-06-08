@@ -5,28 +5,6 @@ import java.util.List;
 
 public class Project {
 
-    public static int getCriticalPathDurationUntil(final Job until) {
-        if (until.isSource()) {
-            return 0;
-        }
-        int min = Integer.MAX_VALUE;
-        for (final Job predecessor : until.getPredecessors()) {
-            min = Math.min(min, Project.getCriticalPathDurationUntil(predecessor));
-        }
-        return min + until.getMinDuration();
-    }
-
-    protected static int getMaxDurationUntil(final Job until) {
-        if (until.isSource()) {
-            return 0;
-        }
-        int max = Integer.MIN_VALUE;
-        for (final Job predecessor : until.getPredecessors()) {
-            max = Math.max(max, Project.getMaxDurationUntil(predecessor));
-        }
-        return max + until.getMaxDuration();
-    }
-
     private ProblemInstance parentInstance;
     private final int id;
 
