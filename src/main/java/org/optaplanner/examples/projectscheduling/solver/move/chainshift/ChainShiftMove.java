@@ -21,20 +21,31 @@ public class ChainShiftMove implements Move {
     private final int startDateDifference;
     private final Job job;
     private final Map<Allocation, Integer> toProcess = new LinkedHashMap<Allocation, Integer>();
-
-    private void addAllocation(final ProjectSchedule p, final Job j) {
-        final Allocation a = p.getAllocation(j);
-        this.toProcess.put(a, a.getStartDate() + this.startDateDifference);
+    
+    private boolean isStartDateAccepted(final Allocation a, final int newStartDate) {
+        final int minimumStartDate = a.getJob().getMinimalPossibleStartDate();
+        final int currentStartDate = a.getStartDate();
+        final boolean breaksMinimum = newStartDate < minimumStartDate;
+        final boolean brokeMinimumBefore = currentStartDate < minimumStartDate;
+        final boolean willImprove = !breaksMinimum || (brokeMinimumBefore && newStartDate >= currentStartDate); 
+        return willImprove;
     }
 
     public ChainShiftMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
         this.startDateDifference = startDateDifference;
         this.job = j;
+        if (startDateDifference == 0) {
+            return;
+        }
         for (final Job successor : j.getRecursiveSuccessors()) {
             if (successor.isSink()) {
                 continue;
             }
-            this.addAllocation(p, successor);
+            final Allocation a = p.getAllocation(successor);
+            final int newStartDate = a.getStartDate() + this.startDateDifference; 
+            if (this.isStartDateAccepted(a, newStartDate)) {
+                this.toProcess.put(a, newStartDate);
+            }
         }
     }
 
@@ -45,22 +56,7 @@ public class ChainShiftMove implements Move {
 
     @Override
     public boolean isMoveDoable(final ScoreDirector scoreDirector) {
-        if (this.startDateDifference == 0) {
-            return false;
-        }
-        for (final Map.Entry<Allocation, Integer> entry : this.toProcess.entrySet()) {
-            final int value = entry.getValue();
-            final Allocation key = entry.getKey();
-            final int minimum = key.getJob().getMinimalPossibleStartDate();
-            final int previousValue = key.getStartDate();
-            final boolean breaksMinimum = value < minimum;
-            final boolean brokeMinimumBefore = previousValue < minimum;
-            final boolean willImprove = !breaksMinimum || (brokeMinimumBefore && value >= previousValue); 
-            if (!willImprove) {
-                return false;
-            }
-        }
-        return true;
+        return this.toProcess.size() > 0;
     }
 
     @Override
