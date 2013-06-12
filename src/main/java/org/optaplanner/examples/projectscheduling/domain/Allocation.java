@@ -78,7 +78,20 @@ public class Allocation {
         final int leftSidedRange = this.isInitialized() ? parent.getCriticalPathDuration() : midRangeStartDate - job.getMinimalPossibleStartDate();
         final int rightSidedRange = parent.getCriticalPathDuration();
         // infer actual range
-        final int left = Math.max(job.getMinimalPossibleStartDate(), midRangeStartDate - leftSidedRange);
+        final int leftSpace = midRangeStartDate - leftSidedRange;
+        int left = 0;
+        if (this.isInitialized()) {
+            /*
+             * if a job starts before it possibly could, we need to make sure that we include that into the range; in
+             * other words, there needs to be room for the start date to gradually get closer to the minimum in order to
+             * increase the likelihood of a feasible score.
+             */
+            final boolean startsBeforePossible = (this.getStartDate() < job.getMinimalPossibleStartDate());
+            left = Math.max(startsBeforePossible ? this.getStartDate() : job.getMinimalPossibleStartDate(), leftSpace);
+        } else {
+            // otherwise limit the range by the absolute minimum start date
+            left = Math.max(job.getMinimalPossibleStartDate(), leftSpace);
+        }
         final int right = midRangeStartDate + rightSidedRange;
         // and finally create it
         final int size = right - left;
