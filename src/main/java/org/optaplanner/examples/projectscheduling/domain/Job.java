@@ -17,11 +17,11 @@ public class Job {
         if (until.isSource()) {
             return 0;
         }
-        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
         for (final Job predecessor : until.getPredecessors()) {
-            min = Math.min(min, Job.getCriticalPathDurationUntil(predecessor) + predecessor.getMinDuration());
+            max = Math.max(max, Job.getCriticalPathDurationUntil(predecessor) + predecessor.getMinDuration());
         }
-        return min;
+        return max;
     }
 
     private static int getMaxDurationUntil(final Job until) {
