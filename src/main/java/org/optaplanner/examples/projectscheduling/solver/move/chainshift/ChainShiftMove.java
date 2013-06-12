@@ -23,12 +23,7 @@ public class ChainShiftMove implements Move {
     private final Map<Allocation, Integer> toProcess = new LinkedHashMap<Allocation, Integer>();
     
     private boolean isStartDateAccepted(final Allocation a, final int newStartDate) {
-        final int minimumStartDate = a.getJob().getMinimalPossibleStartDate();
-        final int currentStartDate = a.getStartDate();
-        final boolean breaksMinimum = newStartDate < minimumStartDate;
-        final boolean brokeMinimumBefore = currentStartDate < minimumStartDate;
-        final boolean willImprove = !breaksMinimum || (brokeMinimumBefore && newStartDate >= currentStartDate); 
-        return willImprove;
+        return newStartDate >= 0; 
     }
 
     public ChainShiftMove(final ProjectSchedule p, final Job j, final int startDateDifference) {
