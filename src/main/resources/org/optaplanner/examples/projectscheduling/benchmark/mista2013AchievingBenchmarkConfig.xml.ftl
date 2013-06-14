@@ -28,8 +28,6 @@
       <inputSolutionFile>data/projectscheduling/input/B-9.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
-      <problemStatisticType>BEST_SOLUTION_CHANGED</problemStatisticType>
-      <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
     </problemBenchmarks>
     <solver>
       <solutionClass>org.optaplanner.examples.projectscheduling.domain.ProjectSchedule</solutionClass>
@@ -49,7 +47,7 @@
 
 <#list [4] as acceptedCountLimit>
 <#list [8000] as lateAcceptance>
-<#list [0.7] as entityTabu>
+<#list [0.2] as entityTabu>
   <solverBenchmark>
     <name>ACL${acceptedCountLimit}-LAS${lateAcceptance}-ETS${entityTabu}</name>
     <solver>
@@ -60,7 +58,7 @@
         <unionMoveSelector>
           <moveIteratorFactory>
             <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-            <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+            <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
           </moveIteratorFactory>
           <!-- Moves that assign various valid values to the entities -->
           <changeMoveSelector>

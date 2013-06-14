@@ -27,6 +27,9 @@
       <inputSolutionFile>data/projectscheduling/input/B-8.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-9.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-10.txt</inputSolutionFile>
+      <problemStatisticType>BEST_SCORE</problemStatisticType>
+      <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
+      <problemStatisticType>BEST_SOLUTION_MUTATION</problemStatisticType>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
     </problemBenchmarks>
     <solver>
@@ -40,18 +43,15 @@
         <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
-        <maximumSecondsSpend>30</maximumSecondsSpend>
+        <maximumSecondsSpend>45</maximumSecondsSpend>
       </termination>
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [1, 2, 4, 8, 16, 32, 64] as sd>
-<#list [1, 2, 4, 8, 16, 32, 64] as em>
-<#list [1, 2, 4, 8, 16, 32, 64] as cs>
-  <#-- 2, 2, 2, 2 is the same as 1, 1, 1, 1; don't repeat; this works as long as the values are always powers of 2 -->
-  <#if sd % 2 == 1 || em % 2 == 1 || cs % 2 == 1>
+<#list [8, 16, 32, 64] as sd>
+<#list [1, 2, 4, 8] as cs>
   <solverBenchmark>
-    <name>${sd}-${em}-${cs}</name>
+    <name>${sd}-1-${cs}</name>
     <solver>
       <constructionHeuristic>
         <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
@@ -67,7 +67,7 @@
             <valueSelector>
               <variableName>executionMode</variableName>
             </valueSelector>
-            <fixedProbabilityWeight>${em}.0</fixedProbabilityWeight>
+            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
           </changeMoveSelector>
           <changeMoveSelector>
             <valueSelector>
@@ -77,8 +77,8 @@
           </changeMoveSelector>
         </unionMoveSelector>
         <acceptor>
-          <entityTabuRatio>0.7</entityTabuRatio>
-          <lateAcceptanceSize>2000</lateAcceptanceSize>
+          <entityTabuRatio>0.2</entityTabuRatio>
+          <lateAcceptanceSize>8000</lateAcceptanceSize>
         </acceptor>
         <forager>
           <acceptedCountLimit>4</acceptedCountLimit>
@@ -86,8 +86,6 @@
       </localSearch>
     </solver>
   </solverBenchmark>
-  </#if>
-</#list>
 </#list>
 </#list>
 </plannerBenchmark>

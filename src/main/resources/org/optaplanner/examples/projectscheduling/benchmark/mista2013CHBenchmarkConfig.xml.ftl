@@ -28,8 +28,9 @@
       <inputSolutionFile>data/projectscheduling/input/B-9.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-10.txt</inputSolutionFile>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
-      <problemStatisticType>BEST_SOLUTION_CHANGED</problemStatisticType>
+      <problemStatisticType>BEST_SCORE</problemStatisticType>
       <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
+      <problemStatisticType>BEST_SOLUTION_MUTATION</problemStatisticType>
     </problemBenchmarks>
     <solver>
       <solutionClass>org.optaplanner.examples.projectscheduling.domain.ProjectSchedule</solutionClass>
