@@ -15,7 +15,7 @@ echo
 echo "Starting mista..."
 
 if [ -f $JAVA_HOME/bin/java ]; then
-    $JAVA_HOME/bin/java -Xms512m -Xmx2048m -server -jar mista2013-6.0.0.Beta1-jar-with-dependencies.jar $*
+    $JAVA_HOME/bin/java -Xms512m -Xmx2048m -server -jar mista2013-6.0.0.Beta4-jar-with-dependencies.jar $*
 else
     echo "Please set environment variable JAVA_HOME"
     # Prevent the terminal window to disappear before the user has seen the error message
