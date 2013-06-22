@@ -38,9 +38,11 @@ public class ChainShiftMoveIteratorFactory implements MoveIteratorFactory {
             final List<Project> projects = this.schedule.getProblem().getProjects();
             final Project project = projects.get(this.random.nextInt(projects.size()));
             final List<Job> jobs = project.getJobs();
-            final Job job = jobs.get(this.random.nextInt(jobs.size() - 1)); // -1 to ignore the sink
+            final Job job = jobs.get(this.random.nextInt(jobs.size()));
             int startDate = Integer.MAX_VALUE;
-            if (job.isSource()) {
+            if (job.isSink()) {
+                return this.next();
+            } else if (job.isSource()) {
                 startDate = project.getReleaseDate();
                 for (Job succ: job.getSuccessors()) {
                     startDate = Math.min(startDate, this.schedule.getAllocation(succ).getStartDate());
