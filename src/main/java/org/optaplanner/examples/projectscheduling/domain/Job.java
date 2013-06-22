@@ -41,7 +41,7 @@ public class Job {
             result.add(successor);
             result.addAll(Job.countSuccessorsRecursively(successor));
         }
-        return Collections.unmodifiableSet(result);
+        return result;
     }
 
     private final int id;
@@ -65,7 +65,7 @@ public class Job {
     public Job(final int id, final Collection<ExecutionMode> modes, final Collection<Job> successors, final JobType type) {
         this.id = id;
         // update successor info
-        this.successors = Collections.unmodifiableList(new ArrayList<Job>(successors));
+        this.successors = new ArrayList<Job>(successors);
         if (this.successors.contains(null)) {
             throw new IllegalStateException("Cannot have null as a successor!");
         }
@@ -98,7 +98,7 @@ public class Job {
                 }
             }
         }
-        this.executionModes = Collections.unmodifiableList(executionModes);
+        this.executionModes = executionModes;
         this.isSource = type == JobType.SOURCE;
         this.isSink = type == JobType.SINK;
         this.maxDuration = max;
@@ -177,7 +177,7 @@ public class Job {
     private void isPrecededBy(final Job j) {
         final Set<Job> predecessors = new HashSet<Job>(this.predecessors);
         predecessors.add(j);
-        this.predecessors = Collections.unmodifiableList(new ArrayList<Job>(predecessors));
+        this.predecessors = new ArrayList<Job>(predecessors);
     }
 
     @Override

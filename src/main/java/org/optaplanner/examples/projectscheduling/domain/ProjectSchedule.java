@@ -2,7 +2,6 @@ package org.optaplanner.examples.projectscheduling.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class ProjectSchedule implements Solution<BendableScore> {
     public ProjectSchedule(final ProblemInstance input) {
         this.problem = input;
         this.allocationsPerJob = new HashMap<Job, Allocation>(input.getTotalNumberOfJobs());
-        final List<Allocation> allocations = new ArrayList<Allocation>(input.getTotalNumberOfJobs());
+        this.allocations = new ArrayList<Allocation>(input.getTotalNumberOfJobs());
         for (final Project p : input.getProjects()) {
             for (final Job j : p.getJobs()) {
                 if (j.isSink() || j.isSource()) {
@@ -32,11 +31,10 @@ public class ProjectSchedule implements Solution<BendableScore> {
                     continue;
                 }
                 final Allocation a = new Allocation(j);
-                allocations.add(a);
+                this.allocations.add(a);
                 this.allocationsPerJob.put(j, a);
             }
         }
-        this.allocations = Collections.unmodifiableList(allocations);
     }
 
     public Allocation getAllocation(final Job job) {

@@ -2,7 +2,6 @@ package org.optaplanner.examples.projectscheduling.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class ProblemInstance {
@@ -20,7 +19,7 @@ public class ProblemInstance {
         int maxRenewableResourceId = Integer.MIN_VALUE;
         int maxNonRenewableResourceId = Integer.MIN_VALUE;
         int tmpJobCount = 0;
-        final List<Project> tmp = new ArrayList<Project>(projects.size());
+        this.projects = new ArrayList<Project>(projects.size());
         for (final Project p : projects) {
             p.setParentInstance(this);
             minReleaseDate = Math.min(minReleaseDate, p.getReleaseDate());
@@ -32,13 +31,12 @@ public class ProblemInstance {
                 }
             }
             tmpJobCount += p.getJobs().size();
-            tmp.add(p);
+            this.projects.add(p);
         }
         this.minReleaseDate = minReleaseDate;
         this.maxRenewableResourceId = maxRenewableResourceId;
         this.maxNonRenewableResourceId = maxNonRenewableResourceId;
         this.totalJobCount = tmpJobCount;
-        this.projects = Collections.unmodifiableList(tmp);
     }
 
     public List<Project> getProjects() {

@@ -1,7 +1,6 @@
 package org.optaplanner.examples.projectscheduling.solver.move;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -38,12 +37,12 @@ public class StartDateUndoMove implements Move {
 
     @Override
     public Collection<? extends Object> getPlanningEntities() {
-        return Collections.unmodifiableSet(this.newDates.keySet());
+        return this.newDates.keySet();
     }
 
     @Override
     public Collection<? extends Object> getPlanningValues() {
-        return Collections.unmodifiableCollection(this.newDates.values());
+        return this.newDates.values();
     }
 
 }

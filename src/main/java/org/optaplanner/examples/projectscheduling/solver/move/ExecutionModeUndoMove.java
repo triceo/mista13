@@ -1,7 +1,6 @@
 package org.optaplanner.examples.projectscheduling.solver.move;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -39,12 +38,12 @@ public class ExecutionModeUndoMove implements Move {
 
     @Override
     public Collection<? extends Object> getPlanningEntities() {
-        return Collections.unmodifiableSet(this.newModes.keySet());
+        return this.newModes.keySet();
     }
 
     @Override
     public Collection<? extends Object> getPlanningValues() {
-        return Collections.unmodifiableCollection(this.newModes.values());
+        return this.newModes.values();
     }
 
 }

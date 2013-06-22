@@ -1,6 +1,5 @@
 package org.optaplanner.examples.projectscheduling.domain;
 
-import java.util.Collections;
 import java.util.List;
 
 public class Project {
@@ -19,8 +18,8 @@ public class Project {
         this.id = id;
         this.criticalPathDuration = criticalPathDuration;
         this.releaseDate = releaseDate;
-        this.resources = Collections.unmodifiableList(resources);
-        this.jobs = Collections.unmodifiableList(jobs);
+        this.resources = resources;
+        this.jobs = jobs;
         for (final Job j : jobs) {
             j.setParentProject(this);
         }

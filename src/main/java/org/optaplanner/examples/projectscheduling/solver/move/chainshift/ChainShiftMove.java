@@ -1,7 +1,6 @@
 package org.optaplanner.examples.projectscheduling.solver.move.chainshift;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public class ChainShiftMove implements Move {
         for (final Map.Entry<Allocation, Integer> entry : this.toProcess.entrySet()) {
             oldDates.put(entry.getKey(), entry.getKey().getStartDate());
         }
-        return new StartDateUndoMove(Collections.unmodifiableMap(oldDates));
+        return new StartDateUndoMove(oldDates);
     }
 
     @Override
@@ -75,12 +74,12 @@ public class ChainShiftMove implements Move {
 
     @Override
     public Collection<? extends Object> getPlanningEntities() {
-        return Collections.unmodifiableCollection(this.toProcess.keySet());
+        return this.toProcess.keySet();
     }
 
     @Override
     public Collection<? extends Object> getPlanningValues() {
-        return Collections.unmodifiableCollection(this.toProcess.values());
+        return this.toProcess.values();
     }
 
 }

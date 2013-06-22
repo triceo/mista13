@@ -102,7 +102,7 @@ public class Allocation {
         for (int i = left; i <= right; i++) {
             range.add(i);
         }
-        return Collections.unmodifiableCollection(range);
+        return range;
     }
 
     public boolean isInitialized() {

@@ -1,7 +1,6 @@
 package org.optaplanner.examples.projectscheduling.domain;
 
 import java.util.Collection;
-import java.util.Collections;
 
 public class ExecutionMode {
 
@@ -17,7 +16,7 @@ public class ExecutionMode {
         }
         this.id = id;
         this.duration = duration;
-        this.resourceRequirements = Collections.unmodifiableCollection(resourceRequirements);
+        this.resourceRequirements = resourceRequirements;
     }
 
     public int getId() {
