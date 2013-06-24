@@ -45,46 +45,41 @@
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [4] as acceptedCountLimit>
-<#list [8000] as lateAcceptance>
-<#list [0.2] as entityTabu>
   <solverBenchmark>
-    <name>ACL${acceptedCountLimit}-LAS${lateAcceptance}-ETS${entityTabu}</name>
+    <name>BEST</name>
     <solver>
       <constructionHeuristic>
         <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
       </constructionHeuristic>
       <localSearch>
-        <unionMoveSelector>
-          <moveIteratorFactory>
-            <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-            <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
-          </moveIteratorFactory>
-          <!-- Moves that assign various valid values to the entities -->
-          <changeMoveSelector>
-            <valueSelector>
-              <variableName>executionMode</variableName>
-            </valueSelector>
-            <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-          </changeMoveSelector>
-          <changeMoveSelector>
-            <valueSelector>
-              <variableName>startDate</variableName>
-            </valueSelector>
-            <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
-          </changeMoveSelector>
-        </unionMoveSelector>
-        <acceptor>
-          <entityTabuRatio>${entityTabu}</entityTabuRatio>
-          <lateAcceptanceSize>${lateAcceptance}</lateAcceptanceSize>
-        </acceptor>
-        <forager>
-          <acceptedCountLimit>${acceptedCountLimit}</acceptedCountLimit>
-        </forager>
+    <unionMoveSelector>
+      <moveIteratorFactory>
+        <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
+        <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
+      </moveIteratorFactory>
+      <!-- Moves that assign various valid values to the entities -->
+      <changeMoveSelector>
+        <valueSelector>
+          <variableName>executionMode</variableName>
+        </valueSelector>
+        <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+      </changeMoveSelector>
+      <changeMoveSelector>
+        <valueSelector>
+          <variableName>startDate</variableName>
+        </valueSelector>
+        <fixedProbabilityWeight>8.0</fixedProbabilityWeight>
+      </changeMoveSelector>
+    </unionMoveSelector>
+    <acceptor>
+      <entityTabuRatio>0.2</entityTabuRatio>
+      <fadingEntityTabuRatio>0.7</fadingEntityTabuRatio>
+      <lateAcceptanceSize>8000</lateAcceptanceSize>
+    </acceptor>
+    <forager>
+      <acceptedCountLimit>4</acceptedCountLimit>
+    </forager>
       </localSearch>
     </solver>
   </solverBenchmark>
-</#list>
-</#list>
-</#list>
 </plannerBenchmark>

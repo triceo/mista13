@@ -31,19 +31,15 @@
       </termination>
       <unionMoveSelector>
         <moveIteratorFactory>
-          <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.gapremover.GapRemovingMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
-        </moveIteratorFactory>
-        <moveIteratorFactory>
           <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
+          <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
         </moveIteratorFactory>
         <!-- Moves that assign various valid values to the entities -->
         <changeMoveSelector>
           <valueSelector>
             <variableName>executionMode</variableName>
           </valueSelector>
-          <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
+          <fixedProbabilityWeight>1.0</fixedProbabilityWeight>
         </changeMoveSelector>
         <changeMoveSelector>
           <valueSelector>
@@ -53,8 +49,8 @@
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <lateAcceptanceSize>2000</lateAcceptanceSize>
-        <entityTabuRatio>0.7</entityTabuRatio>
+        <lateAcceptanceSize>8000</lateAcceptanceSize>
+        <entityTabuRatio>0.2</entityTabuRatio>
       </acceptor>
       <forager>
         <acceptedCountLimit>4</acceptedCountLimit>

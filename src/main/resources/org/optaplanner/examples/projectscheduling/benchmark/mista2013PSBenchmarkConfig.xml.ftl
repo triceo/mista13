@@ -27,9 +27,6 @@
       <inputSolutionFile>data/projectscheduling/input/B-8.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-9.txt</inputSolutionFile>
       <inputSolutionFile>data/projectscheduling/input/B-10.txt</inputSolutionFile>
-      <problemStatisticType>BEST_SCORE</problemStatisticType>
-      <problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>
-      <problemStatisticType>BEST_SOLUTION_MUTATION</problemStatisticType>
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
     </problemBenchmarks>
     <solver>
@@ -43,13 +40,13 @@
         <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
-        <maximumSecondsSpend>45</maximumSecondsSpend>
+        <maximumSecondsSpend>300</maximumSecondsSpend>
       </termination>
     </solver>
   </inheritedSolverBenchmark>
 
-<#list [8, 16, 32, 64] as sd>
-<#list [1, 2, 4, 8] as cs>
+<#list [8, 16, 32] as sd>
+<#list [2, 4, 8] as cs>
   <solverBenchmark>
     <name>${sd}-1-${cs}</name>
     <solver>
@@ -78,6 +75,7 @@
         </unionMoveSelector>
         <acceptor>
           <entityTabuRatio>0.2</entityTabuRatio>
+          <fadingEntityTabuRatio>0.6</fadingEntityTabuRatio>
           <lateAcceptanceSize>8000</lateAcceptanceSize>
         </acceptor>
         <forager>

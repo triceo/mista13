@@ -21,7 +21,7 @@
     <unionMoveSelector>
       <moveIteratorFactory>
         <moveIteratorFactoryClass>org.optaplanner.examples.projectscheduling.solver.move.chainshift.ChainShiftMoveIteratorFactory</moveIteratorFactoryClass>
-        <fixedProbabilityWeight>4.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>2.0</fixedProbabilityWeight>
       </moveIteratorFactory>
       <!-- Moves that assign various valid values to the entities -->
       <changeMoveSelector>
@@ -34,11 +34,12 @@
         <valueSelector>
           <variableName>startDate</variableName>
         </valueSelector>
-        <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>8.0</fixedProbabilityWeight>
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
       <entityTabuRatio>0.2</entityTabuRatio>
+      <fadingEntityTabuRatio>0.7</fadingEntityTabuRatio>
       <lateAcceptanceSize>8000</lateAcceptanceSize>
     </acceptor>
     <forager>
