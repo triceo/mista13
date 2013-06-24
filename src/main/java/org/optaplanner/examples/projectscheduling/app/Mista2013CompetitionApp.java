@@ -17,7 +17,7 @@ public class Mista2013CompetitionApp {
         f.configure(Mista2013CompetitionApp.class.getResourceAsStream("/org/optaplanner/examples/projectscheduling/solver/mista2013SolverConfig.xml"));
         final SolverConfig c = f.getSolverConfig();
         // make sure some of the settings are always what we need them to be
-        c.setEnvironmentMode(EnvironmentMode.REPRODUCIBLE);
+        c.setEnvironmentMode(EnvironmentMode.PRODUCTION);
         c.setRandomSeed(randomSeed);
         c.getTerminationConfig().setMaximumSecondsSpend(timeLimit);
         // read the problem
