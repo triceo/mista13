@@ -76,10 +76,11 @@ public class CapacityTracker {
         return this.overused;
     }
 
-    private int recalculateConsumption(final int consumption, final int newRequirement, final int resourceCapacity, final boolean isAdding) {
+    private int recalculateConsumption(final int consumption, final int newRequirement, final int resourceCapacity, final boolean isAdding, final boolean isRenewable) {
+        final int multiplier = isRenewable ? 1 : 10;
         return isAdding ? 
-                this.recalculateConsumptionOnAddition(consumption, newRequirement, resourceCapacity) :
-                    this.recalculateConsumptionOnRemoval(consumption, newRequirement, resourceCapacity);
+                this.recalculateConsumptionOnAddition(consumption, newRequirement, resourceCapacity, multiplier) :
+                    this.recalculateConsumptionOnRemoval(consumption, newRequirement, resourceCapacity, multiplier);
     }
 
     /**
@@ -106,39 +107,39 @@ public class CapacityTracker {
         final int resourceCapacity = resource.getCapacity();
         if (resource.isRenewable()) {
             for (int time = startDate; time <= dueDate; time++) {
-                this.modifyConsumption(resourceId, requirement, resourceCapacity, this.getConsumptionInTime(time), isAdding);
+                this.modifyConsumption(resourceId, requirement, resourceCapacity, this.getConsumptionInTime(time), isAdding, true);
             }
         } else {
-            this.modifyConsumption(resourceId, requirement, resourceCapacity, this.nonRenewableResourceConsumption, isAdding);
+            this.modifyConsumption(resourceId, requirement, resourceCapacity, this.nonRenewableResourceConsumption, isAdding, false);
         }
     }
 
-    private void modifyConsumption(final int resourceId, final int requirement, final int resourceCapacity, final int[] consumptionInTime, final boolean isAdding) {
-        consumptionInTime[resourceId] = this.recalculateConsumption(consumptionInTime[resourceId], requirement, resourceCapacity, isAdding);
+    private void modifyConsumption(final int resourceId, final int requirement, final int resourceCapacity, final int[] consumptionInTime, final boolean isAdding, final boolean isRenewable) {
+        consumptionInTime[resourceId] = this.recalculateConsumption(consumptionInTime[resourceId], requirement, resourceCapacity, isAdding, isRenewable);
     }
 
-    private int recalculateConsumptionOnAddition(final int currentTotalUse, final int requirement, final int capacity) {
+    private int recalculateConsumptionOnAddition(final int currentTotalUse, final int requirement, final int capacity, final int multiplier) {
         final int newTotalUse = requirement + currentTotalUse;
         if (currentTotalUse > capacity) {
             // add the increase over the already overreached capacity
-            this.overused += requirement;
+            this.overused += multiplier * requirement;
         } else if (newTotalUse > capacity) {
             // the capacity is newly overreached
-            this.overused += newTotalUse - capacity;
+            this.overused += multiplier *  (newTotalUse - capacity);
         } else {
             // the capacity remains idle
         }
         return newTotalUse;
     }
 
-    private int recalculateConsumptionOnRemoval(final int currentTotalUse, final int requirement, final int capacity) {
+    private int recalculateConsumptionOnRemoval(final int currentTotalUse, final int requirement, final int capacity, final int multiplier) {
         final int newTotalUse = currentTotalUse - requirement;
         if (newTotalUse > capacity) {
             // remove the decrease over the already overreached capacity
-            this.overused -= requirement;
+            this.overused -= multiplier * requirement;
         } else if (currentTotalUse > capacity) {
             // the capacity is newly idle
-            this.overused -= currentTotalUse - capacity;
+            this.overused -= multiplier *  (currentTotalUse - capacity);
         } else {
             // the capacity remains idle
         }
