@@ -30,7 +30,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
 
     private class Mista2013TxtInputBuilder extends TxtInputBuilder {
 
-        private List<Job> buildJobs(final RawProjectData data, final List<Resource> resources) {
+        private List<Job> buildJobs(final int projectId, final RawProjectData data, final List<Resource> resources) {
             final List<Request> requests = data.getRequestsAndDurations();
             final List<Precedence> precedence = data.getPrecedences();
             // traverse the jobs backwards; successors need to be created first
@@ -72,7 +72,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                     if (proper) {
                         modes.add(new ExecutionMode(r.getMode(), r.getDuration(), resourceConsumption));
                     } else {
-                        Mista2013SolutionImporter.LOGGER.info("Ignoring execution mode {} of job {} of project {} because it overconsumes at least one of its resources.", r.getMode(), jobId, data.getProject().getNumber());
+                        Mista2013SolutionImporter.LOGGER.info("Ignoring execution mode {} of job {} of project {} because it overconsumes at least one of its resources.", r.getMode(), jobId, projectId);
                     }
                 }
                 JobType jt = null;
@@ -110,7 +110,7 @@ public class Mista2013SolutionImporter extends AbstractTxtSolutionImporter {
                 resultingResources.add(r);
             }
             // build jobs and project
-            final List<Job> jobs = this.buildJobs(data, resultingResources);
+            final List<Job> jobs = this.buildJobs(raw.getId(), data, resultingResources);
             final Project p = new Project(raw.getId(), raw.getCriticalPathDuration(), raw.getReleaseDate(),
                     resultingResources, jobs);
             return p;
