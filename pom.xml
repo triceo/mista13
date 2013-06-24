@@ -99,6 +99,7 @@
               <mainClass>org.optaplanner.examples.projectscheduling.app.Mista2013CompetitionApp</mainClass>
             </manifest>
           </archive>
+          <finalName>mista2013</finalName>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
