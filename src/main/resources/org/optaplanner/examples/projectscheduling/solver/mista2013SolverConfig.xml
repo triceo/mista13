@@ -34,13 +34,13 @@
         <valueSelector>
           <variableName>startDate</variableName>
         </valueSelector>
-        <fixedProbabilityWeight>8.0</fixedProbabilityWeight>
+        <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
       </changeMoveSelector>
     </unionMoveSelector>
     <acceptor>
       <entityTabuRatio>0.2</entityTabuRatio>
       <fadingEntityTabuRatio>0.7</fadingEntityTabuRatio>
-      <lateAcceptanceSize>8000</lateAcceptanceSize>
+      <lateAcceptanceSize>12000</lateAcceptanceSize>
     </acceptor>
     <forager>
       <acceptedCountLimit>4</acceptedCountLimit>

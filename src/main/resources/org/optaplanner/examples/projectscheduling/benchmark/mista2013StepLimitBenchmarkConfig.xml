@@ -49,8 +49,9 @@
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
-        <lateAcceptanceSize>8000</lateAcceptanceSize>
+        <lateAcceptanceSize>12000</lateAcceptanceSize>
         <entityTabuRatio>0.2</entityTabuRatio>
+        <fadingEntityTabuRatio>0.2</fadingEntityTabuRatio>
       </acceptor>
       <forager>
         <acceptedCountLimit>4</acceptedCountLimit>

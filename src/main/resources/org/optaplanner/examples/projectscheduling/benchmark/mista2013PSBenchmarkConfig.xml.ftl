@@ -40,7 +40,7 @@
         <incrementalScoreCalculatorClass>org.optaplanner.examples.projectscheduling.solver.score.Mista2013IncrementalScoreCalculator</incrementalScoreCalculatorClass>
       </scoreDirectorFactory>
       <termination>
-        <maximumSecondsSpend>300</maximumSecondsSpend>
+        <maximumSecondsSpend>360</maximumSecondsSpend>
       </termination>
     </solver>
   </inheritedSolverBenchmark>
@@ -75,8 +75,8 @@
         </unionMoveSelector>
         <acceptor>
           <entityTabuRatio>0.2</entityTabuRatio>
-          <fadingEntityTabuRatio>0.6</fadingEntityTabuRatio>
-          <lateAcceptanceSize>8000</lateAcceptanceSize>
+          <fadingEntityTabuRatio>0.7</fadingEntityTabuRatio>
+          <lateAcceptanceSize>12000</lateAcceptanceSize>
         </acceptor>
         <forager>
           <acceptedCountLimit>4</acceptedCountLimit>

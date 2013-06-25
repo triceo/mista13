@@ -46,9 +46,9 @@
   </inheritedSolverBenchmark>
 
 <#list [4] as acceptedCountLimit>
-<#list [2000, 8000, 12000] as lateAcceptance>
+<#list [12000, 16000] as lateAcceptance>
 <#list [0.2] as entityTabu>
-<#list [0.01, 0.1, 0.6, 0.7] as fadingEntityTabu>
+<#list [0.7, 0.79] as fadingEntityTabu>
   <solverBenchmark>
     <name>ACL${acceptedCountLimit}-LAS${lateAcceptance}-ET${entityTabu}-FET${fadingEntityTabu}</name>
     <solver>
@@ -72,7 +72,7 @@
           <valueSelector>
             <variableName>startDate</variableName>
           </valueSelector>
-          <fixedProbabilityWeight>8.0</fixedProbabilityWeight>
+          <fixedProbabilityWeight>16.0</fixedProbabilityWeight>
         </changeMoveSelector>
       </unionMoveSelector>
       <acceptor>
