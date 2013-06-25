@@ -1,0 +1,204 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\author{
+	Lukáš Petrovický\\
+	lpetrovi@redhat.com
+	\and
+	Geoffrey De Smet\\
+	gdesmet@redhat.com
+}
+\title{MISTA 2013 Challenge Submission Overview}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We propose a Java-based solution to the challenge, which is implemented using \textit{OptaPlanner}. By leveraging late acceptance hill climbing further improved by an adaptive tabu search, we submit a fully reproducible algorithm that provides feasible solutions for all data sets and is able to handle even very large problems within reasonable operating memory constraints.
+\end{abstract}
+
+\section{Algorithm overview}
+
+\subsection{Data model}
+
+The solution is implemented in Java using \textit{OptaPlanner}\footnote{OptaPlanner, http://www.optaplanner.org/}. The domain model is built around an entity called \texttt{Allocation}. To it, various start dates and job modes (\texttt{ExecutionMode}) can be assigned. 
+
+Both \texttt{ExecutionMode}s and start dates are assigned to \texttt{Allocation}s from a specific range, which is different for every \texttt{Allocation}. These ranges are determined in the following way:
+
+\begin{description}
+\item[Start dates] For each job, we calculate the critical path from the source to this job. This plus a release date of the particular project gives us the earliest possible start date. We will never allow a lower start date\footnote{Unless it is the product of a chain shift move, see below.}. There is no maximum start date.
+
+For the actual range, we take the currently assigned start date\footnote{Or we arbitrarily decide one in case there is no start date yet.} and use the immediate neighborhood. It has been determined experimentally that the ideal range is $<-CPD\footnote{Project's critical path duration},  +CPD>$, while still taking into account the minimum described above.
+
+This tight and flexible start date range allows us to accommodate problems of any size without dramatically increasing the state space and thus operating memory consumed.
+\item[Execution modes] Execution modes are specified by the data sets. However, we ignore some of them as they require more resources than there is capacity for and thus could never be part of any feasible solution. Such execution modes can be found in data sets \texttt{B-4} and \texttt{B-7}.
+\end{description}
+
+\subsection{Score function}
+
+Each combination of \texttt{Allocation}s, representing a project schedule, gets a score. Score consists of three parts, described here in order of decreasing importance:
+
+\begin{description}
+\item[Feasibility constraints] Feasibility of the solution is defined by the competition. We split it into following components, which in sum create the final value:
+
+\begin{description}
+\item[Precedence relations] Since we assign start dates to every \texttt{Allocation} independently of any other, it can easily happen that the dependencies between jobs are not kept. This is accounted for by adding the amount of time by which one job falsely precedes the other as a constraint.
+\item[Resource capacity] Capacity of each resource is tracked separately, with the aim of identifying by how much a given resource is overused. For renewable resources, this number is calculated in every unit of time that the resource is in use. For non-renewable resources, the number is multiplied by a constant to prevent score traps\footnote{Since every renewable resource usually spans multiple units of time, they can easily outnumber non-renewable resources, making them disproportionately more significant in the scoring function.}.
+\end{description}
+
+\item[Total project delay] As defined by the competition.
+\item[Total make span] As defined by the competition.
+\end{description}
+
+All of these are negative numbers, so that we can use \textit{OptaPlanner} to maximize their values.
+
+\subsection{Initialization}
+
+Before the actual optimization can start, we need to determine initial settings for each \texttt{Allocation}. This is achieved through \textit{OptaPlanner}'s construction heuristics called ``First fit,'' emerging from our benchmarks as the best performing.
+
+\subsection{Optimization}
+
+After the solution is fully initialized, the optimization work can start. This is driven by late acceptance hill climbing, and further improved by adaptive tabu search\footnote{The size of the tabu list is determined by the number of \texttt{Allocation}s in that particular data set.}.
+
+We have implemented three distinct ways of traversing from one solution to the other (``moves''):
+
+\begin{description}
+\item[Start date change] A start date is assigned from a particular range, see above.
+\item[Execution mode change] An execution mode is assigned from a particular range, see above.
+\item[Chain shift] We take an \texttt{Allocation} along with all its recursive dependents, and we move the entire chain in time. This is the only option for an \texttt{Allocation} to break out of its start range. This coarse-grained move is very beneficial as it will affect many constraints at a time.
+\end{description}
+
+\textit{OptaPlanner} also allows us to specify the ratio in which each of these moves will be picked. Through extensive benchmarking, we have identified that while execution modes remain mostly static, start dates need to change much more often\footnote{The actual ratio is 16 start date changes to 2 chain shifts to 1 execution mode change.}.
+
+Furthermore, we leverage \textit{OptaPlanner}'s just-in-time selectors to ensure that at any time, only a small portion of the state space is located in the operating memory. This allows us to solve very large problems, as the amount of memory necessary only increases linearly with the number of jobs.
+
+Unfortunately, the algorithm is single-threaded as parallelization isn't currently possible in \textit{OptaPlanner}.
+
+\section{Results}
+
+For best results found by the production configuration of the algorithm, please refer to Table \ref{table:results}. It should be noted that for those data sets, where best found solutions have been published\footnote{A-1 through A-10.}, our results vary significantly in quality, see Table \ref{table:comparison}. Table \ref{table:env} describes the computing environment where these results were recorded.
+
+\begin{table}
+\caption{Results for public data sets}
+\centering
+\begin{tabular}{c||c|c}
+Data set & TPD & TMS \\ 
+\hline 
+\hline 
+A-1 & 1 & 23 \\ 
+\hline 
+A-2 & 2 & 41 \\ 
+\hline 
+A-3 & 0 & 50 \\ 
+\hline 
+A-4 & 68 & 46 \\ 
+\hline 
+A-5 & 206 & 107 \\ 
+\hline 
+A-6 & 165 & 101 \\ 
+\hline 
+A-7 & 926 & 208 \\ 
+\hline 
+A-8 & 334 & 157 \\ 
+\hline 
+A-9 & 250 & 135 \\ 
+\hline 
+A-10 & 1558 & 355\\ 
+\hline 
+B-1 & 445 & 136\\ 
+\hline 
+B-2 & 534 & 167\\ 
+\hline 
+B-3 & 771 & 217\\ 
+\hline 
+B-4 & 1898 & 291\\ 
+\hline 
+B-5 & 1203 & 256\\ 
+\hline 
+B-6 & 1221 & 248\\ 
+\hline 
+B-7 & 1384 & 242\\
+\hline 
+B-8 & 6675 & 614\\ 
+\hline 
+B-9 & 8848 & 929\\ 
+\hline 
+B-10 & 4476 & 496\\ 
+\end{tabular} 
+\label{table:results}
+\end{table}
+
+\begin{table}
+\caption{Total project delay comparison}
+\centering
+\begin{tabular}{c||c|c||c}
+Data set & Ours & Best & Ours Worse By [\%]\\ 
+\hline 
+\hline 
+A-1 & 1 & 1 & 0\\ 
+\hline 
+A-2 & 2 & 2 & 0\\ 
+\hline 
+A-3 & 0 & 0 & 0\\ 
+\hline 
+A-4 & 68 & 65 & 5\\ 
+\hline 
+A-5 & 206 & 153 & 35\\ 
+\hline 
+A-6 & 165 & 147 & 12\\ 
+\hline 
+A-7 & 926 & 596 & 55\\ 
+\hline 
+A-8 & 334 & 302 & 11\\ 
+\hline 
+A-9 & 250 & 223 & 12\\ 
+\hline 
+A-10 & 1558 & 969 & 61\\
+\hline 
+\hline 
+\multicolumn{3}{r||}{Median} & 11.5 \\ 
+\end{tabular} 
+\label{table:comparison}
+\end{table}
+
+\begin{table}
+\caption{Computing environment to reproduce published results}
+\centering
+\begin{tabular}{c|c}
+CPU & Intel Core i7 Q820\\ 
+\hline 
+Operating System & 64-bit Fedora 19\\ 
+\hline 
+Java Runtime & OpenJDK 1.7.0\_25 (fedora-2.3.10.3.fc19-x86\_64)\\ 
+\hline 
+JVM Parameters & \texttt{-Xms512m -Xmx2048m -server}\\ 
+\hline 
+Run time & 6 minutes\footnote{Expected to be equivalent to the required 5 minutes on hardware specified by the competition organizers.}\\ 
+\hline 
+Random seed & 0 
+\end{tabular} 
+\label{table:env}
+\end{table}
+
+\textit{OptaPlanner}'s inner workings can be configured in a myriad ways. We have undergone extensive benchmarking and have picked this particular configuration as it proves to be the most stable. Different configurations have been shown to provide slightly better results on some of the data sets, but have performed poorly on others.
+
+\section{Availability and impact}
+
+From the beginning, our submission has been open source, developed under the terms of Apache Public License 2.0 and available on Github\footnote{MISTA 2013 on Lukáš Petrovický's Github, https://github.com/triceo/mista13}. It will eventually be integrated into \textit{OptaPlanner} example codebase\footnote{It will probably perform a bit worse at the time, since it will have been refactored for readability and long-term supportability.}.
+
+On top of the requirements set forth by the competition, our submission provides a desktop application that is able to visualize the progress of the algorithm using a Gantt chart. Also, we have implemented an ANTLR parser for the data sets that could easily be made independent of the application.
+
+As a result of this work, \textit{OptaPlanner} itself has seen significant improvements. One of the new features introduced was adaptive tabu search. Late acceptance hill climbing implementation received important updates, and so did the benchmarker functionality.
+
+\section{Conclusion}
+
+The algorithm being submitted meets all criteria of the competition. It even meets the earlier criteria of being fully reproducible, which was later retracted. Efficient data structures ensure that it can deal with very large data sets.
+
+We have provided feasible solutions for every data set published so far. We have never beaten the published solutions. In some instances we've come very close and for the smallest problems, we even matched them.
+
+Further improvements to our submission could be found in two main areas. First and foremost, new types of moves may be developed to help the algorithm better escape local optima. And second, the data model can be redesigned so that precedence relationships are enforced and we influence the buffers between jobs~-- this may lead to an algorithm that reaches feasible solutions faster and more often.
+
+\end{document}
