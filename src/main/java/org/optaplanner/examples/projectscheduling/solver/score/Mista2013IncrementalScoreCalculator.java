@@ -42,16 +42,6 @@ public class Mista2013IncrementalScoreCalculator extends AbstractIncrementalScor
     }
 
     @Override
-    public void beforeAllVariablesChanged(final Object entity) {
-        this.retract((Allocation) entity);
-    }
-
-    @Override
-    public void afterAllVariablesChanged(final Object entity) {
-        this.insert((Allocation) entity);
-    }
-
-    @Override
     public void beforeVariableChanged(final Object entity, final String variableName) {
         this.retract((Allocation) entity);
     }
