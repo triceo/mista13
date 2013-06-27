@@ -39,7 +39,7 @@ This tight and flexible start date range allows us to accommodate problems of an
 
 \subsection{Score function}
 
-Each combination of \texttt{Allocation}s, representing a project schedule, gets a score. Score consists of three parts, described here in order of decreasing importance:
+Each combination of \texttt{Allocation}s, representing a project schedule, gets a score. A Score consists of three parts, described here in order of decreasing importance:
 
 \begin{description}
 \item[Feasibility constraints] Feasibility of the solution is defined by the competition. We split it into following components, which in sum create the final value:
@@ -61,7 +61,7 @@ Before the actual optimization can start, we need to determine initial settings 
 
 \subsection{Optimization}
 
-After the solution is fully initialized, the optimization work can start. This is driven by late acceptance hill climbing, and further improved by adaptive tabu search\footnote{The size of the tabu list is determined by the number of \texttt{Allocation}s in that particular data set.}.
+After the solution is fully initialized, the optimization work can start. This is driven by a late acceptance hill climbing algorithm. Furthermore, every selected move must also pass an adaptive tabu search criteria\footnote{The size of the tabu list is determined by the number of \texttt{Allocation}s in that particular data set.}.
 
 We have implemented three distinct ways of traversing from one solution to the other (``moves''):
 
@@ -79,7 +79,7 @@ Unfortunately, the algorithm is single-threaded as parallelization isn't current
 
 \section{Results}
 
-For best results found by the production configuration of the algorithm, please refer to Table \ref{table:results}. It should be noted that for those data sets, where best found solutions have been published\footnote{A-1 through A-10.}, our results vary significantly in quality, see Table \ref{table:comparison}. Table \ref{table:env} describes the computing environment where these results were recorded.
+For best results found by the production configuration of the algorithm, please refer to Table \ref{table:results}. It should be noted that for those data sets, for which best found solutions have been published\footnote{A-1 through A-10.}, our results vary significantly in quality, see Table \ref{table:comparison}. Table \ref{table:env} describes the computing environment that recorded these results.
 
 \begin{table}
 \caption{Results for public data sets}
@@ -188,7 +188,7 @@ Random seed & 0
 
 \section{Availability and impact}
 
-From the beginning, our submission has been open source, developed under the terms of Apache Public License 2.0 and available on Github\footnote{MISTA 2013 on Lukáš Petrovický's Github, https://github.com/triceo/mista13}. It will eventually be integrated into \textit{OptaPlanner} example codebase\footnote{It will probably perform a bit worse at the time, since it will have been refactored for readability and long-term supportability.}.
+From the beginning, our submission has been open source, developed under the terms of Apache Public License 2.0 and available on Github\footnote{MISTA 2013 on Lukáš Petrovický's Github, https://github.com/triceo/mista13}. It will eventually be integrated into \textit{OptaPlanner} example codebase\footnote{It will probably perform a bit worse at that time, since it will have been refactored for readability and long-term supportability.}.
 
 On top of the requirements set forth by the competition, our submission provides a desktop application that is able to visualize the progress of the algorithm using a Gantt chart. Also, we have implemented an ANTLR parser for the data sets that could easily be made independent of the application.
 
