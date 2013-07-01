@@ -44,7 +44,7 @@ public class GanttPanel extends SolutionPanel {
                     continue;
                 }
                 series.add(new Task("J" + j.getId(), new SimpleTimePeriod(GanttPanel.date(a.getStartDate()),
-                        GanttPanel.date(a.getDueDate()))));
+                        GanttPanel.date(a.getDueDate() + 1))));
             }
             collection.add(series);
         }
