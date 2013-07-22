@@ -1,18 +1,28 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[draft]{svjour3}
+\smartqed
+\usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\author{
-	Lukáš Petrovický\\
-	lpetrovi@redhat.com
-	\and
-	Geoffrey De Smet\\
-	gdesmet@redhat.com
-}
-\title{MISTA 2013 Challenge Submission Overview}
+\journalname{MISTA 2013}
 \begin{document}
+\title{Solving the MISTA 2013 Challenge using Optaplanner}
+
+\author{
+	Lukáš Petrovický \and
+	Geoffrey De Smet
+}
+
+\institute{Lukáš Petrovický \at
+              Red Hat Czech \\
+              \email{lpetrovi@redhat.com}
+           \and
+           Geoffrey De Smet \at
+              Red Hat Belgium \\
+              \email{gdesmet@redhat.com}
+}
 
 \maketitle
 
@@ -20,13 +30,13 @@
 We propose a Java-based solution to the challenge, which is implemented using \textit{OptaPlanner}. By leveraging late acceptance hill climbing further improved by an adaptive tabu search, we submit a fully reproducible algorithm that provides feasible solutions for all data sets and is able to handle even very large problems within reasonable operating memory constraints.
 \end{abstract}
 
-\section{Algorithm overview}
+\section{Introduction}
+
+In this section, we describe the submission's data model, structure of the score function and the actual optimization algorithms used.
 
 \subsection{Data model}
 
-The solution is implemented in Java using \textit{OptaPlanner}\footnote{OptaPlanner, http://www.optaplanner.org/}. The domain model is built around an entity called \texttt{Allocation}. To it, various start dates and job modes (\texttt{ExecutionMode}) can be assigned. 
-
-Both \texttt{ExecutionMode}s and start dates are assigned to \texttt{Allocation}s from a specific range, which is different for every \texttt{Allocation}. These ranges are determined in the following way:
+The solution is implemented in Java using \textit{OptaPlanner}\footnote{OptaPlanner, http://www.optaplanner.org/}. The domain model is built around \texttt{Allocation} entity. Various start dates and job modes (\texttt{ExecutionMode}) can be assigned to it from a specific range, which is different for every \texttt{Allocation}. These ranges are determined in the following way:
 
 \begin{description}
 \item[Start dates] For each job, we calculate the critical path from the source to this job. This plus a release date of the particular project gives us the earliest possible start date. We will never allow a lower start date\footnote{Unless it is the product of a chain shift move, see below.}. There is no maximum start date.
@@ -177,14 +187,16 @@ Java Runtime & OpenJDK 1.7.0\_25 (fedora-2.3.10.3.fc19-x86\_64)\\
 \hline 
 JVM Parameters & \texttt{-Xms512m -Xmx2048m -server}\\ 
 \hline 
-Run time & 6 minutes\footnote{Expected to be equivalent to the required 5 minutes on hardware specified by the competition organizers.}\\ 
+Run time & 6 minutes\\ 
 \hline 
-Random seed & 0 
+Random seed & 0
 \end{tabular} 
 \label{table:env}
 \end{table}
 
 \textit{OptaPlanner}'s inner workings can be configured in a myriad ways. We have undergone extensive benchmarking and have picked this particular configuration as it proves to be the most stable. Different configurations have been shown to provide slightly better results on some of the data sets, but have performed poorly on others.
+
+The algorithm has been benchmarked to provide optimal results with the stated random seed. (See Table \ref{table:results}.) Results may vary significantly based on the choice of random seed.
 
 \section{Availability and impact}
 
