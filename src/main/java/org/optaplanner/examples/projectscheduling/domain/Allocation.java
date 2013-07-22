@@ -6,8 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.value.ValueRange;
-import org.optaplanner.core.api.domain.value.ValueRangeType;
+import org.optaplanner.core.api.domain.value.ValueRangeProvider;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.examples.projectscheduling.domain.solver.AllocationDifficultyComparator;
 import org.optaplanner.examples.projectscheduling.domain.solver.ExecutionModeStrengthWeightFactory;
@@ -42,8 +41,8 @@ public class Allocation {
         return this.job;
     }
 
-    @PlanningVariable(strengthWeightFactoryClass = ExecutionModeStrengthWeightFactory.class)
-    @ValueRange(planningEntityProperty = "executionModeRange", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    @PlanningVariable(valueRangeProviderRefs = {"executionModeRange"},
+            strengthWeightFactoryClass = ExecutionModeStrengthWeightFactory.class)
     public ExecutionMode getExecutionMode() {
         return this.executionMode;
     }
@@ -54,12 +53,13 @@ public class Allocation {
         this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
+    @ValueRangeProvider(id = "executionModeRange")
     public Collection<ExecutionMode> getExecutionModeRange() {
         return this.job.getExecutionModes();
     }
 
-    @PlanningVariable(strengthComparatorClass = StartDateStrengthComparator.class)
-    @ValueRange(planningEntityProperty = "startDateRange", type = ValueRangeType.FROM_PLANNING_ENTITY_PROPERTY)
+    @PlanningVariable(valueRangeProviderRefs = {"startDateRange"},
+            strengthComparatorClass = StartDateStrengthComparator.class)
     public Integer getStartDate() {
         return this.startDate;
     }
@@ -70,6 +70,7 @@ public class Allocation {
         this.setDueDate(this.getStartDate(), this.executionMode);
     }
 
+    @ValueRangeProvider(id = "startDateRange")
     public Collection<Integer> getStartDateRange() {
         final Job job = this.getJob();
         final Project parent = job.getParentProject();
